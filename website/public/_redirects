@@ -1,5 +1,7 @@
 # Cloudflare Pages redirects configuration
+
 # https://developers.cloudflare.com/pages/configuration/redirects/
+
 # Note: www to non-www redirect should be configured in Cloudflare DNS dashboard
 
 # Old URLs to new (if you had any old structure)
