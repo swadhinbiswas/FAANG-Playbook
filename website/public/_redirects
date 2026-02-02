@@ -1,0 +1,37 @@
+# Cloudflare Pages redirects configuration
+
+# https://developers.cloudflare.com/pages/configuration/redirects/
+
+# Redirect www to non-www
+
+https://www.roadmap.swadhin.cv/* https://roadmap.swadhin.cv/:splat 301
+
+# Old URLs to new (if you had any old structure)
+
+/faang-roadmap/_ /docs/:splat 301
+/interview-prep/_ /docs/interviews/:splat 301
+
+# Shortcut URLs
+
+/dsa /docs/foundations/01-DSA-and-Coding 302
+/system-design /docs/system-design/00-System-Design-Template 302
+/behavioral /docs/interviews/06-Behavioral-Interview-Playbook 302
+/companies /docs/company-notes/00-Index 302
+/google /leetcode/google 302
+/amazon /leetcode/amazon 302
+/meta /leetcode/meta 302
+/facebook /leetcode/facebook 302
+/apple /leetcode/apple 302
+/netflix /leetcode/netflix 302
+/microsoft /leetcode/microsoft 302
+
+# Study plans shortcuts
+
+/junior /docs/study-plans/01-Junior-3-Month-Plan 302
+/mid /docs/study-plans/02-Mid-6-Month-Plan 302
+/senior /docs/study-plans/03-Senior-4-Month-Plan 302
+
+# Start here
+
+/start /docs/start-here/00-README 302
+/begin /docs/start-here/00-README 302

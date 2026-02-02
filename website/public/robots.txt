@@ -1,11 +1,10 @@
-# FAANG Job Prep 2026-2027 Robots.txt
+# Tech Interview Roadmap Robots.txt
 # https://roadmap.swadhin.cv
 
 User-agent: *
 Allow: /
 
 # Sitemaps
-Sitemap: https://roadmap.swadhin.cv/sitemap.xml
 Sitemap: https://roadmap.swadhin.cv/sitemap-index.xml
 
 # Allow all search engines

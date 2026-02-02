@@ -1,0 +1,27 @@
+# Cloudflare Pages Configuration
+# https://developers.cloudflare.com/pages/
+
+name = "faang-playbook"
+compatibility_date = "2026-02-02"
+
+# Pages specific settings
+[site]
+bucket = "./dist"
+
+# Build configuration
+[build]
+command = "bun run build"
+cwd = "."
+watch_dir = "src"
+
+# Environment variables (if needed)
+[vars]
+NODE_VERSION = "18"
+
+# Production environment
+[env.production]
+name = "faang-playbook-prod"
+
+# Preview environment (for PR previews)
+[env.preview]
+name = "faang-playbook-preview"
