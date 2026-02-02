@@ -60,5 +60,5 @@
   <text x="600" y="540" font-family="system-ui, -apple-system, sans-serif" font-size="24" fill="#6c7086" text-anchor="middle">Google • Amazon • Meta • Apple • Netflix & More</text>
 
   <!-- URL -->
-  <text x="600" y="590" font-family="monospace" font-size="20" fill="url(#yellowGrad)" text-anchor="middle">faang-roadmap.dev</text>
+  <text x="600" y="590" font-family="monospace" font-size="20" fill="url(#yellowGrad)" text-anchor="middle">roadmap.swadhin.cv</text>
 </svg>
