@@ -1,0 +1,68 @@
+{
+  "name": "FAANG Job Prep 2026-2027",
+  "short_name": "FAANG Prep",
+  "description": "Complete roadmap to land your dream job at Google, Amazon, Meta, Apple, Netflix & top tech companies. DSA, System Design, Behavioral interviews.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1e1e2e",
+  "theme_color": "#1e1e2e",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["education", "productivity", "business"],
+  "icons": [
+    {
+      "src": "/favicon-16x16.png",
+      "sizes": "16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/og-image.png",
+      "sizes": "1200x630",
+      "type": "image/png",
+      "label": "FAANG Job Prep Homepage"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "DSA & Coding",
+      "short_name": "DSA",
+      "description": "Data Structures and Algorithms preparation",
+      "url": "/docs/foundations/01-DSA-and-Coding",
+      "icons": [{ "src": "/favicon-32x32.png", "sizes": "32x32" }]
+    },
+    {
+      "name": "System Design",
+      "short_name": "Design",
+      "description": "System Design interview preparation",
+      "url": "/docs/system-design/00-System-Design-Template",
+      "icons": [{ "src": "/favicon-32x32.png", "sizes": "32x32" }]
+    },
+    {
+      "name": "Behavioral",
+      "short_name": "Behavioral",
+      "description": "Behavioral interview preparation",
+      "url": "/docs/interviews/06-Behavioral-Interview-Playbook",
+      "icons": [{ "src": "/favicon-32x32.png", "sizes": "32x32" }]
+    }
+  ]
+}

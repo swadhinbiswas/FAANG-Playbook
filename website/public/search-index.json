@@ -1,0 +1,842 @@
+[
+  {
+    "id": 0,
+    "title": "Hiring Pipeline (End-to-End)",
+    "section": "Hiring Pipeline",
+    "sectionSlug": "hiring-pipeline",
+    "href": "/docs/hiring-pipeline/00-Index",
+    "description": "This folder is a practical walkthrough of how hiring typically works for software/data/ML/infra roles, and what to optimize for at each stage.",
+    "keywords": "what gets evaluated (high level) recommended order cross-links to existing detailed playbooks sources used for this section",
+    "content": "# Hiring Pipeline (End-to-End)\n\nThis folder is a practical walkthrough of how hiring typically works for software/data/ML/infra roles, and what to optimize for at each stage.\n\nIf you already know your target lane, jump to [02-Role-Roadmaps/00-Index.md](../02-Role-Roadmaps/00-Index.md).\n\n## What gets evaluated (high level)\n\nAcross most “high-signal” companies, your interviews are not graded on vibes; they are graded on _signals_ and _risk reduction_:\n\n- Can you solve problems clearly and correctly?\n- Can you communicate tradeoffs and reasoning?\n- Can you build/operate real systems (reliability, security, cost)?\n- Will you be effective with ambiguous requirements and imperfect information?\n\nFor a concrete rubric commonly used across big tech coding interviews, see Tech Interview Handbook’s rubric overview: https://www.techinterviewhandbook.org/coding-interview-rubrics/\n\n## Recommended order\n\n1. ATS + shortlisting (resume, referrals, targeting)\n2. Recruiter screen (scope alignment, compensation, process)\n3. Online assessment / quiz (if used)\n4. Phone screen(s)\n5. Onsite/virtual loop (coding, system design, role-specific, behavioral)\n6. Debrief / hiring committee\n7. Offer, negotiation, and closing\n\n## Cross-links to existing detailed playbooks\n\nThis repo already contains deeper playbooks; these new docs are an opinionated “front door”:\n\n- Interview loop overview: [00-START-HERE/02-Interview-Loop-At-A-Glance.md](../00-START-HERE/02-Interview-Loop-At-A-Glance.md)\n- Recruiter screen: [03-INTERVIEWS/01-Recruiter-Screen-Playbook.md](../03-INTERVIEWS/01-Recruiter-Screen-Playbook.md)\n- Coding interviews: [03-INTERVIEWS/02-Coding-Interview-Playbook.md](../03-INTERVIEWS/02-Coding-Interview-Playbook.md)\n- System design interviews: [03-INTERVIEWS/03-System-Design-Interview-Playbook.md](../03-INTERVIEWS/03-System-Design-Interview-Playbook.md)\n- ML system design: [03-INTERVIEWS/04-ML-System-Design-Interview.md](../03-INTERVIEWS/04-ML-System-Design-Interview.md)\n- SQL/data interviews"
+  },
+  {
+    "id": 1,
+    "title": "ATS + Shortlisting (Resume, targeting, referrals)",
+    "section": "Hiring Pipeline",
+    "sectionSlug": "hiring-pipeline",
+    "href": "/docs/hiring-pipeline/01-ATS-and-Shortlisting",
+    "description": "Your goal at this stage is simple: get into the interview loop.",
+    "keywords": "what actually works 1) targeting beats volume 2) evidence beats claims 3) use the recruiter’s mental model checklist (15 minutes) common rejection reasons cross-links grounding sources",
+    "content": "# ATS + Shortlisting (Resume, targeting, referrals)\n\nYour goal at this stage is simple: get into the interview loop.\n\nHiring teams are trying to answer two questions quickly:\n\n1. _Is this person plausibly qualified for this level and role?_\n2. _Do we have evidence they can deliver impact in our environment?_\n\n## What actually works\n\n### 1) Targeting beats volume\n\nIf you spray 200 applications, you will get filtered like spam.\n\n- Pick 1–2 roles (e.g., Backend L4/L5, MLE L4).\n- Pick 1–2 archetypes (FAANG vs enterprise vs automotive) and tune for their signals.\n- Tailor the first half-page of your resume for that lane.\n\n### 2) Evidence beats claims\n\nReplace “worked on X” with evidence:\n\n- Scale: QPS, p95 latency, dataset size, model inference cost\n- Reliability: SLOs, incident reduction, rollout safety\n- Ownership: requirements, tradeoffs, stakeholder management\n- Impact: revenue, cost savings, conversion lift, time saved\n\n### 3) Use the recruiter’s mental model\n\nRecruiters aren’t judging your “potential”; they’re matching you to a requisition.\n\n- Mirror the job posting vocabulary (without keyword stuffing).\n- Put the relevant tech stack and scope where it’s hard to miss.\n- Make level obvious via scope: project size, ambiguity, leadership.\n\n## Checklist (15 minutes)\n\n- One-line headline: role + domain + level target (e.g., “Backend Engineer (L4/L5) — distributed systems + reliability”).\n- Top 3 bullets: your _best_ measurable wins.\n- Skills: keep it short; list only what you can discuss deeply.\n- Projects: include one “end-to-end” project if you lack industry experience.\n- Remove “fluff”: buzzwords without proof.\n\n## Common rejection reasons\n\n- No measurable outcomes (reads like responsibilities).\n- Mismatch: applying for backend but bullets are mostly dashboards.\n- Too broad: five roles in one resume.\n- Level mismatch: staff-level words with junior-scope evidence.\n\n## Cross-links\n\n- Resume/LinkedIn/GitHub guidance: [08-CAREER/01-Resume-LinkedIn-GitHub.md](../08-CAREER"
+  },
+  {
+    "id": 2,
+    "title": "Recruiter Screen (Alignment + leverage)",
+    "section": "Hiring Pipeline",
+    "sectionSlug": "hiring-pipeline",
+    "href": "/docs/hiring-pipeline/02-Recruiter-Screen",
+    "description": "The recruiter screen is not “small talk.” It’s a gating conversation where the recruiter decides whether you are:",
+    "keywords": "what recruiters optimize for your objectives (leave the call with these) your 60-second pitch (template) the “evidence bullets” you should prepare questions that upgrade your signal (ask 4–6) role + expectations interview format team + scope (if team is known) logistics + process archetype differences (what to expect)",
+    "content": "# Recruiter Screen (Alignment + leverage)\n\nThe recruiter screen is not “small talk.” It’s a gating conversation where the recruiter decides whether you are:\n\n- a fit for the role + level _as written_,\n- credible and coherent (communication + career story),\n- logistically viable (timeline, location/remote, visa constraints),\n- worth spending expensive interviewer time on.\n\nYour goal is to **make it easy for them to move you forward**.\n\n---\n\n## What recruiters optimize for\n\nRecruiters are optimizing for **throughput and risk reduction**:\n\n- **Speed + clarity:** can they summarize you in 2–3 bullets to a hiring manager?\n- **Mismatch detection:** role/level gaps, unclear scope, shaky communication, compensation/visa constraints.\n- **Process predictability:** can you schedule the loop quickly? will you ghost? do you have competing deadlines?\n- **Candidate quality signals:** not “buzzwords,” but evidence you can execute.\n\nThink like a recruiter: you are giving them a clean packet of “why this person should interview.”\n\n---\n\n## Your objectives (leave the call with these)\n\n1. **Role clarity:** exact title, team/domain (if known), core responsibilities.\n2. **Level calibration:** what level they are targeting and why.\n3. **Loop expectations:** number of rounds, types (coding/system design/behavioral/role-specific).\n4. **Timeline:** expected scheduling + decision date.\n5. **Constraints captured:** location, remote/hybrid policy, visa, start date.\n6. **Compensation alignment:** confirm you’re not far outside their bands.\n\nIf you can only do one thing: **confirm the level**. Many disappointments later are actually mismatched level expectations early.\n\n---\n\n## Your 60-second pitch (template)\n\nUse a tight structure:\n\n1. **Who you are:** role + domain (e.g., backend + distributed systems, MLE + ranking/recs, DE + batch/streaming)\n2. **Proof of impact:** 2–3 outcomes with numbers and constraints\n3. **What you want next:** role + why this company archetype\n\nExample skeleton:\n\n> I’m a"
+  },
+  {
+    "id": 3,
+    "title": "Online Assessments (OA) / Quizzes",
+    "section": "Hiring Pipeline",
+    "sectionSlug": "hiring-pipeline",
+    "href": "/docs/hiring-pipeline/03-Online-Assessments",
+    "description": "Some companies run an OA as a cheap first filter; others skip it.",
+    "keywords": "what an oa is testing the oa protocol (repeatable) phase 1: understand (3–5 minutes) phase 2: design (5–8 minutes) phase 3: implement (rest of time) phase 4: verify (last 10–20%) time management heuristics common failure modes (and how to avoid them) oa setup checklist (do this before the test) archetype differences",
+    "content": "# Online Assessments (OA) / Quizzes\n\nSome companies run an OA as a cheap first filter; others skip it.\n\nTreat an OA like a production incident: **be systematic, reduce mistakes, and keep your head**.\n\n---\n\n## What an OA is testing\n\nIn practice, OAs mostly test:\n\n- **Correctness under constraints:** choosing an algorithm that fits time/memory.\n- **Implementation hygiene:** clean code, fewer bugs, edge-case handling.\n- **Reasoning speed:** can you convert a prompt into a plan quickly?\n- **Composure:** do you spiral when stuck?\n\nMany candidates fail for process reasons (I/O mistakes, no tests, misread constraints), not because they don’t “know DSA.”\n\n---\n\n## The OA protocol (repeatable)\n\n### Phase 1: Understand (3–5 minutes)\n\n1. Read the statement twice.\n2. Rewrite the task in your own words.\n3. Extract constraints (e.g., $n \\le 10^5$, values up to $10^9$, time limit 1–2s).\n4. Identify required outputs and edge behaviors.\n\n### Phase 2: Design (5–8 minutes)\n\n1. Write 2–3 examples.\n2. Add 1–2 edge cases (empty, duplicates, negatives, overflow, extreme sizes).\n3. Choose a baseline approach.\n4. Sanity-check complexity.\n\n### Phase 3: Implement (rest of time)\n\n1. Code the simplest correct solution.\n2. Keep functions small.\n3. Avoid cleverness unless required.\n\n### Phase 4: Verify (last 10–20%)\n\n1. Run your examples.\n2. Run edge cases.\n3. Do a quick “invariants pass” (what must always be true?).\n4. Only then micro-optimize.\n\n---\n\n## Time management heuristics\n\n- If you are stuck for 5 minutes: step back and ask, “What’s the simplest representation that makes this easy?” (sorting? hashmap? prefix sums? two pointers?)\n- If you are 50% through time with no working code: ship the simplest working baseline.\n- If you have a baseline working early: spend the remaining time on tests + clarity.\n\n---\n\n## Common failure modes (and how to avoid them)\n\n- **Ignoring constraints:** $n$ up to $10^5$ but writing $O(n^2)$.\n  Fix: complexity check before coding.\n- **Misreading the prompt:** wro"
+  },
+  {
+    "id": 4,
+    "title": "Phone Screen(s)",
+    "section": "Hiring Pipeline",
+    "sectionSlug": "hiring-pipeline",
+    "href": "/docs/hiring-pipeline/04-Phone-Screens",
+    "description": "Phone screens are usually 1–2 rounds and can include:",
+    "keywords": "what’s different from onsite the phone screen flow (what to expect) what “great” looks like (rubric mindset) what “good” looks like phone screen checklist what to do when you’re stuck your questions (pick 2–3) common failure modes cross-links grounding sources",
+    "content": "# Phone Screen(s)\n\nPhone screens are usually 1–2 rounds and can include:\n\n- Coding (most common)\n- Practical debugging\n- Light system design (mid/senior)\n- Role-specific (SQL, ML, infra)\n\nPhone screens are high-leverage because they’re cheaper than onsites: companies are trying to quickly answer “is this person worth a full loop?”\n\n## What’s different from onsite\n\n- Less time to build rapport\n- Usually one interviewer → one “vote” can gate you\n- Often stricter on basics (communication, correctness)\n\nIn many orgs, a phone screen fail is not “almost”; it’s a hard stop. Treat it with onsite seriousness.\n\n---\n\n## The phone screen flow (what to expect)\n\nTypical structure for a coding-focused screen:\n\n1. 2–3 minutes: intros + context\n2. 2–5 minutes: problem statement + clarifying questions\n3. 15–25 minutes: solve + implement\n4. 5–10 minutes: testing + complexity + follow-ups\n5. 2–5 minutes: your questions\n\nRole-specific screens vary:\n\n- **SQL:** one hard query + follow-ups (edge cases, performance, correctness)\n- **ML:** modeling choices, tradeoffs, evaluation pitfalls, data leakage\n- **Infra/SRE:** debugging, incident-style reasoning, reliability tradeoffs\n\n---\n\n## What “great” looks like (rubric mindset)\n\nEven when the interviewer doesn’t show you a rubric, they typically grade on dimensions like:\n\n- Communication\n- Problem solving\n- Technical competency\n- Testing\n\nReference rubric example: https://www.techinterviewhandbook.org/coding-interview-rubrics/\n\n## What “good” looks like\n\nUse a rubric mindset. Many big tech companies evaluate coding on dimensions like:\n\n- Communication\n- Problem solving\n- Technical competency\n- Testing\n\nSee: https://www.techinterviewhandbook.org/coding-interview-rubrics/\n\n## Phone screen checklist\n\n- Confirm language + environment (CoderPad, shared doc, etc.).\n- Ask clarifying questions early.\n- State approach before coding.\n- Narrate while coding (don’t go silent).\n- Test typical + corner cases.\n- If stuck: communicate, propose alternatives, a"
+  },
+  {
+    "id": 5,
+    "title": "Onsite / Virtual Loop",
+    "section": "Hiring Pipeline",
+    "sectionSlug": "hiring-pipeline",
+    "href": "/docs/hiring-pipeline/05-Onsite-Loop",
+    "description": "The onsite (or virtual onsite) is usually 3–6 rounds, often combining:",
+    "keywords": "what companies want from the loop before the loop (prep that actually matters) 1) standardize your interview operating system 2) build a “portfolio” of evidence 3) match archetype expectations how to pace yourself round-by-round guidance coding rounds system design (mid/senior) behavioral",
+    "content": "# Onsite / Virtual Loop\n\nThe onsite (or virtual onsite) is usually 3–6 rounds, often combining:\n\n- 2× coding\n- 1× system design (mid/senior)\n- 1× behavioral\n- 0–2× role-specific (ML design, SQL, infra, domain)\n\nThis is where companies spend real money: multiple senior interviewers + a debrief process. The loop is designed to **reduce false positives** (hiring the wrong person) more than to avoid false negatives.\n\n## What companies want from the loop\n\nThey want multiple independent measurements of the same underlying capability, then a calibration step.\n\nThat’s why you’ll see similar themes across rounds (clarity, correctness, tradeoffs, execution).\n\nIn other words: you’re not trying to be “brilliant,” you’re trying to be **consistently strong**.\n\n---\n\n## Before the loop (prep that actually matters)\n\n### 1) Standardize your interview operating system\n\n- A repeatable coding process (clarify → plan → implement → test).\n- A repeatable system design process (requirements → API/data → components → scaling → reliability → tradeoffs).\n- A repeatable behavioral structure (STAR/SAO with metrics and ownership).\n\n### 2) Build a “portfolio” of evidence\n\nHave 6–10 stories ready:\n\n- 2 delivery wins\n- 2 reliability/incident stories\n- 1 conflict / disagreement\n- 1 leading without authority\n- 1 big technical tradeoff\n- 1 failure + what you learned\n\n### 3) Match archetype expectations\n\n- Big tech: strongest on fundamentals + structured communication.\n- Startups: strongest on end-to-end ownership and pragmatism.\n- Enterprise: strongest on stakeholder management + maintainability.\n- Automotive/industrial: strongest on safety, validation mindset, constraints.\n\n## How to pace yourself\n\n- Early rounds: don’t “warm up.” Treat round 1 as the decider.\n- Between rounds: write 5 bullets of what went well/what to fix.\n- Food/water: manage energy like a long incident.\n\nAdd two more:\n\n- Reset between rounds: close tabs, breathe, sip water, quick posture reset.\n- Track time inside rounds: if you’re"
+  },
+  {
+    "id": 6,
+    "title": "Debrief / Hiring Committee / Decision",
+    "section": "Hiring Pipeline",
+    "sectionSlug": "hiring-pipeline",
+    "href": "/docs/hiring-pipeline/06-Debrief-and-Decision",
+    "description": "After the loop, the company consolidates evidence. You generally don’t see this step, but you can _optimize for it_.",
+    "keywords": "what happens (typical) how your interview becomes feedback how to make your feedback easier to write mixed signals: what tends to happen what you can (and cannot) influence after the loop what you can do after the loop cross-links grounding sources optimize for the write-up.",
+    "content": "# Debrief / Hiring Committee / Decision\n\nAfter the loop, the company consolidates evidence. You generally don’t see this step, but you can _optimize for it_.\n\nThis doc’s core idea: **optimize for the write-up.** Most debriefs are based on the written feedback. If your interviewers can easily write “hire” feedback, you win.\n\n## What happens (typical)\n\n- Interviewers submit feedback (often structured)\n- A debrief/hiring committee calibrates signals and risk\n- The recruiter communicates outcome and next steps\n\nDifferent companies name this differently (debrief, hiring committee, HC, calibration), but the purpose is consistent: reduce variance and decide if the evidence clears the hiring bar.\n\n---\n\n## How your interview becomes feedback\n\nInterviewers typically have to answer questions like:\n\n- Did the candidate communicate clearly?\n- Did they solve the problem correctly?\n- Did they show good judgment and tradeoffs?\n- For senior: did they show leadership/ownership?\n\nIf your process is crisp (clarify → plan → implement → test), feedback becomes easier.\n\n## How to make your feedback easier to write\n\nInterviewers are busy. The easier you make it to write “hire” feedback, the more likely you are to pass.\n\n- Be explicit about tradeoffs.\n- Verify correctness (tests, invariants, edge cases).\n- Communicate clearly.\n- Show ownership and sound judgment.\n\nAdd “sound bites” the interviewer can reuse:\n\n- “Candidate asked strong clarifying questions and stated assumptions.”\n- “Candidate validated correctness with edge cases and explained complexity.”\n- “Candidate presented tradeoffs and justified the chosen design.”\n\nTech Interview Handbook notes that interviewers often see feedback from your other rounds and that mixed results trigger discussion and sometimes extra rounds: https://www.techinterviewhandbook.org/coding-interview-rubrics/\n\n## Mixed signals: what tends to happen\n\nMixed loops are common. Typical outcomes:\n\n- Additional round to resolve uncertainty\n- Downlevel to reduce ri"
+  },
+  {
+    "id": 7,
+    "title": "Offer, Negotiation, and Closing",
+    "section": "Hiring Pipeline",
+    "sectionSlug": "hiring-pipeline",
+    "href": "/docs/hiring-pipeline/07-Offer-and-Closing",
+    "description": "An offer is the start of a negotiation, not the end of the process.",
+    "keywords": "what to do when you get the offer what to negotiate archetype differences (how offers behave) how to negotiate effectively common mistakes cross-links grounding sources faang / big tech: unicorns / startups: enterprise:",
+    "content": "# Offer, Negotiation, and Closing\n\nAn offer is the start of a negotiation, not the end of the process.\n\nYour leverage and strategy depend heavily on company archetype, your alternatives, and your timeline.\n\n## What to do when you get the offer\n\n- Get the full package details in writing.\n- Ask about level and leveling rationale.\n- Ask about team matching (if applicable).\n- Ask for the decision deadline.\n\nAlso:\n\n- Ask what parts are negotiable (many companies won’t say directly, but you can infer).\n- Confirm if there are refreshers, relocation, and what the vesting schedule is.\n\n## What to negotiate\n\nDepends on company archetype, but typically:\n\n- Base salary\n- Equity (grant size; refreshers)\n- Signing bonus\n- Start date / relocation\n\nSometimes negotiable (depending on company):\n\n- Title (rare)\n- Level (sometimes via re-leveling)\n- Remote/hybrid exceptions (varies widely)\n- Education budget / equipment (more common in smaller companies)\n\n---\n\n## Archetype differences (how offers behave)\n\n- **FAANG / Big Tech:** compensation is often more structured; biggest levers are level, equity, sign-on, and competing offers.\n- **Unicorns / startups:** equity terms and strike price matter; risk-adjust your view of equity; cash may be tighter.\n- **Enterprise:** base and bonus may dominate; equity may be smaller; stability/role scope may be the real “value.”\n- **Automotive/industrial:** compensation bands can be rigid; negotiate role scope, level, relocation, flexibility.\n\n## How to negotiate effectively\n\n- Anchor with competing offers (best leverage).\n- Frame as wanting to join, but needing the package to work.\n- Be specific and polite.\n\nSimple negotiation script:\n\n> I’m excited about the role and I want to make this work. Based on my current compensation and the other processes I’m in, I’m targeting a total package closer to X. Is there flexibility on base/sign-on/equity to close that gap?\n\n---\n\n## Common mistakes\n\n- Negotiating without understanding the full package.\n- Revealing "
+  },
+  {
+    "id": 8,
+    "title": "Start Here",
+    "section": "Start Here",
+    "sectionSlug": "start-here",
+    "href": "/docs/start-here/00-README",
+    "description": "You can use this repo in two modes:",
+    "keywords": "what “good” looks like across companies 3-step setup the golden rule a concrete 7-day kickoff plan common failure modes (and fixes) job search mode (4–12 weeks): career transition mode (8–24+ weeks): faang / high-growth consumer: enterprise software: automotive / industrial:",
+    "content": "# Start Here\n\nYou can use this repo in two modes:\n\n- **Job search mode (4–12 weeks):** you already know the basics and want to maximize interview performance.\n- **Career transition mode (8–24+ weeks):** you’re switching lanes (e.g., DS → DE, Backend → MLE) or returning after a gap.\n\n## What “good” looks like across companies\n\nDifferent company archetypes value different signals:\n\n- **FAANG / high-growth consumer:** speed + scale tradeoffs, ambiguity handling, crisp communication, strong coding.\n- **Enterprise software:** correctness, maintainability, incremental delivery, compatibility, compliance, stakeholder management.\n- **Automotive / industrial:** safety mindset, verification culture, long-lived systems, careful risk management, reliability.\n\nSame skills show up everywhere; the **weighting** changes.\n\n## 3-step setup\n\n1. **Pick a lane** (role + level + company archetype)\n   - Use [02-ROLE-ROADMAPS/00-Role-Chooser.md](../02-ROLE-ROADMAPS/00-Role-Chooser.md)\n2. **Baseline yourself**\n   - Do one timed coding interview (45–60 min)\n   - Do one “design a service” prompt (45–60 min)\n   - Do one behavioral story (15 min)\n   - Score yourself using [00-START-HERE/02-Interview-Loop-At-A-Glance.md](02-Interview-Loop-At-A-Glance.md)\n3. **Pick a cadence you can sustain**\n   - 60–90 min/day beats 6 hours on Sunday.\n\n## The golden rule\n\nInterview prep fails when you optimize for _feeling prepared_ (reading) instead of _being prepared_ (practice under constraints).\n\nPractice should resemble the interview:\n\n- timeboxed\n- verbalized thinking\n- written tradeoffs\n- explicit assumptions\n- post-mortem after each session\n\n## A concrete 7-day kickoff plan\n\nThis plan is meant to create momentum and reveal the biggest gaps.\n\nDay 1: Choose lane + set scope\n\n- Define target roles/levels and company archetypes.\n- Write a one-paragraph “why me” narrative (role fit, projects, domain).\n- Pick your core stack (language + infra/cloud).\n\nDay 2: Resume + recruiter pass\n\n- Rewrite resume for readab"
+  },
+  {
+    "id": 9,
+    "title": "Targeting Your Lane (Role × Level × Company)",
+    "section": "Start Here",
+    "sectionSlug": "start-here",
+    "href": "/docs/start-here/01-Targeting-Your-Lane",
+    "description": "If you try to prepare for “everything”, you end up prepared for nothing.",
+    "keywords": "1) role 2) level 3) company archetype faang / high-growth enterprise software automotive / industrial lane definition template what to do if you’re not sure swe (generalist): backend:",
+    "content": "# Targeting Your Lane (Role × Level × Company)\n\nIf you try to prepare for “everything”, you end up prepared for nothing.\n\nDefine your lane using three axes:\n\n## 1) Role\n\n- **SWE (generalist):** coding + fundamentals + some design.\n- **Backend:** APIs, storage, distributed systems, reliability.\n- **MLE:** modeling + data + production ML engineering.\n- **DE:** data modeling, pipelines, orchestration, quality, cost.\n- **DS:** experimentation, causal thinking, metrics, storytelling.\n- **DevOps / SRE:** operability, incident response, automation, systems.\n- **MLOps:** ML platforms, deployment, monitoring, reliability of ML systems.\n\n## 2) Level\n\nLevels differ mostly in **scope** and **judgment**.\n\n- **Junior/Entry:** correctness + learning + basic collaboration.\n- **Mid:** ownership of components, good debugging, shipping reliably.\n- **Senior:** ambiguity handling, system-level thinking, influence.\n- **Staff+ (where applicable):** multi-team scope, strategy, long-term risk management.\n\n## 3) Company archetype\n\n### FAANG / high-growth\n\n- You’ll be evaluated on communication under ambiguity, speed of iteration, and scale tradeoffs.\n- System design tends to probe: capacity planning, cache/queue patterns, failure handling.\n\n### Enterprise software\n\n- Expect deeper questions on maintainability, integration, migration, and reliability.\n- “How do you evolve this safely?” matters as much as “how do you build it?”.\n\n### Automotive / industrial\n\n- Risk and safety mindset matters; verification culture is common.\n- Expect emphasis on reliability, requirements clarity, and disciplined engineering.\n\n## Lane definition template\n\nWrite this down before you start.\n\n- Target roles:\n- Target level:\n- Target company archetypes:\n- Primary geography/time zone:\n- Interview language:\n- Primary tech stack (language + cloud):\n- Dealbreakers (on-call, relocation, remote, domain):\n\n## What to do if you’re not sure\n\nPick a “default lane” that maximizes optionality:\n\n- SWE/Backend at mid-level\n- stro"
+  },
+  {
+    "id": 10,
+    "title": "Interview Loop at a Glance",
+    "section": "Start Here",
+    "sectionSlug": "start-here",
+    "href": "/docs/start-here/02-Interview-Loop-At-A-Glance",
+    "description": "Most loops are some variation of:",
+    "keywords": "what interviewers are really scoring coding round signals system design round signals behavioral round signals how loops differ by role how loops differ by company archetype quick self-scoring rubric (0–2) recruiter screen technical screen onsite / virtual onsite",
+    "content": "# Interview Loop at a Glance\n\nMost loops are some variation of:\n\n1. **Recruiter screen** (fit + logistics)\n2. **Technical screen** (coding / SQL / ML / infra)\n3. **Onsite / virtual onsite** (multiple rounds)\n4. **Hiring committee / debrief** (calibration)\n\n## What interviewers are really scoring\n\nAcross companies, the scoring typically reduces to:\n\n- **Correctness:** you can produce correct solutions and validate them.\n- **Reasoning:** you can explain tradeoffs and constraints.\n- **Signal-to-noise:** you communicate without wandering.\n- **Engineering maturity:** you build maintainable systems, not just demos.\n- **Ownership:** you take responsibility for outcomes.\n\n## Coding round signals\n\nGood\n\n- Clarifies requirements and constraints early.\n- Chooses an approach that fits time and complexity.\n- Writes clean code with tests / edge cases.\n- Narrates tradeoffs and alternative approaches.\n\nBad\n\n- Starts coding without clarifying input/output.\n- Overcomplicates: premature optimization, clever tricks.\n- Can’t reason about complexity or edge cases.\n\n## System design round signals\n\nGood\n\n- Defines requirements and makes them measurable (SLOs, throughput, latency).\n- Proposes a simple baseline architecture first.\n- Identifies bottlenecks and failure modes.\n- Connects tradeoffs to product goals.\n\nBad\n\n- Talks in buzzwords without data flows.\n- No capacity planning.\n- No failure handling or operational plan.\n\n## Behavioral round signals\n\nGood\n\n- Uses concrete stories with impact and learning.\n- Shows judgment and ownership (not blame).\n- Demonstrates collaboration and conflict handling.\n\nBad\n\n- Generic STAR with no specifics.\n- No reflection on what you’d do differently.\n\n## How loops differ by role\n\n- **Backend:** more depth in storage, distributed systems, APIs, reliability.\n- **MLE/MLOps:** production readiness, data issues, monitoring, deployment patterns.\n- **DE:** SQL, modeling, pipelines, orchestration, cost, quality.\n- **DS:** experimentation, metrics, ambiguity-to-pl"
+  },
+  {
+    "id": 11,
+    "title": "Foundations Index",
+    "section": "Foundations",
+    "sectionSlug": "foundations",
+    "href": "/docs/foundations/00-Foundations-Index",
+    "description": "If you’re targeting multiple company archetypes, foundations are your unfair advantage: they transfer between domains and reduce interview variance.",
+    "keywords": "how to study foundations efficiently the “practice loop” what _not_ to do company archetype weighting (rough) recommended order (4 weeks) next pages faang/high-growth: enterprise: automotive/industrial:",
+    "content": "# Foundations Index\n\nIf you’re targeting multiple company archetypes, foundations are your unfair advantage: they transfer between domains and reduce interview variance.\n\nThis folder is split into foundations that show up in _most_ loops:\n\n- Coding fundamentals (data structures, algorithms, complexity)\n- Computer systems (OS, networking)\n- Databases (modeling, indexing, transactions)\n- Engineering craft (testing, debugging, maintainability)\n- Cloud + reliability basics\n\n## How to study foundations efficiently\n\n### The “practice loop”\n\nFor each topic, do a weekly loop:\n\n1. Read 1–2 short references\n2. Implement 1–3 small exercises\n3. Do 1 timed interview-style prompt\n4. Write a post-mortem: what failed, why, what rule prevents it next time\n\n### What _not_ to do\n\n- Don’t binge-watch content without doing reps.\n- Don’t memorize solutions; memorize _problem types_ and _decision rules_.\n\n## Company archetype weighting (rough)\n\n- **FAANG/high-growth:** strongest weight on coding + system design communication.\n- **Enterprise:** weight shifts toward maintainability, migrations, and operating in constraints.\n- **Automotive/industrial:** higher emphasis on correctness, traceability, and risk management.\n\n## Recommended order (4 weeks)\n\nWeek 1\n\n- Coding mechanics + complexity\n- OS basics (process vs thread, memory)\n\nWeek 2\n\n- Networking (HTTP, TCP, latency)\n- Databases (indexes, transactions)\n\nWeek 3\n\n- Reliability basics (SLOs, retries, timeouts)\n- Debugging + testing practices\n\nWeek 4\n\n- Cloud primitives (compute, storage, queues)\n- Combine topics in system design exercises\n\n## Next pages\n\n- [01-DSA-and-Coding.md](01-DSA-and-Coding.md)\n- [02-Computer-Systems.md](02-Computer-Systems.md)\n- **[03-DSA-Topic-Breakdown.md](03-DSA-Topic-Breakdown.md) — NEW:** Patterns & intuition for arrays, trees, DP, heaps, hashing, bits\n- [04-Databases.md](04-Databases.md)\n- [05-Software-Engineering-Practices.md](05-Software-Engineering-Practices.md)\n- [06-Cloud-and-Reliability-Basics.md](06-Clo"
+  },
+  {
+    "id": 12,
+    "title": "DSA & Coding (Interview-Grade)",
+    "section": "Foundations",
+    "sectionSlug": "foundations",
+    "href": "/docs/foundations/01-DSA-and-Coding",
+    "description": "The goal isn’t “know all algorithms”. The goal is to reliably:",
+    "keywords": "core patterns you must recognize arrays / strings hashing trees / graphs dynamic programming how interviewers evaluate you a 45-minute coding process common failure cases practice plan (minimum effective dose) notes by company archetype",
+    "content": "# DSA & Coding (Interview-Grade)\n\nThe goal isn’t “know all algorithms”. The goal is to reliably:\n\n- identify the right approach quickly\n- implement correctly under time\n- communicate tradeoffs\n\n## Core patterns you must recognize\n\n### Arrays / strings\n\n- Two pointers\n- Sliding window\n- Prefix sums / difference arrays\n- Sorting + scanning\n\n### Hashing\n\n- Frequency maps\n- De-dup and membership\n- “Seen set” to break cycles\n\n### Trees / graphs\n\n- BFS vs DFS decision rules\n- Topological ordering (DAG)\n- Shortest path when edges have weights\n\n### Dynamic programming\n\n- Define state + transition + base case\n- Start with 2D DP, then optimize\n- If stuck: recursion + memo first\n\n## How interviewers evaluate you\n\nThey’re typically scoring:\n\n- correctness and edge cases\n- complexity reasoning\n- clarity (naming, structure)\n- debugging ability\n\n## A 45-minute coding process\n\n1. Restate problem and confirm inputs/outputs\n2. Identify constraints and edge cases\n3. Propose 1–2 approaches; pick one\n4. Write code in small compilable chunks\n5. Test with 2–3 cases (happy path + edge)\n6. State complexity and any follow-ups\n\n## Common failure cases\n\n- **Off-by-one bugs** in loops/pointers\n  - Fix: write invariants (what’s true each iteration)\n\n- **Wrong data structure** (e.g., list instead of set)\n  - Fix: ask “do I need membership in O(1)?”\n\n- **DP panic**\n  - Fix: first write recursion with memo; only then convert to bottom-up\n\n## Practice plan (minimum effective dose)\n\n- 3 days/week: 1 medium problem timed (45–60 min)\n- 2 days/week: 30 min pattern drill (same pattern, different problems)\n- 1 day/week: redo a previously-missed problem from scratch\n\n## Notes by company archetype\n\n- **FAANG:** speed + clear communication; they expect structured thinking.\n- **Enterprise:** still cares about correctness, but may value maintainability and tests more.\n- **Automotive/industrial:** correctness and disciplined reasoning can outweigh “flashy” speed.\n"
+  },
+  {
+    "id": 13,
+    "title": "Computer Systems (OS + Networking)",
+    "section": "Foundations",
+    "sectionSlug": "foundations",
+    "href": "/docs/foundations/02-Computer-Systems",
+    "description": "Systems knowledge matters because many “senior” bugs are systems bugs: timeouts, memory, contention, caching, and partial failure.",
+    "keywords": "os basics you should be able to explain interview-grade mental models networking basics you should be able to explain practical debugging checklist company archetype differences faang/high-growth: enterprise: automotive/industrial:",
+    "content": "# Computer Systems (OS + Networking)\n\nSystems knowledge matters because many “senior” bugs are systems bugs: timeouts, memory, contention, caching, and partial failure.\n\n## OS basics you should be able to explain\n\n- process vs thread\n- context switching and why too many threads hurt\n- memory: stack vs heap, GC basics (if using managed languages)\n- IO vs CPU bound\n- locks vs lock-free intuition (don’t overclaim)\n\n### Interview-grade mental models\n\n- Latency is not just “slow code”; it’s often queueing.\n- Most outages are dependency + retry storms + timeouts misconfigured.\n\n## Networking basics you should be able to explain\n\n- DNS and where caching happens\n- TCP vs UDP (and why HTTP/3 exists)\n- TLS basics: what it gives you, handshake cost, cert rotation\n- HTTP semantics: idempotency, retries, timeouts\n\n## Practical debugging checklist\n\nWhen a service is “slow”:\n\n1. Is it CPU bound? (high CPU)\n2. Is it IO bound? (waiting on DB, remote calls)\n3. Is it lock/contention bound? (high latency but low CPU)\n4. Is it GC bound? (stop-the-world pauses)\n5. Is it saturation? (queues growing, p95 exploding)\n\n## Company archetype differences\n\n- **FAANG/high-growth:** expects you to reason about tail latencies and tradeoffs.\n- **Enterprise:** expects you to manage compatibility, change control, and safe rollouts.\n- **Automotive/industrial:** expects careful risk thinking, testing discipline, and verification mindset.\n"
+  },
+  {
+    "id": 14,
+    "title": "DSA Topic Breakdown: Patterns & Intuition",
+    "section": "Foundations",
+    "sectionSlug": "foundations",
+    "href": "/docs/foundations/03-DSA-Topic-Breakdown",
+    "description": "Purpose: Master LeetCode-style problems by understanding underlying patterns, not just memorizing solutions.",
+    "keywords": "**1. arrays & strings** **core pattern: sliding window** **core pattern: two pointer** **core pattern: prefix sum** **2. trees & graphs** **core pattern: dfs (depth-first search)** **core pattern: bfs (breadth-first search)** **core pattern: binary search tree (bst) properties** **core pattern: tree traversals** **3. dynamic programming (dp)**",
+    "content": "# DSA Topic Breakdown: Patterns & Intuition\n\n**Purpose:** Master LeetCode-style problems by understanding underlying patterns, not just memorizing solutions.\n\n---\n\n## **1. Arrays & Strings**\n\n### **Core Pattern: Sliding Window**\n\nUse when: \"Find max/min subarray,\" \"substring with k distinct chars,\" \"longest without repeating.\"\n\n**Intuition:** Two pointers (left, right) expand right until condition breaks, then shrink left.\n\n```\nwhile right < len(arr):\n    # Add arr[right] to window\n    while window_invalid():\n        # Remove arr[left] from window\n        left += 1\n    # Process valid window\n    right += 1\n```\n\n**Key problems:**\n\n- [Longest Substring Without Repeating Characters](https://leetcode.com/problems/longest-substring-without-repeating-characters/) — Track char frequencies; expand/shrink\n- [Max Consecutive Ones III](https://leetcode.com/problems/max-consecutive-ones-iii/) — Track 0s flipped; shrink when flips exceeded\n- [Minimum Window Substring](https://leetcode.com/problems/minimum-window-substring/) — Track required chars; find smallest valid window\n\n**Time complexity:** O(n) (each element visited twice)\n\n---\n\n### **Core Pattern: Two Pointer**\n\nUse when: \"Find pair with sum,\" \"partition array,\" \"reverse array.\"\n\n**Intuition:** Start from opposite ends; move based on condition.\n\n```\nleft, right = 0, len(arr) - 1\nwhile left < right:\n    if arr[left] + arr[right] == target:\n        return [left, right]\n    elif arr[left] + arr[right] < target:\n        left += 1\n    else:\n        right -= 1\n```\n\n**Key problems:**\n\n- [Two Sum II - Input Array Is Sorted](https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/) — Classic two-pointer\n- [Container With Most Water](https://leetcode.com/problems/container-with-most-water/) — Greedy: shrink from smaller edge\n- [Trapping Rain Water](https://leetcode.com/problems/trapping-rain-water/) — Two pointer or DP\n\n**Time complexity:** O(n)\n\n---\n\n### **Core Pattern: Prefix Sum**\n\nUse when: \"Sum of subarray,\" \"range quer"
+  },
+  {
+    "id": 15,
+    "title": "Databases (Interview Foundations)",
+    "section": "Foundations",
+    "sectionSlug": "foundations",
+    "href": "/docs/foundations/03-Databases",
+    "description": "Databases show up in almost every role: they are the “ground truth” and the bottleneck.",
+    "keywords": "concepts to master “good enough” sql knowledge common failure modes archetype emphasis index cargo cult: hot partition: ignoring isolation: faang: enterprise: automotive/industrial:",
+    "content": "# Databases (Interview Foundations)\n\nDatabases show up in almost every role: they are the “ground truth” and the bottleneck.\n\n## Concepts to master\n\n- Data modeling: entities, relationships, normalization vs denormalization\n- Indexes: what they accelerate and what they cost\n- Transactions: atomicity and isolation; practical pitfalls\n- Replication and read scaling\n- Partitioning/sharding and hotspots\n\n## “Good enough” SQL knowledge\n\n- join types and when they change row counts\n- group by + having\n- window functions basics\n- explain plans (conceptually)\n\n## Common failure modes\n\n- **Index cargo cult:** adding indexes everywhere\n  - Cost: write amplification, storage, slower inserts/updates\n\n- **Hot partition:** all traffic hits one shard\n  - Fix: choose partition keys with access patterns in mind\n\n- **Ignoring isolation:** phantom reads / lost updates\n  - Fix: pick correct isolation/locking approach, use idempotency\n\n## Archetype emphasis\n\n- **FAANG:** expects reasoning about scale + consistency.\n- **Enterprise:** expects migrations, compatibility, and operational constraints.\n- **Automotive/industrial:** expects reliability, traceability, sometimes stricter governance.\n"
+  },
+  {
+    "id": 16,
+    "title": "Software Engineering Practices (That Interviewers Notice)",
+    "section": "Foundations",
+    "sectionSlug": "foundations",
+    "href": "/docs/foundations/04-Software-Engineering-Practices",
+    "description": "Strong candidates write code that is correct _and_ maintainable under change.",
+    "keywords": "practices that transfer to interviews testing mindset debugging approach common failure modes",
+    "content": "# Software Engineering Practices (That Interviewers Notice)\n\nStrong candidates write code that is correct _and_ maintainable under change.\n\n## Practices that transfer to interviews\n\n- Name things clearly\n- Keep functions small with single responsibility\n- Validate inputs and handle errors explicitly\n- Write small tests / examples for edge cases\n\n## Testing mindset\n\nIn interviews, you usually can’t write full test suites, but you can show the mindset:\n\n- boundary cases\n- invariants\n- “what could go wrong in production?”\n\n## Debugging approach\n\n1. Reproduce with smallest case\n2. Form a hypothesis\n3. Add one probe/log/print to confirm or refute\n4. Fix + prevent (guardrail)\n\n## Common failure modes\n\n- Overengineering (patterns before problems)\n- No error handling (happy path only)\n- Inconsistent naming and messy control flow\n"
+  },
+  {
+    "id": 17,
+    "title": "Cloud & Reliability Basics",
+    "section": "Foundations",
+    "sectionSlug": "foundations",
+    "href": "/docs/foundations/05-Cloud-and-Reliability-Basics",
+    "description": "Cloud interviews are rarely about vendor trivia. They’re about architecture and operability.",
+    "keywords": "primitive building blocks reliability building blocks slo-first thinking failure mode you must avoid retry storm:",
+    "content": "# Cloud & Reliability Basics\n\nCloud interviews are rarely about vendor trivia. They’re about architecture and operability.\n\n## Primitive building blocks\n\n- compute: VMs, containers, serverless\n- storage: object, block, file\n- databases: relational, key-value, document\n- messaging: queues, pub/sub, streams\n- networking: VPC, load balancing, DNS\n\n## Reliability building blocks\n\n- timeouts and retries (with backoff)\n- idempotency\n- circuit breaking / bulkheads\n- graceful degradation\n- rate limiting\n- observability (metrics/logs/traces)\n\n## SLO-first thinking\n\n- Define user-facing SLOs (latency, availability, freshness)\n- Design for the tails (p95/p99)\n- Plan for incidents (runbooks, rollback, alerts)\n\n## Failure mode you must avoid\n\n**Retry storm:** dependency slows → callers retry aggressively → dependency gets worse.\n\nMitigations:\n\n- cap retries\n- add jitter\n- use timeouts\n- implement circuit breakers\n- shed load early\n"
+  },
+  {
+    "id": 18,
+    "title": "Role Chooser",
+    "section": "Role Roadmaps",
+    "sectionSlug": "role-roadmaps",
+    "href": "/docs/role-roadmaps/00-Role-Chooser",
+    "description": "This chooser helps you pick a lane based on what you enjoy and what companies will expect.",
+    "keywords": "quick decision guide interview expectations by lane fast sanity test next steps backend engineer mle mlops data engineer data scientist devops/sre",
+    "content": "# Role Chooser\n\nThis chooser helps you pick a lane based on what you enjoy and what companies will expect.\n\n## Quick decision guide\n\nChoose **Backend Engineer** if you like:\n\n- APIs, data modeling, performance\n- distributed systems tradeoffs\n- reliability and operability\n\nChoose **MLE** if you like:\n\n- modeling + data + iteration\n- product metrics and model quality\n- shipping models to production (not just notebooks)\n\nChoose **MLOps** if you like:\n\n- platforms, pipelines, deployment, monitoring\n- reliability for ML systems\n- enabling other teams to ship models\n\nChoose **Data Engineer** if you like:\n\n- SQL + modeling + pipelines\n- cost, quality, lineage\n- making data reliable for analytics/ML\n\nChoose **Data Scientist** if you like:\n\n- experimentation, causal reasoning\n- stakeholder influence\n- turning messy questions into measurable decisions\n\nChoose **DevOps/SRE** if you like:\n\n- incidents and reliability\n- automation, CI/CD, infra as code\n- systems performance and debugging\n\nChoose **SWE generalist** if you want optionality:\n\n- strong coding + fundamentals\n- enough design to pass mid-level loops\n- later specialization based on projects\n\n## Interview expectations by lane\n\n- SWE/Backend: coding + system design + behavioral\n- MLE: coding (varies) + ML theory + ML system design + behavioral\n- MLOps/DevOps/SRE: systems + ops + design + behavioral\n- DE: SQL + pipelines + modeling + behavioral\n- DS: case studies + stats + experiments + behavioral\n\n## Fast sanity test\n\nIf you can’t describe (in 2 minutes) what you ship and how it runs in prod, you’re not ready for senior roles in Backend/MLE/MLOps/SRE.\n\n## Next steps\n\nPick the role page in this folder and follow its plan.\n"
+  },
+  {
+    "id": 19,
+    "title": "SWE (Generalist) Roadmap",
+    "section": "Role Roadmaps",
+    "sectionSlug": "role-roadmaps",
+    "href": "/docs/role-roadmaps/01-SWE-Generalist",
+    "description": "Generalist SWE is the highest-optionality path: strong coding + fundamentals + enough design to build and operate real services.",
+    "keywords": "what interviewers expect entry / junior mid senior+ skill pillars (in priority order) 8-week plan (job search mode) projects that create real signal company archetype adjustments faang/high-growth: enterprise:",
+    "content": "# SWE (Generalist) Roadmap\n\nGeneralist SWE is the highest-optionality path: strong coding + fundamentals + enough design to build and operate real services.\n\n## What interviewers expect\n\n### Entry / Junior\n\n- solid coding fundamentals\n- basic debugging and correctness\n- coachability and clear communication\n\n### Mid\n\n- reliable delivery: can own components end-to-end\n- good engineering judgment (tests, API design)\n- basic system design for small services\n\n### Senior+\n\n- ambiguity handling: can turn vague goals into a plan\n- system-level tradeoffs and operational mindset\n- influence across teams\n\n## Skill pillars (in priority order)\n\n1. Coding fundamentals (patterns + correctness)\n2. Systems basics (networking, OS, databases)\n3. System design basics (requirements → design → failure handling)\n4. Engineering craft (testing, maintainability, reading code)\n5. Behavioral stories (ownership, conflict, impact)\n\n## 8-week plan (job search mode)\n\nWeek 1–2: Coding + foundations\n\n- 3 timed coding problems/week + mistake log\n- Review: complexity + edge cases\n\nWeek 3–4: System design intro\n\n- 1 design prompt/week using [04-SYSTEM-DESIGN-LIBRARY/00-System-Design-Template.md](../04-SYSTEM-DESIGN-LIBRARY/00-System-Design-Template.md)\n- Add 2 mini-drills/week (caching, queues, DB indexing)\n\nWeek 5–6: Depth + polish\n\n- Mock interviews (coding + design)\n- Rewrite 6 behavioral stories (impact + tradeoffs)\n\nWeek 7–8: Full loop simulation\n\n- 2 full mock loops/week\n- Fix only the top 3 recurring failures\n\n## Projects that create real signal\n\nPick projects that prove execution and reliability:\n\n- A small API service with authn/authz, DB, caching, rate limiting\n- Observability: metrics + logs + traces + dashboards\n- A safe deployment strategy (blue/green or canary)\n\nAvoid:\n\n- toy apps with no tests, no monitoring, no failure plan\n\n## Company archetype adjustments\n\n- **FAANG/high-growth:** invest more in system design communication and scale math.\n- **Enterprise:** invest more in migrations, c"
+  },
+  {
+    "id": 20,
+    "title": "Backend Engineer Roadmap",
+    "section": "Role Roadmaps",
+    "sectionSlug": "role-roadmaps",
+    "href": "/docs/role-roadmaps/02-Backend-Engineer",
+    "description": "Backend interviews test whether you can build reliable services: APIs, data, scaling, and operability.",
+    "keywords": "what backend loops emphasize core competencies 1) data and storage 2) distributed systems mindset 3) operability 10-week plan (mid/senior) common backend failure cases projects that read as “backend” company archetype adjustments faang/high-growth:",
+    "content": "# Backend Engineer Roadmap\n\nBackend interviews test whether you can build reliable services: APIs, data, scaling, and operability.\n\n## What backend loops emphasize\n\n- API design and data contracts\n- storage choices and consistency tradeoffs\n- scaling and latency (especially p95/p99)\n- reliability patterns (timeouts, retries, rate limits)\n- operational excellence (debugging, incidents, rollbacks)\n\n## Core competencies\n\n### 1) Data and storage\n\n- relational modeling and indexes\n- transactions and isolation intuition\n- caching and invalidation\n- partitioning/sharding basics\n\n### 2) Distributed systems mindset\n\n- partial failure is normal\n- idempotency and retries\n- backpressure and queueing\n\n### 3) Operability\n\n- SLIs/SLOs\n- dashboards/alerts\n- runbooks and safe rollouts\n\n## 10-week plan (mid/senior)\n\nWeeks 1–2: Refresh foundations\n\n- Databases + networking + reliability basics\n- 2 design mini-drills/week (cache, queue, storage)\n\nWeeks 3–6: System design reps\n\n- 1 full prompt/week\n- Focus prompts: rate limiter, notification system, feed/timeline, file upload\n\nWeeks 7–8: Production thinking\n\n- Add failure modes + rollback + observability to every design\n- Practice explaining tradeoffs succinctly\n\nWeeks 9–10: Mock loops\n\n- Combine coding + design + behavioral\n\n## Common backend failure cases\n\n- Over-indexing on microservices without reason\n- No capacity planning (“we’ll scale later”)\n- No failure handling (timeouts/retries/circuit breakers)\n- No data model clarity (no keys/indexes/partition strategy)\n\n## Projects that read as “backend”\n\n- API service with schema versioning + migrations\n- Background jobs + queues + idempotency\n- Multi-tenant architecture considerations (authz, quotas)\n\n## Company archetype adjustments\n\n- **FAANG/high-growth:** emphasize scale math, tail latency, de-risking launches.\n- **Enterprise:** emphasize migrations, change management, compatibility.\n- **Automotive/industrial:** emphasize correctness, risk control, verification discipline.\n"
+  },
+  {
+    "id": 21,
+    "title": "Machine Learning Engineer (MLE) Roadmap",
+    "section": "Role Roadmaps",
+    "sectionSlug": "role-roadmaps",
+    "href": "/docs/role-roadmaps/03-Machine-Learning-Engineer",
+    "description": "MLE is “software engineering for learning systems”. The job is not just training models; it’s building systems that improve safely over time.",
+    "keywords": "what gets evaluated mle foundations ml fundamentals (interview-grade) data + features production ml engineering 12-week plan common failure cases company archetype adjustments faang/high-growth: enterprise:",
+    "content": "# Machine Learning Engineer (MLE) Roadmap\n\nMLE is “software engineering for learning systems”. The job is not just training models; it’s building systems that improve safely over time.\n\n## What gets evaluated\n\n- core ML concepts and evaluation\n- data quality, leakage, bias\n- production readiness: deployment, monitoring, iteration\n- ability to turn product goals into measurable objectives\n\n## MLE foundations\n\n### ML fundamentals (interview-grade)\n\n- supervised learning: classification/regression\n- metrics: precision/recall, ROC-AUC, calibration\n- bias/variance and regularization intuition\n- offline vs online evaluation\n\n### Data + features\n\n- leakage patterns\n- label quality and feedback loops\n- feature freshness and ownership\n\n### Production ML engineering\n\n- training/serving skew\n- monitoring for drift and silent failures\n- rollback, shadow deploy, A/B testing\n\n## 12-week plan\n\nWeeks 1–3: Refresh ML fundamentals\n\n- create a one-page “metrics cheat sheet” per problem type\n- practice explaining tradeoffs: precision vs recall, latency vs accuracy\n\nWeeks 4–6: ML system design\n\n- 1 prompt/week: ranking/recommendation, fraud/spam, search, forecasting\n- use [05-ML-MLOPS/03-ML-System-Design-Templates.md](../05-ML-MLOPS/03-ML-System-Design-Templates.md)\n\nWeeks 7–9: Production readiness\n\n- monitoring plan, testing plan, rollback plan\n- map to ML Test Score rubric\n\nWeeks 10–12: Mock loops\n\n- coding (varies), ML system design, behavioral\n\n## Common failure cases\n\n- treating ML like a notebook project\n- no plan for data/label issues in production\n- confusing metric optimization with product success\n- ignoring cost/latency constraints\n\n## Company archetype adjustments\n\n- **FAANG/high-growth:** emphasis on large-scale systems + experimentation.\n- **Enterprise:** emphasis on reliability, governance, model risk management.\n- **Automotive/industrial:** emphasis on safety, verification, and risk control (often stricter acceptance criteria).\n"
+  },
+  {
+    "id": 22,
+    "title": "Data Engineer Roadmap",
+    "section": "Role Roadmaps",
+    "sectionSlug": "role-roadmaps",
+    "href": "/docs/role-roadmaps/04-Data-Engineer",
+    "description": "DE interviews test whether you can build reliable data products: correct, cost-efficient, and understandable.",
+    "keywords": "core competencies 10-week plan common failure cases company archetype adjustments faang/high-growth: enterprise: automotive/industrial:",
+    "content": "# Data Engineer Roadmap\n\nDE interviews test whether you can build reliable data products: correct, cost-efficient, and understandable.\n\n## Core competencies\n\n1. SQL under time\n\n- joins, group by, window functions\n- correctness and performance intuition\n\n2. Data modeling\n\n- dimensional vs normalized models\n- keys, grain, slowly changing dimensions\n\n3. Pipelines and orchestration\n\n- batch vs streaming\n- idempotency, backfills, reprocessing\n\n4. Data quality and reliability\n\n- freshness, completeness, accuracy\n- lineage and governance\n- cost control\n\n## 10-week plan\n\nWeeks 1–2: SQL drill\n\n- 4 timed SQL sessions/week\n- keep a mistake log by failure type\n\nWeeks 3–4: Modeling\n\n- design schemas for common domains (orders, payments, events)\n\nWeeks 5–7: Pipelines\n\n- design batch + streaming pipelines\n- handle late data and schema evolution\n\nWeeks 8–10: Mock DE loop\n\n- SQL + system design (data platform) + behavioral\n\n## Common failure cases\n\n- wrong assumptions about data grain\n- ignoring late/out-of-order events\n- no backfill strategy\n- no quality checks or alerting\n\n## Company archetype adjustments\n\n- **FAANG/high-growth:** scale + real-time needs often stronger.\n- **Enterprise:** governance, compliance, and integration are heavier.\n- **Automotive/industrial:** lifecycle is long; traceability and reliability are key.\n"
+  },
+  {
+    "id": 23,
+    "title": "Data Scientist Roadmap",
+    "section": "Role Roadmaps",
+    "sectionSlug": "role-roadmaps",
+    "href": "/docs/role-roadmaps/05-Data-Scientist",
+    "description": "DS interviews often test whether you can make decisions with data under ambiguity.",
+    "keywords": "what ds loops commonly include core competencies 1) metrics and experiments 2) causal reasoning intuition 3) communication 10-week plan failure modes archetype adjustments faang/high-growth: enterprise:",
+    "content": "# Data Scientist Roadmap\n\nDS interviews often test whether you can make decisions with data under ambiguity.\n\n## What DS loops commonly include\n\n- metrics and experiment design\n- SQL / analysis\n- product sense / case studies\n- sometimes modeling\n- storytelling and stakeholder influence\n\n## Core competencies\n\n### 1) Metrics and experiments\n\n- define success metrics and guardrails\n- power/variance intuition\n- A/B testing pitfalls\n\n### 2) Causal reasoning intuition\n\n- confounding, selection bias\n- when correlation is enough vs not\n\n### 3) Communication\n\n- explain results clearly\n- tie analysis to business decision\n\n## 10-week plan\n\nWeeks 1–2: SQL + analysis\n\n- 3–4 timed SQL drills/week\n- practice writing “one-page” conclusions\n\nWeeks 3–6: Experimentation\n\n- 1 case/week: metric definition + experiment plan + pitfalls\n\nWeeks 7–8: Product sense\n\n- practice turning vague goals into measurable plans\n\nWeeks 9–10: Mock loop\n\n- case study + SQL + behavioral\n\n## Failure modes\n\n- metric confusion (optimizing a proxy that harms long-term goals)\n- p-hacking / post-hoc stories\n- unclear narrative and recommendations\n\n## Archetype adjustments\n\n- **FAANG/high-growth:** large-scale experimentation cultures; speed and rigor.\n- **Enterprise:** domain and stakeholder management may matter more.\n- **Automotive/industrial:** safety/regulatory context can constrain experimentation; offline evaluation may dominate.\n"
+  },
+  {
+    "id": 24,
+    "title": "DevOps / SRE Roadmap",
+    "section": "Role Roadmaps",
+    "sectionSlug": "role-roadmaps",
+    "href": "/docs/role-roadmaps/06-DevOps-SRE",
+    "description": "DevOps/SRE interviews evaluate whether you can keep systems healthy under change: automation, reliability, and incident leadership.",
+    "keywords": "core competencies 10-week plan interview failure modes archetype adjustments faang/high-growth: enterprise: automotive/industrial:",
+    "content": "# DevOps / SRE Roadmap\n\nDevOps/SRE interviews evaluate whether you can keep systems healthy under change: automation, reliability, and incident leadership.\n\n## Core competencies\n\n- Linux + networking fundamentals\n- containers and Kubernetes basics\n- observability (metrics/logs/traces)\n- CI/CD, safe rollouts, IaC\n- incident response and postmortems\n\n## 10-week plan\n\nWeeks 1–2: Systems fundamentals\n\n- networking + Linux debugging drills\n\nWeeks 3–5: Containers + Kubernetes\n\n- understand core primitives and failure modes\n\nWeeks 6–7: CI/CD + deployment safety\n\n- blue/green, canary, feature flags\n\nWeeks 8–10: Incidents and reliability\n\n- practice incident scenarios and communication\n\n## Interview failure modes\n\n- tool trivia without fundamentals\n- no mental model for debugging\n- ignoring SLOs, saturation, and feedback loops\n\n## Archetype adjustments\n\n- **FAANG/high-growth:** large fleets and standardized SRE practices.\n- **Enterprise:** heterogeneous systems, compliance, slower change windows.\n- **Automotive/industrial:** safety and long-lived systems; higher emphasis on risk control.\n"
+  },
+  {
+    "id": 25,
+    "title": "MLOps Engineer Roadmap",
+    "section": "Role Roadmaps",
+    "sectionSlug": "role-roadmaps",
+    "href": "/docs/role-roadmaps/07-MLOps-Engineer",
+    "description": "MLOps sits between platform engineering and ML: you enable teams to ship models reliably.",
+    "keywords": "what gets evaluated core pillars 12-week plan failure modes archetype adjustments faang/high-growth: enterprise: automotive/industrial:",
+    "content": "# MLOps Engineer Roadmap\n\nMLOps sits between platform engineering and ML: you enable teams to ship models reliably.\n\n## What gets evaluated\n\n- deployment strategies for models\n- monitoring and drift\n- feature stores and data pipelines\n- reproducibility and governance\n- platform design and developer experience\n\n## Core pillars\n\n1. Software + platform engineering fundamentals\n2. ML production readiness (tests, monitoring, rollback)\n3. Data reliability (freshness, lineage)\n\n## 12-week plan\n\nWeeks 1–3: Infra foundations\n\n- containers, Kubernetes, CI/CD, observability\n\nWeeks 4–6: ML production basics\n\n- training/serving skew, feature freshness, deployment patterns\n\nWeeks 7–9: Platform design\n\n- multi-tenant pipelines, quotas, cost control\n\nWeeks 10–12: Mock loops\n\n- platform/system design + behavioral\n\n## Failure modes\n\n- treating MLOps as “just Kubernetes”\n- no ML-specific monitoring/testing plan\n- weak story on how the platform improves team velocity and safety\n\n## Archetype adjustments\n\n- **FAANG/high-growth:** platform scale and experimentation tooling.\n- **Enterprise:** governance, approvals, model risk management.\n- **Automotive/industrial:** safety, verification, traceability.\n"
+  },
+  {
+    "id": 26,
+    "title": "Interview Index",
+    "section": "Interviews",
+    "sectionSlug": "interviews",
+    "href": "/docs/interviews/00-Interview-Index",
+    "description": "This folder is the practical “how to pass the loop” playbook.",
+    "keywords": "choose your track the weekly cadence that works post-mortem template",
+    "content": "# Interview Index\n\nThis folder is the practical “how to pass the loop” playbook.\n\n## Choose your track\n\n- SWE/Backend: start at [03-INTERVIEWS/02-Coding-Interview-Playbook.md](02-Coding-Interview-Playbook.md) and [03-INTERVIEWS/03-System-Design-Interview-Playbook.md](03-System-Design-Interview-Playbook.md)\n- MLE/MLOps: add [03-INTERVIEWS/04-ML-System-Design-Interview.md](04-ML-System-Design-Interview.md)\n- DE/DS: add [03-INTERVIEWS/05-SQL-Data-Interview.md](05-SQL-Data-Interview.md)\n- Everyone: [03-INTERVIEWS/06-Behavioral-Interview-Playbook.md](06-Behavioral-Interview-Playbook.md)\n\n## The weekly cadence that works\n\nIf you only have 60–90 minutes/day:\n\n- 3 days: coding reps\n- 1 day: system design rep\n- 1 day: behavioral rep\n- 1 day: role-specific (ML/SQL/infra)\n- 1 day: rest or catch-up\n\n## Post-mortem template\n\nAfter each interview practice:\n\n- What went well?\n- What broke (exact moment)?\n- Root cause (knowledge vs execution vs communication)?\n- Fix rule (a sentence you’ll follow next time)\n- One follow-up drill to prevent recurrence\n"
+  },
+  {
+    "id": 27,
+    "title": "Recruiter Screen Playbook",
+    "section": "Interviews",
+    "sectionSlug": "interviews",
+    "href": "/docs/interviews/01-Recruiter-Screen-Playbook",
+    "description": "Recruiter screens are not “small talk”. They decide whether you enter the technical funnel.",
+    "keywords": "what the recruiter is trying to learn your 90-second pitch questions you should ask common failure modes company archetype notes faang/high-growth: enterprise: automotive/industrial:",
+    "content": "# Recruiter Screen Playbook\n\nRecruiter screens are not “small talk”. They decide whether you enter the technical funnel.\n\n## What the recruiter is trying to learn\n\n- Are you credible for the level?\n- Is your experience aligned with the role?\n- Can the company close you (comp, location, timing)?\n- Are there obvious risks (communication, mismatch, unrealistic expectations)?\n\n## Your 90-second pitch\n\nStructure:\n\n1. Who you are (role + years + domain)\n2. What you shipped (2–3 highlights)\n3. What you want next (target role + scope)\n4. Why this company (1–2 concrete reasons)\n\n## Questions you should ask\n\n- What level is this role hiring at?\n- What is the interview loop and timeline?\n- What does success look like in the first 3–6 months?\n- Team match process (before or after onsite)?\n- Remote/hybrid expectations and location constraints?\n- On-call expectations (if relevant)?\n\n## Common failure modes\n\n- Rambling history with no “so what”\n- No clear target role/level\n- Over-selling a niche skill for a generalist role\n- Avoiding compensation discussion entirely (you can defer, but don’t dodge)\n\n## Company archetype notes\n\n- **FAANG/high-growth:** usually structured level bands and calibrated loops.\n- **Enterprise:** role scope varies; clarify team and expectations early.\n- **Automotive/industrial:** clarify domain constraints (safety/regulatory, onsite needs).\n"
+  },
+  {
+    "id": 28,
+    "title": "Coding Interview Playbook",
+    "section": "Interviews",
+    "sectionSlug": "interviews",
+    "href": "/docs/interviews/02-Coding-Interview-Playbook",
+    "description": "Coding interviews are about building confidence in your reasoning under constraints.",
+    "keywords": "the structure to follow (every time) communication rules what causes fails how to train",
+    "content": "# Coding Interview Playbook\n\nCoding interviews are about building confidence in your reasoning under constraints.\n\n## The structure to follow (every time)\n\n1. Clarify requirements and constraints\n2. Example walkthrough\n3. Approach + complexity\n4. Implement in small steps\n5. Validate with tests\n6. State complexity + improvements\n\n## Communication rules\n\n- Narrate decisions, not every keystroke.\n- If stuck for >3 minutes: step back, propose alternatives.\n- If you made an assumption: say it explicitly.\n\n## What causes fails\n\n- Incorrect solution or unhandled edge cases\n- No explanation of approach\n- Inability to debug\n- Disorganized code that can’t be reasoned about\n\n## How to train\n\n- Prefer 1 timed problem + post-mortem over 5 untimed.\n- Redo failed problems 48–72 hours later.\n- Keep a “mistake log” grouped by failure type.\n"
+  },
+  {
+    "id": 29,
+    "title": "System Design Interview Playbook",
+    "section": "Interviews",
+    "sectionSlug": "interviews",
+    "href": "/docs/interviews/03-System-Design-Interview-Playbook",
+    "description": "System design interviews test your ability to design systems under ambiguity, justify tradeoffs, and communicate clearly.",
+    "keywords": "the only structure you need what interviewers expect (by level) common ways candidates fail how to practice mid: senior: staff+:",
+    "content": "# System Design Interview Playbook\n\nSystem design interviews test your ability to design systems under ambiguity, justify tradeoffs, and communicate clearly.\n\n## The only structure you need\n\nUse the template in [04-SYSTEM-DESIGN-LIBRARY/00-System-Design-Template.md](../04-SYSTEM-DESIGN-LIBRARY/00-System-Design-Template.md).\n\n## What interviewers expect (by level)\n\n- **Mid:** a coherent architecture + basic scaling + failure handling.\n- **Senior:** capacity planning + tradeoffs + operability + migrations.\n- **Staff+:** multi-system tradeoffs, org constraints, long-term risk management.\n\n## Common ways candidates fail\n\n- No requirements: architecture doesn’t match the problem.\n- No numbers: can’t justify capacity.\n- No failure plan: ignores partial failure.\n- Buzzwords over data flows.\n\n## How to practice\n\n- Do 1 prompt/week end-to-end (60–90 min).\n- Do 2 “mini drills” (15 min) on one topic (cache, queue, storage).\n"
+  },
+  {
+    "id": 30,
+    "title": "ML System Design Interview",
+    "section": "Interviews",
+    "sectionSlug": "interviews",
+    "href": "/docs/interviews/04-ML-System-Design-Interview",
+    "description": "ML system design is not a modeling exam. It’s a product + data + production reliability exam.",
+    "keywords": "a template that works common prompts what interviewers want to hear failure modes",
+    "content": "# ML System Design Interview\n\nML system design is not a modeling exam. It’s a product + data + production reliability exam.\n\n## A template that works\n\n1. Define product goal and measurable metrics\n2. Define data sources and labeling strategy\n3. Define model approach (baseline first)\n4. Define training pipeline (features, freshness, leakage controls)\n5. Define serving (latency, caching, fallbacks)\n6. Define evaluation (offline + online)\n7. Define monitoring (drift, data quality, silent failures)\n8. Define iteration + rollback\n\nReference anchors:\n\n- Rules of ML emphasizes “pipeline first, simple model first”.\n- ML Test Score gives a rubric for tests and monitoring.\n\n## Common prompts\n\n- recommendations / ranking\n- fraud/spam detection\n- search relevance\n- forecasting\n- personalization\n- LLM application with retrieval\n\n## What interviewers want to hear\n\n- baselines and iteration plan\n- how you avoid leakage\n- how you handle feedback loops\n- how you monitor and rollback safely\n\n## Failure modes\n\n- jumping to deep learning without a baseline\n- no plan for labels and data quality\n- no monitoring or rollback plan\n- optimizing offline metrics without product constraints\n"
+  },
+  {
+    "id": 31,
+    "title": "SQL / Data Interview Playbook",
+    "section": "Interviews",
+    "sectionSlug": "interviews",
+    "href": "/docs/interviews/05-SQL-Data-Interview",
+    "description": "SQL interviews are not about memorizing syntax; they’re about correctness and reasoning under time.",
+    "keywords": "the process high-frequency topics failure modes practice plan",
+    "content": "# SQL / Data Interview Playbook\n\nSQL interviews are not about memorizing syntax; they’re about correctness and reasoning under time.\n\n## The process\n\n1. Clarify table schemas and grain\n2. Identify joins and cardinality\n3. Write the simplest correct query\n4. Validate with a small example\n5. Optimize only if asked\n\n## High-frequency topics\n\n- joins and deduping\n- window functions\n- cohort retention\n- funnels\n- sessionization\n- slowly changing dimensions\n\n## Failure modes\n\n- wrong grain assumptions\n- accidental row multiplication\n- filtering in WHERE vs HAVING incorrectly\n\n## Practice plan\n\n- 3 timed SQL sessions/week\n- keep a log of mistakes by category\n"
+  },
+  {
+    "id": 32,
+    "title": "Behavioral Interview Playbook",
+    "section": "Interviews",
+    "sectionSlug": "interviews",
+    "href": "/docs/interviews/06-Behavioral-Interview-Playbook",
+    "description": "Behavioral rounds are where strong engineers lose offers: not because of bad people skills, but because their stories don’t show judgment.",
+    "keywords": "the scoring model (what they infer) a story structure that works build a story bank (6–8 stories) common failure modes company archetype notes faang/high-growth: enterprise: automotive/industrial:",
+    "content": "# Behavioral Interview Playbook\n\nBehavioral rounds are where strong engineers lose offers: not because of bad people skills, but because their stories don’t show judgment.\n\n## The scoring model (what they infer)\n\n- ownership and accountability\n- conflict handling\n- judgment under ambiguity\n- communication and influence\n- learning and growth\n\n## A story structure that works\n\nUse a modified STAR:\n\n1. Context (one paragraph)\n2. Goal (what success meant)\n3. Constraints (time, people, risk)\n4. Actions (what _you_ did; decision criteria)\n5. Results (numbers, impact)\n6. Reflection (what you’d do differently)\n\n## Build a story bank (6–8 stories)\n\n- a failure and what you learned\n- a conflict / disagreement\n- a time you led without authority\n- a deep technical dive\n- a high-impact delivery\n- a time you improved reliability or quality\n\n## Common failure modes\n\n- generic stories with no specifics\n- blaming others\n- no reflection or learning\n\n## Company archetype notes\n\n- **FAANG/high-growth:** structured rubrics; crisp stories with metrics help.\n- **Enterprise:** cross-functional influence and change management matter.\n- **Automotive/industrial:** risk control, verification mindset, reliability culture resonate.\n"
+  },
+  {
+    "id": 33,
+    "title": "Take-Home and Project Interviews",
+    "section": "Interviews",
+    "sectionSlug": "interviews",
+    "href": "/docs/interviews/07-Take-Home-and-Project-Interviews",
+    "description": "Take-homes often measure what whiteboard interviews miss: code quality, architecture, testing, and communication.",
+    "keywords": "the scoring rubric (usually) how to respond (high leverage) common failure modes if you’re time-constrained",
+    "content": "# Take-Home and Project Interviews\n\nTake-homes often measure what whiteboard interviews miss: code quality, architecture, testing, and communication.\n\n## The scoring rubric (usually)\n\n- correctness\n- clarity and maintainability\n- tests and edge cases\n- reasonable architecture and tradeoffs\n- documentation (how to run + decisions)\n\n## How to respond (high leverage)\n\nBefore you start:\n\n- confirm time expectations and submission format\n- clarify ambiguous requirements\n- ask about evaluation criteria\n\nWhile building:\n\n- keep the scope small and solid\n- write tests for the “core” path\n- add minimal observability/logging\n\nDelivery:\n\n- include a short README: setup, run, test, decisions, tradeoffs, next steps\n\n## Common failure modes\n\n- too much scope, unfinished core\n- no tests\n- no error handling\n- unclear instructions to run\n\n## If you’re time-constrained\n\nPrioritize in this order:\n\n1. correctness\n2. clean structure\n3. tests\n4. docs\n5. extras\n"
+  },
+  {
+    "id": 34,
+    "title": "Using AI Tools Ethically (2025–2026)",
+    "section": "Interviews",
+    "sectionSlug": "interviews",
+    "href": "/docs/interviews/08-Using-AI-Tools-Ethically",
+    "description": "Many companies are evolving their stance on AI-assisted development. Your safest strategy is to be transparent and to follow the interview’s rules.",
+    "keywords": "principles how to use ai tools well (when allowed) what interviewers are watching failure modes",
+    "content": "# Using AI Tools Ethically (2025–2026)\n\nMany companies are evolving their stance on AI-assisted development. Your safest strategy is to be transparent and to follow the interview’s rules.\n\n## Principles\n\n- Follow the explicit policy for the interview.\n- If unclear, ask the recruiter for rules before the interview.\n- Never paste proprietary company details into tools.\n\n## How to use AI tools well (when allowed)\n\n- Use them for: boilerplate, syntax recall, edge case brainstorming, test ideas.\n- Avoid: copying full solutions you can’t explain.\n\n## What interviewers are watching\n\n- Do you understand the solution and tradeoffs?\n- Can you debug when the suggested code is wrong?\n- Do you maintain ownership of decisions?\n\n## Failure modes\n\n- using a tool as a crutch without understanding\n- producing code you can’t reason about\n- violating interview rules\n"
+  },
+  {
+    "id": 35,
+    "title": "Interview Day Operations",
+    "section": "Interviews",
+    "sectionSlug": "interviews",
+    "href": "/docs/interviews/09-Interview-Day-Operations",
+    "description": "Interview days are high cognitive load. Your goal is to reduce avoidable variance.",
+    "keywords": "before the day during rounds between rounds after the loop",
+    "content": "# Interview Day Operations\n\nInterview days are high cognitive load. Your goal is to reduce avoidable variance.\n\n## Before the day\n\n- Confirm schedule and tech setup.\n- Prepare water/notes.\n- Review your top 6 behavioral stories.\n- Warm up with 1 easy coding problem (not a hard one).\n\n## During rounds\n\n- Ask clarifying questions early.\n- Write assumptions down.\n- Timebox: if stuck, step back and propose alternatives.\n- Summarize tradeoffs and next steps at the end.\n\n## Between rounds\n\n- Don’t try to learn new topics.\n- Write a 3-line note: what worked, what to fix next round.\n\n## After the loop\n\n- Write a quick debrief while memory is fresh.\n- Send a short thank-you to recruiter if appropriate.\n"
+  },
+  {
+    "id": 36,
+    "title": "System Design Template (Use This Every Time)",
+    "section": "System Design",
+    "sectionSlug": "system-design",
+    "href": "/docs/system-design/00-System-Design-Template",
+    "description": "This is a repeatable structure to keep you from rambling.",
+    "keywords": "1) requirements functional non-functional 2) back-of-the-envelope numbers 3) high-level architecture 4) data model 5) deep dives (pick 1–3) 6) failure modes and resilience 7) observability and operations 8) security and privacy",
+    "content": "# System Design Template (Use This Every Time)\n\nThis is a repeatable structure to keep you from rambling.\n\n## 1) Requirements\n\n### Functional\n\n- What does the system do?\n- Who are the users?\n- What are the core APIs?\n\n### Non-functional\n\n- latency targets (p50/p95/p99)\n- availability target (e.g., 99.9%)\n- consistency requirements\n- data retention and privacy constraints\n\n## 2) Back-of-the-envelope numbers\n\nEstimate:\n\n- QPS (reads/writes)\n- peak factor\n- data size per object\n- storage growth\n- bandwidth\n\nThe point is not perfect math—it’s to justify design choices.\n\n## 3) High-level architecture\n\nStart simple:\n\n- clients → API layer → core services → storage\n\nThen add scaling elements:\n\n- caching\n- queues/streams\n- read replicas\n- sharding/partitioning\n\n## 4) Data model\n\n- key entities\n- indexes needed\n- partition key and why\n\n## 5) Deep dives (pick 1–3)\n\n- caching strategy and invalidation\n- consistency model\n- rate limiting\n- search/indexing\n- async processing\n\n## 6) Failure modes and resilience\n\n- timeouts, retries (with jitter), circuit breakers\n- dependency degradation plan\n- disaster recovery (RPO/RTO)\n\n## 7) Observability and operations\n\n- SLIs/SLOs\n- dashboards + alerts\n- runbooks and rollback strategy\n\n## 8) Security and privacy\n\n- authn/authz\n- data encryption (in transit/at rest)\n- least privilege\n\n## 9) Tradeoffs recap\n\nEnd with 3–5 explicit tradeoffs:\n\n- what you optimized for\n- what you sacrificed\n- what you’d do next if given more time\n"
+  },
+  {
+    "id": 37,
+    "title": "Capacity Planning Cheatsheet",
+    "section": "System Design",
+    "sectionSlug": "system-design",
+    "href": "/docs/system-design/01-Capacity-Planning-Cheatsheet",
+    "description": "Capacity planning is about making design choices defensible.",
+    "keywords": "a minimal template useful rules of thumb common mistakes",
+    "content": "# Capacity Planning Cheatsheet\n\nCapacity planning is about making design choices defensible.\n\n## A minimal template\n\n1. Users and traffic\n\n- DAU/MAU (if relevant)\n- QPS average and peak factor\n\n2. Data size\n\n- size per record/object\n- storage growth per day\n\n3. Bandwidth\n\n- read/write bandwidth at peak\n\n4. Latency budget\n\n- p95/p99 target\n- where time goes (network, compute, DB)\n\n## Useful rules of thumb\n\n- You don’t need perfect math; you need the right order of magnitude.\n- Tail latency gets worse under saturation; plan for headroom.\n- Caches reduce load but introduce invalidation complexity.\n\n## Common mistakes\n\n- ignoring peak factor\n- ignoring read/write asymmetry\n- no plan for hot keys/hot partitions\n"
+  },
+  {
+    "id": 38,
+    "title": "Design Patterns & Failure Handling",
+    "section": "System Design",
+    "sectionSlug": "system-design",
+    "href": "/docs/system-design/02-Design-Patterns-and-Failure-Handling",
+    "description": "Most system design interviews are evaluating your handling of partial failure.",
+    "keywords": "core patterns failure handling checklist observability checklist",
+    "content": "# Design Patterns & Failure Handling\n\nMost system design interviews are evaluating your handling of partial failure.\n\n## Core patterns\n\n- Caching (read-through, write-through, write-back)\n- Queues and async workers\n- Idempotency keys\n- Rate limiting\n- Circuit breakers and bulkheads\n- Backpressure\n\n## Failure handling checklist\n\n- Timeouts set everywhere (and sane)\n- Retries capped + backoff + jitter\n- Fallbacks for degraded dependencies\n- Dead-letter queues for async\n- Rollback plan\n\n## Observability checklist\n\n- SLIs: latency, errors, saturation\n- dashboards show p95/p99\n- alerts are actionable\n- tracing for dependency chains\n"
+  },
+  {
+    "id": 39,
+    "title": "Common System Design Prompts (and what they test)",
+    "section": "System Design",
+    "sectionSlug": "system-design",
+    "href": "/docs/system-design/03-Common-Prompts-and-What-They-Test",
+    "description": "This is a “why this question” map so you can practice deliberately.",
+    "keywords": "url shortener rate limiter notification system feed / timeline file upload / media processing",
+    "content": "# Common System Design Prompts (and what they test)\n\nThis is a “why this question” map so you can practice deliberately.\n\n## URL shortener\n\nTests:\n\n- API design and data modeling\n- capacity planning basics\n- caching and TTL\n\n## Rate limiter\n\nTests:\n\n- algorithms (token bucket/leaky bucket)\n- distributed coordination tradeoffs\n- hot keys and performance\n\n## Notification system\n\nTests:\n\n- async processing\n- retries, DLQs\n- user preferences, idempotency\n\n## Feed / timeline\n\nTests:\n\n- fanout tradeoffs (push vs pull)\n- storage and caching\n- consistency and freshness\n\n## File upload / media processing\n\nTests:\n\n- object storage patterns\n- async processing pipelines\n- security and abuse prevention\n"
+  },
+  {
+    "id": 40,
+    "title": "ML & MLOps Index",
+    "section": "ML & MLOps",
+    "sectionSlug": "ml-mlops",
+    "href": "/docs/ml-mlops/00-ML-Index",
+    "description": "ML interviews vary wildly by company and role. The consistent theme: can you build reliable ML systems, not just train models.",
+    "keywords": "core pillars production mindset (high signal) what changes in 2025–2026 next pages modeling fundamentals data production",
+    "content": "# ML & MLOps Index\n\nML interviews vary wildly by company and role. The consistent theme: can you build reliable ML systems, not just train models.\n\n## Core pillars\n\n1. **Modeling fundamentals** (bias/variance, metrics, evaluation)\n2. **Data** (quality, leakage, features, labeling)\n3. **Production** (deployment, monitoring, iteration)\n\n## Production mindset (high signal)\n\nTwo reference frames this repo uses:\n\n- Rules of ML (engineering-first approach)\n- ML Test Score (tests/monitoring rubric for production readiness)\n\nSee [RESOURCES.md](../RESOURCES.md).\n\n## What changes in 2025–2026\n\n- More interviews explicitly evaluate how you work with AI tools.\n- LLM/GenAI systems design shows up more (retrieval, evaluation, safety, cost).\n- MLOps signals matter more: monitoring, rollback, shadow deploy, data issues.\n\n## Next pages\n\n- [05-ML-MLOPS/01-ML-Fundamentals-for-Interviews.md](01-ML-Fundamentals-for-Interviews.md)\n- [05-ML-MLOPS/04-ML-Testing-and-ML-Test-Score.md](04-ML-Testing-and-ML-Test-Score.md)\n- [05-ML-MLOPS/06-Monitoring-and-Drift.md](06-Monitoring-and-Drift.md)\n"
+  },
+  {
+    "id": 41,
+    "title": "ML Fundamentals for Interviews",
+    "section": "ML & MLOps",
+    "sectionSlug": "ml-mlops",
+    "href": "/docs/ml-mlops/01-ML-Fundamentals-for-Interviews",
+    "description": "The goal: explain ML clearly, choose reasonable metrics, and reason about tradeoffs.",
+    "keywords": "core concepts metrics cheat sheet practical evaluation failure modes",
+    "content": "# ML Fundamentals for Interviews\n\nThe goal: explain ML clearly, choose reasonable metrics, and reason about tradeoffs.\n\n## Core concepts\n\n- bias/variance intuition\n- overfitting and regularization\n- train/validation/test splits\n- calibration and thresholds\n\n## Metrics cheat sheet\n\n- Classification: precision/recall, ROC-AUC, PR-AUC\n- Ranking: NDCG, MAP\n- Regression: MAE/MSE, pinball loss (quantiles)\n\n## Practical evaluation\n\n- Offline metrics are not product success.\n- Define guardrails: latency, cost, fairness, safety.\n- Use online experiments when possible; otherwise use careful offline validation.\n\n## Failure modes\n\n- optimizing the wrong metric\n- leakage\n- dataset shift\n"
+  },
+  {
+    "id": 42,
+    "title": "Feature Engineering & Data Leakage",
+    "section": "ML & MLOps",
+    "sectionSlug": "ml-mlops",
+    "href": "/docs/ml-mlops/02-Feature-Engineering-and-Data-Leakage",
+    "description": "Leakage is one of the fastest ways to fail an MLE interview because it shows weak production intuition.",
+    "keywords": "common leakage patterns defensive checklist feature ownership",
+    "content": "# Feature Engineering & Data Leakage\n\nLeakage is one of the fastest ways to fail an MLE interview because it shows weak production intuition.\n\n## Common leakage patterns\n\n- using future information (post-outcome fields)\n- target leakage through derived aggregates\n- using labels as features (directly or indirectly)\n- sampling bias (logging only shown items)\n\n## Defensive checklist\n\n- define what is available at serving time\n- version features and enforce freshness\n- validate training/serving parity\n- monitor feature coverage and distribution\n\n## Feature ownership\n\nProduction ML improves when feature columns have owners, documentation, and monitoring.\n"
+  },
+  {
+    "id": 43,
+    "title": "ML System Design Templates",
+    "section": "ML & MLOps",
+    "sectionSlug": "ml-mlops",
+    "href": "/docs/ml-mlops/03-ML-System-Design-Templates",
+    "description": "Use these templates to structure design discussions.",
+    "keywords": "template a: ranking / recommendations template b: fraud / abuse template c: forecasting",
+    "content": "# ML System Design Templates\n\nUse these templates to structure design discussions.\n\n## Template A: Ranking / Recommendations\n\n- Goal and metrics (CTR, watch time, satisfaction)\n- Candidate generation vs ranking\n- Features and freshness\n- Training pipeline and evaluation\n- Serving latency and fallbacks\n- Monitoring: drift, bias, feedback loops\n\n## Template B: Fraud / Abuse\n\n- High recall vs high precision tradeoff\n- Label acquisition and adversarial behavior\n- Real-time scoring vs batch\n- Human-in-the-loop\n- Monitoring for concept drift and false positives\n\n## Template C: Forecasting\n\n- horizon and granularity\n- missing data and seasonality\n- evaluation beyond MSE (business cost)\n- retraining schedule\n"
+  },
+  {
+    "id": 44,
+    "title": "ML Testing and the ML Test Score",
+    "section": "ML & MLOps",
+    "sectionSlug": "ml-mlops",
+    "href": "/docs/ml-mlops/04-ML-Testing-and-ML-Test-Score",
+    "description": "Traditional software tests check deterministic behavior. ML systems are probabilistic, so you need broader coverage: data, training, serving, and monitoring.",
+    "keywords": "what “production-ready” means a pragmatic test checklist data tests training tests serving tests monitoring why interviewers like this",
+    "content": "# ML Testing and the ML Test Score\n\nTraditional software tests check deterministic behavior. ML systems are probabilistic, so you need broader coverage: data, training, serving, and monitoring.\n\n## What “production-ready” means\n\n- data is validated\n- training is reproducible\n- serving matches training assumptions\n- monitoring detects silent failures\n- rollback is possible\n\n## A pragmatic test checklist\n\n### Data tests\n\n- schema checks\n- missingness/coverage\n- distribution sanity\n\n### Training tests\n\n- deterministic seeds where possible\n- training data versioning\n- metric regression checks\n\n### Serving tests\n\n- training/serving skew checks\n- latency budget checks\n\n### Monitoring\n\n- drift detection\n- alerting for stale features\n- outcome monitoring and feedback loops\n\n## Why interviewers like this\n\nIt shows you understand ML technical debt and can build systems that don’t degrade silently.\n"
+  },
+  {
+    "id": 45,
+    "title": "LLM Applications and Evaluation (Interview Notes)",
+    "section": "ML & MLOps",
+    "sectionSlug": "ml-mlops",
+    "href": "/docs/ml-mlops/05-LLM-Applications-and-Evaluation",
+    "description": "LLM/GenAI interviews often focus on evaluation, cost, latency, and safety—not on prompt poetry.",
+    "keywords": "common system types what to define early evaluation playbook failure modes",
+    "content": "# LLM Applications and Evaluation (Interview Notes)\n\nLLM/GenAI interviews often focus on evaluation, cost, latency, and safety—not on prompt poetry.\n\n## Common system types\n\n- Chat assistant with tools\n- Retrieval-augmented generation (RAG)\n- Classification / routing\n- Summarization\n\n## What to define early\n\n- user goal and failure impact\n- latency and cost constraints\n- acceptable hallucination risk\n\n## Evaluation playbook\n\n- Create a representative evaluation set.\n- Define metrics (task success, factuality, latency, cost).\n- Add human review for high-risk slices.\n- Monitor regressions across model versions.\n\n## Failure modes\n\n- no evaluation plan (only anecdotes)\n- ignoring cost and tail latency\n- no safety/abuse considerations\n"
+  },
+  {
+    "id": 46,
+    "title": "Monitoring, Drift, and Silent Failures",
+    "section": "ML & MLOps",
+    "sectionSlug": "ml-mlops",
+    "href": "/docs/ml-mlops/06-Monitoring-and-Drift",
+    "description": "The most dangerous ML failures are quiet: performance decays while dashboards look “fine”.",
+    "keywords": "what to monitor drift types common silent failures response plan",
+    "content": "# Monitoring, Drift, and Silent Failures\n\nThe most dangerous ML failures are quiet: performance decays while dashboards look “fine”.\n\n## What to monitor\n\n- input data distribution\n- feature coverage/freshness\n- model output distribution\n- outcome metrics (delayed labels)\n- business guardrails (latency, cost)\n\n## Drift types\n\n- covariate shift (inputs changed)\n- concept drift (relationship changed)\n- label drift (labels changed)\n\n## Common silent failures\n\n- a joined table stops updating\n- feature coverage drops\n- model is stale\n\n## Response plan\n\n- detect → triage → rollback/shadow → fix pipeline → re-deploy\n"
+  },
+  {
+    "id": 47,
+    "title": "Mock Interview: Self-Evaluation Rubric",
+    "section": "Mock Interviews",
+    "sectionSlug": "mock-interviews",
+    "href": "/docs/mock-interviews/01-Self-Evaluation-Rubric",
+    "description": "Use this after every mock interview to calibrate yourself against real evaluation standards.",
+    "keywords": "**coding interview rubric** **communication (how clearly did you explain your thinking?)** **problem solving (did you approach the problem systematically?)** **technical correctness (does your solution work?)** **complexity analysis (can you explain runtime/space?)** **optimization & iterative thinking (did you improve your solution?)** **system design interview rubric** **requirements clarification (did you understand the problem?)** **api & data model design (is your interface clear?)** **architecture & components (does your design scale?)**",
+    "content": "# Mock Interview: Self-Evaluation Rubric\n\nUse this **after every mock interview** to calibrate yourself against real evaluation standards.\n\n---\n\n## **Coding Interview Rubric**\n\nRate yourself 1–5 on each dimension. Compare to your mock interviewer's feedback.\n\n### **Communication (How clearly did you explain your thinking?)**\n\n| Score | Description                                                                      | What this means                               |\n| ----- | -------------------------------------------------------------------------------- | --------------------------------------------- |\n| **1** | Silent coding or vague statements (\"uh, I'll try this...\")                       | Interviewer has no idea what you're thinking. |\n| **2** | Some explanation, but incomplete or hard to follow                               | Interviewer misses key steps.                 |\n| **3** | Clear but not proactive (only explain when asked)                                | Interviewer has to prompt you repeatedly.     |\n| **4** | Clear explanation of approach before coding; narrate while coding                | Interviewer follows your logic.               |\n| **5** | Crystal-clear walkthrough; state assumptions; explain tradeoffs; invite feedback | Interviewer feels confident in your clarity.  |\n\n**Target:** 4–5\n**Improvement if 1–3:** Practice narrating your approach BEFORE coding. Record yourself solving LeetCode problems.\n\n---\n\n### **Problem Solving (Did you approach the problem systematically?)**\n\n| Score | Description                                                                 | What this means                                      |\n| ----- | --------------------------------------------------------------------------- | ---------------------------------------------------- |\n| **1** | Jumped to code without understanding the problem                            | You misunderstood the prompt or constraints.         |\n| **2** | Asked some questions but still uncle"
+  },
+  {
+    "id": 48,
+    "title": "Mock Interview: Peer Feedback Template",
+    "section": "Mock Interviews",
+    "sectionSlug": "mock-interviews",
+    "href": "/docs/mock-interviews/02-Peer-Feedback-Template",
+    "description": "Use this template when giving feedback to a peer (or when asking for feedback).",
+    "keywords": "**template: peer mock interview feedback** **overall impression (1-2 sentences)** **strengths (what went well)** 1. [dimension] 2. [dimension] 3. [dimension] **areas for improvement (what didn't go as well)** 1. [dimension] — priority 1 2. [dimension] — priority 2 **specific moments**",
+    "content": "# Mock Interview: Peer Feedback Template\n\nUse this template when giving feedback to a peer (or when asking for feedback).\n\n---\n\n## **Template: Peer Mock Interview Feedback**\n\n```markdown\n# Mock Interview Feedback\n\n**Interviewer:** [Your name]\n**Candidate:** [Their name]\n**Date:** [YYYY-MM-DD]\n**Interview Type:** [Coding / System Design / Behavioral]\n**Duration:** [Minutes]\n\n---\n\n## **Overall Impression (1-2 sentences)**\n\n[Quick gut reaction. Example: \"Strong communication and systematic approach. Struggled with edge cases.\"]\n\n---\n\n## **Strengths (What Went Well)**\n\n### 1. [Dimension]\n\n**What I observed:** [Specific example. NOT \"You were good at coding\"; instead: \"You asked about input constraints before starting, which showed discipline.\"]\n\n**Impact:** [Why this matters. Example: \"This prevented you from making wrong assumptions.\"]\n\n### 2. [Dimension]\n\n**What I observed:** [Example]\n**Impact:** [Why it mattered]\n\n### 3. [Dimension]\n\n**What I observed:** [Example]\n**Impact:** [Why it mattered]\n\n---\n\n## **Areas for Improvement (What Didn't Go As Well)**\n\n### 1. [Dimension] — PRIORITY 1\n\n**What I observed:** [Specific example. NOT \"You had bugs\"; instead: \"You tested your solution against the provided examples but didn't test edge cases like empty input or duplicates.\"]\n\n**Why it hurt:** [Business impact. Example: \"An edge case bug would likely be caught by the interviewer, and you'd lose points.\"]\n\n**How to improve:** [Concrete next step. Example: \"Always add 2–3 edge case tests before declaring your solution done.\"]\n\n### 2. [Dimension] — PRIORITY 2\n\n**What I observed:** [Example]\n**Why it hurt:** [Impact]\n**How to improve:** [Next step]\n\n---\n\n## **Specific Moments**\n\n### Moment 1: [Where things went well or poorly]\n\n**What happened:** [Narrate what you saw]\n**Why I flag this:** [What it signals about interview readiness]\n**Suggestion:** [How to handle it next time]\n\n### Moment 2: [Another key moment]\n\n**What happened:** [Narrate]\n**Why I flag this:** [Signal]\n**Sugg"
+  },
+  {
+    "id": 49,
+    "title": "Data Index (DE + DS foundations)",
+    "section": "Data",
+    "sectionSlug": "data",
+    "href": "/docs/data/00-Data-Index",
+    "description": "Data roles fail in interviews for predictable reasons:",
+    "keywords": "core skills by role data engineer data scientist next pages",
+    "content": "# Data Index (DE + DS foundations)\n\nData roles fail in interviews for predictable reasons:\n\n- weak SQL fundamentals under time\n- hand-wavy data modeling\n- ignoring quality/lineage/cost\n- not turning ambiguity into a plan\n\n## Core skills by role\n\n### Data Engineer\n\n- SQL + modeling\n- batch and streaming pipelines\n- orchestration\n- data quality + lineage\n- cost and reliability\n\n### Data Scientist\n\n- metrics and experiments\n- causal reasoning intuition\n- storytelling and stakeholder influence\n- practical modeling (when relevant)\n\n## Next pages\n\n- [06-DATA/01-SQL-Patterns.md](01-SQL-Patterns.md)\n- [06-DATA/02-Data-Modeling.md](02-Data-Modeling.md)\n- [06-DATA/04-Data-Quality.md](04-Data-Quality.md)\n"
+  },
+  {
+    "id": 50,
+    "title": "SQL Patterns (High Frequency)",
+    "section": "Data",
+    "sectionSlug": "data",
+    "href": "/docs/data/01-SQL-Patterns",
+    "description": "This page is about patterns, not syntax.",
+    "keywords": "pattern 1: deduplicate latest row pattern 2: funnel conversion pattern 3: cohort retention mistakes to avoid",
+    "content": "# SQL Patterns (High Frequency)\n\nThis page is about patterns, not syntax.\n\n## Pattern 1: Deduplicate latest row\n\nApproach:\n\n- define partition key\n- order by timestamp\n- pick row_number = 1\n\n## Pattern 2: Funnel conversion\n\nApproach:\n\n- define steps\n- join events per user/session\n- compute drop-off\n\n## Pattern 3: Cohort retention\n\nApproach:\n\n- cohort by first event date\n- compute retention by week/month\n\n## Mistakes to avoid\n\n- accidental row multiplication\n- filtering too early (before dedupe)\n- wrong grain\n"
+  },
+  {
+    "id": 51,
+    "title": "Data Modeling (DE / Analytics)",
+    "section": "Data",
+    "sectionSlug": "data",
+    "href": "/docs/data/02-Data-Modeling",
+    "description": "Good models reduce downstream confusion and rework.",
+    "keywords": "start with grain common approaches practical checklist",
+    "content": "# Data Modeling (DE / Analytics)\n\nGood models reduce downstream confusion and rework.\n\n## Start with grain\n\nDefine what one row means. Many modeling bugs are really grain bugs.\n\n## Common approaches\n\n- normalized models for core entities\n- dimensional models for analytics\n\n## Practical checklist\n\n- primary keys and uniqueness\n- time fields and timezone policy\n- handling late arriving data\n- schema evolution and compatibility\n"
+  },
+  {
+    "id": 52,
+    "title": "Pipelines and Orchestration",
+    "section": "Data",
+    "sectionSlug": "data",
+    "href": "/docs/data/03-Pipelines-and-Orchestration",
+    "description": "Pipelines are systems: they fail, they backfill, and they need observability.",
+    "keywords": "concepts that interviewers probe failure modes",
+    "content": "# Pipelines and Orchestration\n\nPipelines are systems: they fail, they backfill, and they need observability.\n\n## Concepts that interviewers probe\n\n- idempotency (safe retries)\n- backfills and reprocessing\n- dependency management\n- SLAs and freshness\n- cost control\n\n## Failure modes\n\n- non-idempotent jobs corrupt data\n- backfills overload systems\n- silent failures due to missing alerting\n"
+  },
+  {
+    "id": 53,
+    "title": "Data Quality",
+    "section": "Data",
+    "sectionSlug": "data",
+    "href": "/docs/data/04-Data-Quality",
+    "description": "Quality is not a dashboard; it is a set of checks and ownership.",
+    "keywords": "dimensions to monitor practical playbook",
+    "content": "# Data Quality\n\nQuality is not a dashboard; it is a set of checks and ownership.\n\n## Dimensions to monitor\n\n- completeness\n- freshness\n- accuracy\n- consistency\n\n## Practical playbook\n\n- define contracts per dataset\n- add automated checks at ingestion and transformation\n- alert on violations\n- document owners and SLAs\n"
+  },
+  {
+    "id": 54,
+    "title": "Streaming and Late Data",
+    "section": "Data",
+    "sectionSlug": "data",
+    "href": "/docs/data/05-Streaming-and-Late-Data",
+    "description": "Streaming systems fail in interviews when candidates assume perfect ordering and completeness.",
+    "keywords": "concepts to handle explicitly practical strategies failure modes",
+    "content": "# Streaming and Late Data\n\nStreaming systems fail in interviews when candidates assume perfect ordering and completeness.\n\n## Concepts to handle explicitly\n\n- out-of-order events\n- late arrivals\n- deduplication\n- exactly-once vs at-least-once semantics\n\n## Practical strategies\n\n- event time vs processing time\n- watermarks\n- idempotent consumers\n- replay/backfill plan\n\n## Failure modes\n\n- double counting due to retries\n- missing late data leading to wrong analytics\n"
+  },
+  {
+    "id": 55,
+    "title": "Cost and Performance (Data Systems)",
+    "section": "Data",
+    "sectionSlug": "data",
+    "href": "/docs/data/06-Cost-and-Performance",
+    "description": "Cost is a first-class requirement in data platforms.",
+    "keywords": "common cost drivers practical optimizations failure modes",
+    "content": "# Cost and Performance (Data Systems)\n\nCost is a first-class requirement in data platforms.\n\n## Common cost drivers\n\n- scanning too much data\n- storing duplicates\n- unbounded retention\n- too many materializations\n\n## Practical optimizations\n\n- partitioning/clustering\n- incremental processing\n- caching and reuse\n- retention policies\n\n## Failure modes\n\n- “it works” but at unsustainable cost\n- no observability into data platform spend\n"
+  },
+  {
+    "id": 56,
+    "title": "Junior Engineer: 3-Month FAANG Prep Plan",
+    "section": "Study Plans",
+    "sectionSlug": "study-plans",
+    "href": "/docs/study-plans/01-Junior-3-Month-Plan",
+    "description": "Target: Software Engineer L3–L4 (junior-to-mid track)\nTimeline: 12 weeks, ~20 hours/week\nOutcome: Ready for 4–5 FAANG loops simultaneously",
+    "keywords": "**overview** **phase 1: foundation (weeks 1–4)** **week 1: dsa bootcamp** **week 2: trees, graphs, search** **week 3: dynamic programming & patterns** **week 4: interview simulation + system design intro** **phase 2: practice (weeks 5–8)** **week 5: coding mock loop** **week 6: system design deep dives** **week 7: behavioral rehearsal**",
+    "content": "# Junior Engineer: 3-Month FAANG Prep Plan\n\n**Target:** Software Engineer L3–L4 (junior-to-mid track)\n**Timeline:** 12 weeks, ~20 hours/week\n**Outcome:** Ready for 4–5 FAANG loops simultaneously\n\n---\n\n## **Overview**\n\n| Phase          | Weeks | Focus               | Goal             |\n| -------------- | ----- | ------------------- | ---------------- |\n| **Foundation** | 1–4   | DSA + fundamentals  | Strong on basics |\n| **Practice**   | 5–8   | Interviews + design | Mock loops       |\n| **Refinement** | 9–12  | Polish + targeting  | Offer ready      |\n\n---\n\n## **PHASE 1: FOUNDATION (Weeks 1–4)**\n\n**Mindset:** Build speed and confidence in fundamentals.\n**Time commitment:** 20 hours/week\n\n### **Week 1: DSA Bootcamp**\n\n**Daily Schedule (2–3 hours):**\n\n| Day | Topic            | Activity                                                                                  | Target                            |\n| --- | ---------------- | ----------------------------------------------------------------------------------------- | --------------------------------- |\n| Mon | Arrays & Strings | Read [DSA/01-Arrays.md](../../01-Foundations/01-DSA-and-Coding.md); solve 3 easy LeetCode | Two pointers, prefix sum patterns |\n| Tue | Arrays continued | Solve 5 medium LeetCode (sliding window)                                                  | Fluent on sliding window          |\n| Wed | Linked Lists     | Study reverse, merge; solve 3 problems                                                    | Understand pointer manipulation   |\n| Thu | Stacks & Queues  | Study; solve 3 problems (mono stack patterns)                                             | Mono-stack intuition              |\n| Fri | Hashing          | Study HashMap/HashSet; solve 3 problems                                                   | Caching strategy comfort          |\n| Sat | Depth Review     | Re-solve 5 problems from Mon–Fri                                                          | Reinforce patterns                |\n"
+  },
+  {
+    "id": 57,
+    "title": "Mid-Level Engineer: 6-Month FAANG Prep Plan",
+    "section": "Study Plans",
+    "sectionSlug": "study-plans",
+    "href": "/docs/study-plans/02-Mid-6-Month-Plan",
+    "description": "Target: Software Engineer L4–L5 (mid-level, potential staff track)\nTimeline: 24 weeks, ~15 hours/week (part-time; assume you have a job)\nOutcome: Ready for 4–6 FAANG loops; negotiating senior offers",
+    "keywords": "**overview** **phase 1: foundation review (weeks 1–6)** **week 1–2: dsa expert review** **week 3–4: system design depth** **week 5–6: behavioral + leadership** **phase 2: advanced practice (weeks 7–16)** **week 7–10: advanced system design** **week 11–14: role-specific deep dives** **if backend track:** **if ml track:**",
+    "content": "# Mid-Level Engineer: 6-Month FAANG Prep Plan\n\n**Target:** Software Engineer L4–L5 (mid-level, potential staff track)\n**Timeline:** 24 weeks, ~15 hours/week (part-time; assume you have a job)\n**Outcome:** Ready for 4–6 FAANG loops; negotiating senior offers\n\n---\n\n## **Overview**\n\n| Phase                       | Weeks | Focus                               | Goal                       |\n| --------------------------- | ----- | ----------------------------------- | -------------------------- |\n| **Foundation Review**       | 1–6   | DSA mastery + systems depth         | Expert-level fundamentals  |\n| **Advanced Practice**       | 7–16  | Complex designs + leadership signal | Ready for mid/senior loops |\n| **Application & Interview** | 17–24 | Real loops + refinement             | Offers at L4/L5+           |\n\n---\n\n## **PHASE 1: FOUNDATION REVIEW (Weeks 1–6)**\n\n**Mindset:** You know the basics; get to expert level. Understand _why_, not just _how_.\n**Time commitment:** 15 hours/week (3–4 blocks)\n\n### **Week 1–2: DSA Expert Review**\n\n**Goal:** Solve hard problems in <30 min; explain optimality clearly.\n\n| Day     | Activity                                                                                              | Target                                          |\n| ------- | ----------------------------------------------------------------------------------------------------- | ----------------------------------------------- |\n| Mon–Wed | LeetCode hard: 3 problems per day from [company tags](../../06-Study-Plans/01-Junior-3-Month-Plan.md) | Optimize under pressure; think about invariants |\n| Thu     | Mock coding (90 min; 2 hard problems back-to-back)                                                    | Test stamina                                    |\n| Fri     | Debrief mock + identify pattern gaps                                                                  | Spot weak areas                                 |\n| Sat–Sun | 5–6 more hard problems (relaxed pace)      "
+  },
+  {
+    "id": 58,
+    "title": "Senior Engineer: 4-Month FAANG Prep Plan",
+    "section": "Study Plans",
+    "sectionSlug": "study-plans",
+    "href": "/docs/study-plans/03-Senior-4-Month-Plan",
+    "description": "Target: Staff Engineer / L5–L6 (senior; potential principal track)\nTimeline: 16 weeks, ~12 hours/week (you're busy; this is surgical)\nOutcome: Ready for 2–3 FAANG loops; negotiating principal offers",
+    "keywords": "**overview** **phase 1: calibration (weeks 1–3)** **week 1: self-assessment** **week 2–3: dsa maintenance + signal** **phase 2: depth & leadership (weeks 4–11)** **week 4–6: strategic system design (i)** **week 7–9: senior lens on ml/data/infra** **if backend/data:** **if ml/data science:** **if infra/sre/platform:**",
+    "content": "# Senior Engineer: 4-Month FAANG Prep Plan\n\n**Target:** Staff Engineer / L5–L6 (senior; potential principal track)\n**Timeline:** 16 weeks, ~12 hours/week (you're busy; this is surgical)\n**Outcome:** Ready for 2–3 FAANG loops; negotiating principal offers\n\n---\n\n## **Overview**\n\n| Phase                  | Weeks | Focus                                             | Goal                              |\n| ---------------------- | ----- | ------------------------------------------------- | --------------------------------- |\n| **Calibration**        | 1–3   | Understand senior bar; refresh on medium-hard DSA | Know what you're preparing for    |\n| **Depth & Leadership** | 4–11  | Principal-level designs + strategic thinking      | Ready for senior/staff interviews |\n| **Application & Loop** | 12–16 | Focused applications + real onsites               | Principal offer in hand           |\n\n---\n\n## **PHASE 1: CALIBRATION (Weeks 1–3)**\n\n**Mindset:** Senior interviews are NOT harder DSA; they're about judgment, strategy, and impact.\n**Time commitment:** 10 hours/week\n\n### **Week 1: Self-Assessment**\n\n| Day     | Activity                                                                                           | Output                        |\n| ------- | -------------------------------------------------------------------------------------------------- | ----------------------------- |\n| Mon     | Review [senior bar](../../00-START-HERE/02-Interview-Loop-At-A-Glance.md) for your company         | Notes on expectations         |\n| Tue     | Read 3 senior-level system design interviews (Palantir, Jane Street, etc.)                         | Understand the depth required |\n| Wed     | Record yourself designing a system (untimed); compare vs. junior approach                          | Identify gaps                 |\n| Thu–Fri | Skim DSA hard problems; time yourself on 3 (LeetCode)                                              | Ensure speed (< 20 min each)  |\n| Sat–Sun | Light: read "
+  },
+  {
+    "id": 59,
+    "title": "Infra / DevOps / SRE Index",
+    "section": "Infra & DevOps",
+    "sectionSlug": "infra-devops",
+    "href": "/docs/infra-devops/00-Infra-Index",
+    "description": "Infra interviews evaluate whether you can keep systems healthy under change.",
+    "keywords": "core pillars what “senior” means in infra next pages",
+    "content": "# Infra / DevOps / SRE Index\n\nInfra interviews evaluate whether you can keep systems healthy under change.\n\n## Core pillars\n\n- Linux fundamentals\n- networking\n- containers and Kubernetes\n- CI/CD and safe rollouts\n- observability\n- incident response\n\n## What “senior” means in infra\n\n- You can debug unknown issues methodically.\n- You can design for reliability and operability.\n- You can prevent entire classes of incidents (guardrails).\n\n## Next pages\n\n- [07-INFRA-DEVOPS/02-Docker.md](02-Docker.md)\n- [07-INFRA-DEVOPS/03-Kubernetes.md](03-Kubernetes.md)\n- [07-INFRA-DEVOPS/05-Incident-Response.md](05-Incident-Response.md)\n"
+  },
+  {
+    "id": 60,
+    "title": "Linux + Networking Fundamentals",
+    "section": "Infra & DevOps",
+    "sectionSlug": "infra-devops",
+    "href": "/docs/infra-devops/01-Linux-Networking-Fundamentals",
+    "description": "Most infra interviews are debugging interviews.",
+    "keywords": "linux basics to know networking basics to know debugging checklist",
+    "content": "# Linux + Networking Fundamentals\n\nMost infra interviews are debugging interviews.\n\n## Linux basics to know\n\n- processes, signals\n- file descriptors\n- basic resource inspection (CPU, memory)\n\n## Networking basics to know\n\n- DNS, TCP, TLS\n- HTTP semantics and idempotency\n- timeouts and retries\n\n## Debugging checklist\n\n1. Is the system saturated?\n2. Is there a dependency issue?\n3. Is there a config/rollout change?\n4. Is there packet loss or DNS failure?\n"
+  },
+  {
+    "id": 61,
+    "title": "Docker (Interview Essentials)",
+    "section": "Infra & DevOps",
+    "sectionSlug": "infra-devops",
+    "href": "/docs/infra-devops/02-Docker",
+    "description": "Docker topics often appear as practical questions: packaging, isolation, and debugging.",
+    "keywords": "what you should be able to explain practical checklist",
+    "content": "# Docker (Interview Essentials)\n\nDocker topics often appear as practical questions: packaging, isolation, and debugging.\n\n## What you should be able to explain\n\n- image vs container\n- layers and caching\n- why containers are not VMs\n- common failure: missing dependencies, wrong entrypoint\n\n## Practical checklist\n\n- small images (multi-stage builds)\n- explicit health checks\n- env var configuration\n"
+  },
+  {
+    "id": 62,
+    "title": "Kubernetes (Interview Essentials)",
+    "section": "Infra & DevOps",
+    "sectionSlug": "infra-devops",
+    "href": "/docs/infra-devops/03-Kubernetes",
+    "description": "Kubernetes questions test operational intuition: scheduling, reliability, and debugging.",
+    "keywords": "core primitives common failure modes debugging approach",
+    "content": "# Kubernetes (Interview Essentials)\n\nKubernetes questions test operational intuition: scheduling, reliability, and debugging.\n\n## Core primitives\n\n- Pods, Deployments\n- Services and Ingress\n- ConfigMaps and Secrets\n- autoscaling (HPA) basics\n\n## Common failure modes\n\n- misconfigured probes causing crash loops\n- resource limits too low/high\n- networking and DNS issues\n\n## Debugging approach\n\n- check pod status/events\n- check logs\n- verify service endpoints\n- isolate config changes\n"
+  },
+  {
+    "id": 63,
+    "title": "CI/CD and Safe Rollouts",
+    "section": "Infra & DevOps",
+    "sectionSlug": "infra-devops",
+    "href": "/docs/infra-devops/04-CICD-and-Safe-Rollouts",
+    "description": "CI/CD interviews are about reducing risk while maintaining speed.",
+    "keywords": "core elements deployment safety checklist failure modes",
+    "content": "# CI/CD and Safe Rollouts\n\nCI/CD interviews are about reducing risk while maintaining speed.\n\n## Core elements\n\n- automated tests\n- build artifacts are immutable\n- environments are reproducible (IaC)\n- progressive delivery (canary/blue-green)\n\n## Deployment safety checklist\n\n- health checks and readiness probes\n- rollback plan\n- feature flags for risky changes\n- metrics-based rollout gates\n\n## Failure modes\n\n- deploying without observability\n- no rollback path\n- manual steps that drift over time\n"
+  },
+  {
+    "id": 64,
+    "title": "Incident Response",
+    "section": "Infra & DevOps",
+    "sectionSlug": "infra-devops",
+    "href": "/docs/infra-devops/05-Incident-Response",
+    "description": "Incident response is a leadership exercise under time pressure.",
+    "keywords": "what good looks like a practical incident checklist postmortem quality bar",
+    "content": "# Incident Response\n\nIncident response is a leadership exercise under time pressure.\n\n## What good looks like\n\n- triage quickly (scope, impact)\n- stop the bleeding (rollback, disable feature)\n- communicate clearly\n- write a blameless postmortem with action items\n\n## A practical incident checklist\n\n1. Declare incident and assign roles\n2. Assess impact and user-facing symptoms\n3. Mitigate (rollback, failover, rate limit)\n4. Verify recovery\n5. Preserve data for analysis\n6. Postmortem and follow-ups\n\n## Postmortem quality bar\n\n- timeline\n- contributing factors\n- what detection missed\n- action items with owners and dates\n"
+  },
+  {
+    "id": 65,
+    "title": "Observability",
+    "section": "Infra & DevOps",
+    "sectionSlug": "infra-devops",
+    "href": "/docs/infra-devops/06-Observability",
+    "description": "Observability is how you debug production without guessing.",
+    "keywords": "the three pillars what to monitor alerting rules failure modes",
+    "content": "# Observability\n\nObservability is how you debug production without guessing.\n\n## The three pillars\n\n- metrics: what is happening?\n- logs: what happened?\n- traces: where did time go?\n\n## What to monitor\n\n- latency (p50/p95/p99)\n- error rate\n- saturation (CPU, memory, queues)\n\n## Alerting rules\n\n- alerts must be actionable\n- avoid alert fatigue\n- focus on SLO-impacting signals\n\n## Failure modes\n\n- dashboards with only averages\n- alerts that fire but don’t help diagnose\n"
+  },
+  {
+    "id": 66,
+    "title": "Career Index",
+    "section": "Career",
+    "sectionSlug": "career",
+    "href": "/docs/career/00-Career-Index",
+    "description": "1. targeting and positioning\n2. application throughput\n3. interview performance\n4. offer negotiation",
+    "keywords": "where to start industry differences faang/high-growth: enterprise: automotive/industrial:",
+    "content": "# Career Index\n\nJob prep is a pipeline:\n\n1. targeting and positioning\n2. application throughput\n3. interview performance\n4. offer negotiation\n\nThis folder covers the non-technical pieces that routinely gate strong engineers.\n\n## Where to start\n\n- If you have no interviews: [08-CAREER/01-Resume-LinkedIn-GitHub.md](01-Resume-LinkedIn-GitHub.md)\n- If you’re getting screens but failing: [03-INTERVIEWS](../03-INTERVIEWS)\n- If you have offers: [08-CAREER/04-Offer-Negotiation.md](04-Offer-Negotiation.md)\n\n## Industry differences\n\n- **FAANG/high-growth:** highly structured loops; signals are consistent across teams.\n- **Enterprise:** role scope can vary widely; hiring may emphasize domain.\n- **Automotive/industrial:** hiring often values safety, reliability, long-term ownership.\n"
+  },
+  {
+    "id": 67,
+    "title": "Resume, LinkedIn, GitHub (Recruiter Pass)",
+    "section": "Career",
+    "sectionSlug": "career",
+    "href": "/docs/career/01-Resume-LinkedIn-GitHub",
+    "description": "Your resume is a throughput tool. It should make it easy for a recruiter and hiring manager to say “this person fits”.",
+    "keywords": "resume principles bullet formula linkedin github",
+    "content": "# Resume, LinkedIn, GitHub (Recruiter Pass)\n\nYour resume is a throughput tool. It should make it easy for a recruiter and hiring manager to say “this person fits”.\n\n## Resume principles\n\n- one screen = one story\n- lead with impact and ownership\n- numbers beat adjectives\n\n### Bullet formula\n\n\"Did X by doing Y, resulting in Z\" (with constraints/tradeoffs when relevant)\n\nExample:\n\n- Reduced p95 latency by 35% by adding caching + query optimization, improving checkout completion rate.\n\n## LinkedIn\n\n- headline: target role + credibility\n- about: 5–7 lines, specific strengths\n- featured: 2–3 strong projects or talks\n\n## GitHub\n\nFocus on 1–2 repos that show:\n\n- readable code\n- tests\n- docs\n- real operational thinking (monitoring, deployment notes)\n\nAvoid a graveyard of half-finished repos.\n"
+  },
+  {
+    "id": 68,
+    "title": "Applications and Networking",
+    "section": "Career",
+    "sectionSlug": "career",
+    "href": "/docs/career/02-Applications-and-Networking",
+    "description": "Most candidates under-invest in pipeline management.",
+    "keywords": "the pipeline model networking that works tracking",
+    "content": "# Applications and Networking\n\nMost candidates under-invest in pipeline management.\n\n## The pipeline model\n\n- applications → recruiter screens → technical screens → onsite loops → offers\n\nIf applications aren’t turning into screens, fix positioning and targeting.\n\n## Networking that works\n\n- ask for 15 minutes to understand the role/team\n- be specific: why this role, why you fit\n- follow up with a concise thank-you and resume\n\n## Tracking\n\nUse a simple spreadsheet:\n\n- company, role, level\n- referral status\n- dates per stage\n- notes and follow-ups\n"
+  },
+  {
+    "id": 69,
+    "title": "Interview Prep Calendar (Sustainable)",
+    "section": "Career",
+    "sectionSlug": "career",
+    "href": "/docs/career/03-Interview-Prep-Calendar",
+    "description": "Most plans fail because they’re too intense to sustain.",
+    "keywords": "60–90 minutes/day plan rules",
+    "content": "# Interview Prep Calendar (Sustainable)\n\nMost plans fail because they’re too intense to sustain.\n\n## 60–90 minutes/day plan\n\nMon: coding timed + postmortem\nTue: coding pattern drill\nWed: system design mini drill\nThu: coding timed + redo mistakes\nFri: behavioral story practice\nSat: role-specific (ML/SQL/infra)\nSun: rest or mock loop\n\n## Rules\n\n- Every session ends with a postmortem.\n- Fix the top 3 recurring failures first.\n- Redo failed problems after 48–72 hours.\n"
+  },
+  {
+    "id": 70,
+    "title": "Offer Negotiation (Practical)",
+    "section": "Career",
+    "sectionSlug": "career",
+    "href": "/docs/career/04-Offer-Negotiation",
+    "description": "Negotiation is not about being aggressive; it’s about aligning on value and reducing uncertainty.",
+    "keywords": "the only three levers that matter before you negotiate a negotiation script that works common traps company archetype notes non-comp terms worth negotiating decision checklist competing options role clarity risk profile",
+    "content": "# Offer Negotiation (Practical)\n\nNegotiation is not about being aggressive; it’s about aligning on value and reducing uncertainty.\n\n## The only three levers that matter\n\n1. **Competing options** (real alternatives reduce uncertainty)\n2. **Role clarity** (level, scope, team, location)\n3. **Risk profile** (remote, immigration, on-call, stability)\n\n## Before you negotiate\n\n- Confirm the level/title in writing.\n- Confirm location and remote expectations.\n- Ask for full comp breakdown: base, bonus, equity/RSUs, refreshers, sign-on.\n- Ask about vesting schedule and performance review cadence.\n\n## A negotiation script that works\n\nUse calm, factual language:\n\n1. Express excitement and fit.\n2. Ask for time to review.\n3. Present constraints or competing options.\n4. Ask what flexibility exists.\n\nExample structure:\n\n\"I’m excited about the role and I think I can have strong impact. I’m reviewing the offer details this week. Based on my other conversations and my current comp, I’d be comfortable signing if we can improve the overall package—especially the equity and/or sign-on. What flexibility do we have?\"\n\n## Common traps\n\n- **Negotiating before the offer is complete** (you don’t know what you’re negotiating).\n- **Over-optimizing one component** (base vs equity vs sign-on) without thinking in totals.\n- **Ignoring refreshers** (long-term comp can dominate).\n- **Not clarifying scope** (a “great comp” for a role you’ll hate is not great comp).\n\n## Company archetype notes\n\n- **FAANG/high-growth:** tends to be structured bands; negotiation often moves sign-on/equity more than base.\n- **Enterprise:** sometimes more base/bonus flexibility; equity may be smaller.\n- **Automotive/industrial:** may trade higher base for smaller equity; stability and benefits can be strong.\n\n## Non-comp terms worth negotiating\n\n- start date\n- relocation support\n- immigration support\n- remote/hybrid terms\n- team match (when possible)\n- on-call expectations\n\n## Decision checklist\n\n- Is the role scope aligned"
+  },
+  {
+    "id": 71,
+    "title": "Company Archetypes and How to Prepare",
+    "section": "Career",
+    "sectionSlug": "career",
+    "href": "/docs/career/05-Company-Archetypes-and-How-to-Prepare",
+    "description": "Preparation changes based on what the company optimizes for.",
+    "keywords": "faang / high-growth consumer enterprise software automotive / industrial",
+    "content": "# Company Archetypes and How to Prepare\n\nPreparation changes based on what the company optimizes for.\n\n## FAANG / high-growth consumer\n\n- structured loops and calibration\n- heavy emphasis on coding + system design communication\n- strong expectation of dealing with ambiguity\n\nPrep focus:\n\n- timed coding reps\n- system design practice with numbers\n- behavioral stories with impact\n\n## Enterprise software\n\n- role scope varies widely\n- migrations, integrations, maintainability matter\n- stakeholder influence can matter more\n\nPrep focus:\n\n- explain tradeoffs for maintainability\n- migration strategies\n- examples of long-term ownership\n\n## Automotive / industrial\n\n- safety/reliability culture\n- long-lived systems and verification\n- domain constraints may matter\n\nPrep focus:\n\n- correctness and risk control\n- testing discipline\n- reliability and incident stories\n"
+  },
+  {
+    "id": 72,
+    "title": "Handling Rejection and Iteration",
+    "section": "Career",
+    "sectionSlug": "career",
+    "href": "/docs/career/06-Handling-Rejection-and-Iteration",
+    "description": "Rejection is often variance, not a verdict. The key is to extract signal and iterate.",
+    "keywords": "post-interview debrief a 2-week improvement cycle keep a “wins log”",
+    "content": "# Handling Rejection and Iteration\n\nRejection is often variance, not a verdict. The key is to extract signal and iterate.\n\n## Post-interview debrief\n\n- Which round likely failed (coding/design/behavioral)?\n- Was it knowledge, execution, or communication?\n- What is the smallest drill that would prevent it?\n\n## A 2-week improvement cycle\n\nWeek 1\n\n- fix the top failure mode with focused reps\n\nWeek 2\n\n- run a mock loop and re-score\n\n## Keep a “wins log”\n\nTrack improvements (e.g., fewer bugs, better structure). This reduces burnout and keeps progress measurable.\n"
+  },
+  {
+    "id": 73,
+    "title": "Company-Specific Notes",
+    "section": "Company Notes",
+    "sectionSlug": "company-notes",
+    "href": "/docs/company-notes/00-Index",
+    "description": "This folder helps you adapt the same fundamentals to different company archetypes.",
+    "keywords": "archetypes detailed company playbooks (new in phase 2) company archetypes useful cross-links google: amazon: meta: apple: netflix:",
+    "content": "# Company-Specific Notes\n\nThis folder helps you adapt the same fundamentals to different company archetypes.\n\nThe goal is not to stereotype companies; it’s to anticipate differences in:\n\n- what is “table stakes” vs “nice to have”,\n- how risk is evaluated (production safety vs growth vs compliance),\n- what an “excellent” signal looks like.\n\n## Archetypes\n\n- FAANG / Big Tech (high-signal loops; multiple rounds; strong rubric discipline)\n- Unicorns / startups (take-homes, practical builds, speed, ownership)\n- Enterprise software (stakeholder mgmt, correctness, long-lived systems, governance)\n- Automotive / industrial (safety, validation, long product cycles, regulated constraints)\n\n## Detailed Company Playbooks (New in Phase 2)\n\n**Deep-dive guides for top 5 FAANG companies with specific interview loops, leveling, and prep strategies:**\n\n- **Google:** [01-Google-Detailed.md](01-Google-Detailed.md) — Technical rigor, bias toward scale, 4-round loop\n- **Amazon:** [02-Amazon-Detailed.md](02-Amazon-Detailed.md) — Leadership principles, operational excellence, 4–5 round loop\n- **Meta:** [03-Meta-Detailed.md](03-Meta-Detailed.md) — Move fast, impact-driven, 4-round loop\n- **Apple:** [04-Apple-Detailed.md](04-Apple-Detailed.md) — Quality obsession, privacy-first, 4–5 round loop\n- **Netflix:** [05-Netflix-Detailed.md](05-Netflix-Detailed.md) — Autonomy, data-driven, streamlined 3–4 round loop\n\n## Company Archetypes\n\n- FAANG / Big Tech: [01-FAANG-BigTech.md](01-FAANG-BigTech.md)\n- Unicorns / startups: [02-Unicorns-Startups.md](02-Unicorns-Startups.md)\n- Enterprise software: [03-Enterprise-Software.md](03-Enterprise-Software.md)\n- Automotive / industrial: [04-Automotive-Industrial.md](04-Automotive-Industrial.md)\n- Geography + leveling: [05-Geography-Leveling.md](05-Geography-Leveling.md)\n\n## Useful cross-links\n\n- Company archetypes and preparation notes: [08-CAREER/05-Company-Archetypes-and-How-to-Prepare.md](../08-CAREER/05-Company-Archetypes-and-How-to-Prepare.md)\n\nAdd these w"
+  },
+  {
+    "id": 74,
+    "title": "FAANG / Big Tech Notes",
+    "section": "Company Notes",
+    "sectionSlug": "company-notes",
+    "href": "/docs/company-notes/01-FAANG-BigTech",
+    "description": "This archetype includes large, high-signal tech companies with standardized interview loops, calibrated rubrics, and strong emphasis on repeatable signals.",
+    "keywords": "what to expect what “strong” looks like prep emphasis what often fails candidates",
+    "content": "# FAANG / Big Tech Notes\n\nThis archetype includes large, high-signal tech companies with standardized interview loops, calibrated rubrics, and strong emphasis on repeatable signals.\n\n## What to expect\n\n- Multiple technical rounds (often 2× coding + 1× system design at mid+)\n- Behavioral round(s)\n- Debrief/committee-style decision making is common\n\n## What “strong” looks like\n\n- You operate with a rubric mindset (communication, problem solving, correctness, testing)\n- You can explain tradeoffs crisply\n- You show reliability/operational thinking when designing systems\n\nConcrete example of a common coding rubric (used broadly across big tech): https://www.techinterviewhandbook.org/coding-interview-rubrics/\n\n## Prep emphasis\n\n- Coding reps with strict discipline (not just solving): talk, test, optimize\n- System design: practice clarifying requirements and narrowing scope\n- Behavioral: 8–12 STAR stories with measurable outcomes\n\n## What often fails candidates\n\n- Silent coding / poor communication\n- No testing / brittle correctness\n- System design that skips requirements and constraints\n"
+  },
+  {
+    "id": 75,
+    "title": "Google: Detailed Interview Playbook",
+    "section": "Company Notes",
+    "sectionSlug": "company-notes",
+    "href": "/docs/company-notes/01-Google-Detailed",
+    "description": "Company Profile: Hiring L3–L6 (SWE), L4–L6 (SRE), L4–L5 (APM). Culture: technical rigor, bias toward action, data-driven.",
+    "keywords": "**loop structure** **recruiter screen** **talking points** **traps to avoid** **questions to ask** **phone screen (coding)** **problem style** **evaluation criteria** **strategy** **real interview tips**",
+    "content": "# Google: Detailed Interview Playbook\n\n**Company Profile:** Hiring L3–L6 (SWE), L4–L6 (SRE), L4–L5 (APM). Culture: technical rigor, bias toward action, data-driven.\n\n---\n\n## **Loop Structure**\n\n| Stage                     | Duration      | Evaluators                | What They Test                            |\n| ------------------------- | ------------- | ------------------------- | ----------------------------------------- |\n| **Recruiter Screen**      | 30 min        | Recruiter                 | Fit, communication, motivation            |\n| **Phone Screen (Coding)** | 60 min        | Senior SWE                | Medium-hard DSA; code quality             |\n| **Onsite (4 rounds)**     | 5 hours total | SWEs, TPM, hiring manager | Coding + design + behavioral + tech depth |\n\n---\n\n## **Recruiter Screen**\n\n**What Google cares about:** Can you do the job? Do you want to work here?\n\n### **Talking Points**\n\n- **Lead with impact:** \"I shipped X, which improved Y by Z%\"\n- **Show ownership:** \"I didn't just implement; I drove the decision\"\n- **Express genuine interest:** Mention a _specific_ product or initiative (not just \"Google is cool\")\n\n### **Traps to Avoid**\n\n- ❌ \"I want to work at Google because it's prestigious\" → ✅ \"I want to work on [product]\"\n- ❌ Generic answers → ✅ Specific examples with metrics\n- ❌ Lack of questions → ✅ Ask thoughtful questions about team, product roadmap\n\n### **Questions to Ask**\n\n- \"What's the biggest challenge your team is facing right now?\"\n- \"How does success look for this role in the first 90 days?\"\n- \"Can you tell me about the team's culture and how we work together?\"\n\n---\n\n## **Phone Screen (Coding)**\n\n**What Google cares about:** Can you solve hard problems cleanly?\n\n### **Problem Style**\n\n- Medium to medium-hard LeetCode (mostly Google-tagged problems)\n- Examples: [Binary Tree Max Path Sum](https://leetcode.com/problems/binary-tree-maximum-path-sum/), [Word Ladder II](https://leetcode.com/problems/word-ladder-ii/), [LRU Cache](https://"
+  },
+  {
+    "id": 76,
+    "title": "Amazon: Detailed Interview Playbook",
+    "section": "Company Notes",
+    "sectionSlug": "company-notes",
+    "href": "/docs/company-notes/02-Amazon-Detailed",
+    "description": "Company Profile: Hiring L4–L7 (SDE), L4–L6 (SRE/Principal). Culture: customer obsession, ownership, frugality, bias for action. Leadership Principles are central to every interview.",
+    "keywords": "**loop structure** **phone screen (coding)** **problem style** **evaluation (1–5 scale)** **strategy** **real interview tips** **onsite (4–5 rounds)** **round 1: coding (60–70 min)** **round 2: system design (60–70 min)** **round 3: leadership principles + behavioral (60 min)**",
+    "content": "# Amazon: Detailed Interview Playbook\n\n**Company Profile:** Hiring L4–L7 (SDE), L4–L6 (SRE/Principal). Culture: customer obsession, ownership, frugality, bias for action. **Leadership Principles** are central to every interview.\n\n---\n\n## **Loop Structure**\n\n| Stage                     | Duration  | Evaluators                       | What They Test                                    |\n| ------------------------- | --------- | -------------------------------- | ------------------------------------------------- |\n| **Phone Screen (Coding)** | 60 min    | SDE                              | Hard DSA; problem-solving                         |\n| **Onsite (4–5 rounds)**   | 5–6 hours | SDEs, bar raiser, hiring manager | Coding + design + behavioral (heavy) + leadership |\n\n_Note: Amazon's bar raiser round is critical; they have high standards._\n\n---\n\n## **Phone Screen (Coding)**\n\n**What Amazon cares about:** Can you solve hard problems cleanly and quickly?\n\n### **Problem Style**\n\n- Hard LeetCode (Amazon-tagged)\n- Examples: [Number of Islands II](https://leetcode.com/problems/number-of-islands-ii/), [LRU Cache](https://leetcode.com/problems/lru-cache/), [Word Ladder](https://leetcode.com/problems/word-ladder/), [Merge K Sorted Lists](https://leetcode.com/problems/merge-k-sorted-lists/)\n\n### **Evaluation (1–5 scale)**\n\n- **5:** Optimal solution on first try; clean code; great communication\n- **4:** Correct solution; minor inefficiency; good communication\n- **3:** Correct solution with hints; acceptable communication\n- **<3:** Wrong approach or incomplete solution\n\n### **Strategy**\n\n1. **Clarify (2 min):** Ask constraints, edge cases. Amazon likes precision.\n2. **Discuss approach (5 min):** Explain before coding.\n3. **Code cleanly (20–25 min):** Readable; follows style guidelines.\n4. **Test thoroughly (10 min):** Edge cases; example walkthroughs.\n5. **Optimize (5 min):** Space/time analysis; discuss alternative approaches.\n\n### **Real Interview Tips**\n\n- Amazon interviewers exp"
+  },
+  {
+    "id": 77,
+    "title": "Unicorns / Startups Notes",
+    "section": "Company Notes",
+    "sectionSlug": "company-notes",
+    "href": "/docs/company-notes/02-Unicorns-Startups",
+    "description": "This archetype includes fast-growing startups and late-stage unicorns.",
+    "keywords": "what to expect what “strong” looks like prep emphasis common failure modes",
+    "content": "# Unicorns / Startups Notes\n\nThis archetype includes fast-growing startups and late-stage unicorns.\n\n## What to expect\n\n- Higher variance in loop structure\n- Practical rounds: take-homes, pair programming, architecture discussions\n- More weight on ownership, speed, and ambiguity handling\n\n## What “strong” looks like\n\n- You can ship end-to-end without perfect inputs\n- You balance speed with correctness and reliability\n- You have opinions and can defend tradeoffs\n\n## Prep emphasis\n\n- Build 1–2 portfolio projects that resemble real product work\n- Practice scoping and prioritization (“what would you do in week 1?”)\n- Be ready to discuss tradeoffs: iteration speed vs long-term maintainability\n\n## Common failure modes\n\n- Over-theorizing; not converging to a plan\n- Weak debugging and operational readiness\n- No evidence you can ship\n"
+  },
+  {
+    "id": 78,
+    "title": "Enterprise Software Notes",
+    "section": "Company Notes",
+    "sectionSlug": "company-notes",
+    "href": "/docs/company-notes/03-Enterprise-Software",
+    "description": "This archetype includes large enterprise vendors and internal platform teams.",
+    "keywords": "what to expect what “strong” looks like prep emphasis reference mindset",
+    "content": "# Enterprise Software Notes\n\nThis archetype includes large enterprise vendors and internal platform teams.\n\n## What to expect\n\n- Emphasis on correctness, maintainability, and stakeholder alignment\n- Security, compliance, and governance show up more frequently\n- Longer hiring cycles; more process\n\n## What “strong” looks like\n\n- You reason about tradeoffs across reliability/security/cost\n- You can operate in constraints (governance, approvals, existing systems)\n- You communicate clearly with non-engineering stakeholders\n\n## Prep emphasis\n\n- System design with non-functional requirements (auditability, RBAC, tenancy)\n- Behavioral stories that show cross-team collaboration\n\n## Reference mindset\n\nCloud adoption standards and Well-Architected principles are common in enterprise cloud work.\n\n- Azure architecture fundamentals: https://learn.microsoft.com/en-us/azure/architecture/guide/\n"
+  },
+  {
+    "id": 79,
+    "title": "Meta: Detailed Interview Playbook",
+    "section": "Company Notes",
+    "sectionSlug": "company-notes",
+    "href": "/docs/company-notes/03-Meta-Detailed",
+    "description": "Company Profile: Hiring E3–E6 (SWE), E4–E5 (Production Engineer). Culture: move fast, break things, technical excellence, impact.",
+    "keywords": "**loop structure** **phone screen (coding)** **problem style** **evaluation criteria (1–5 scale)** **strategy** **real interview tips** **onsite (4 rounds)** **round 1: coding (60 min)** **round 2: system design (60 min)** **round 3: behavioral (45 min)**",
+    "content": "# Meta: Detailed Interview Playbook\n\n**Company Profile:** Hiring E3–E6 (SWE), E4–E5 (Production Engineer). Culture: move fast, break things, technical excellence, impact.\n\n---\n\n## **Loop Structure**\n\n| Stage                     | Duration      | Evaluators                             | What They Test                               |\n| ------------------------- | ------------- | -------------------------------------- | -------------------------------------------- |\n| **Recruiter Screen**      | 30 min        | Recruiter                              | Fit, motivation, background                  |\n| **Phone Screen (Coding)** | 60 min        | SWE                                    | Hard DSA + communication                     |\n| **Onsite (4 rounds)**     | 5 hours total | SWEs, hiring manager, cross-functional | Coding + design + behavioral + product sense |\n\n---\n\n## **Phone Screen (Coding)**\n\n**What Meta cares about:** Can you solve hard problems fast and communicate well?\n\n### **Problem Style**\n\n- Hard LeetCode (Meta-tagged)\n- Examples: [Number of Islands](https://leetcode.com/problems/number-of-islands/), [Median of Two Sorted Arrays](https://leetcode.com/problems/median-of-two-sorted-arrays/), [Serialize/Deserialize BST](https://leetcode.com/problems/serialize-and-deserialize-bst/)\n\n### **Evaluation Criteria (1–5 scale)**\n\n- **5:** Optimal solution quickly; excellent communication; handles edge cases\n- **4:** Correct solution; minor inefficiency; good communication\n- **3:** Correct with hints; acceptable communication\n- **<3:** Incorrect or incomplete\n\n### **Strategy**\n\n1. **Clarify (1–2 min):** Edge cases, constraints.\n2. **Think aloud (3–5 min):** Explain your approach before coding.\n3. **Code (15–20 min):** Fast; clean; readable.\n4. **Test (5 min):** Walkthroughs; edge cases.\n5. **Optimize (5 min):** Discuss alternatives.\n\n### **Real Interview Tips**\n\n- Meta's bar is high for coding; they expect you to solve hard problems correctly.\n- Communication matters; ex"
+  },
+  {
+    "id": 80,
+    "title": "Apple: Detailed Interview Playbook",
+    "section": "Company Notes",
+    "sectionSlug": "company-notes",
+    "href": "/docs/company-notes/04-Apple-Detailed",
+    "description": "Company Profile: Hiring ICT2–ICT5 (SWE), ICT4+ (senior). Culture: excellence, privacy-first, attention to detail, product quality.",
+    "keywords": "**loop structure** **phone screen (coding)** **problem style** **evaluation criteria (1–5 scale)** **strategy** **real interview tips** **onsite (4–5 rounds)** **round 1: coding (60 min)** **round 2: coding or design (60 min)** **round 3: system design (60 min) [if not round 2]**",
+    "content": "# Apple: Detailed Interview Playbook\n\n**Company Profile:** Hiring ICT2–ICT5 (SWE), ICT4+ (senior). Culture: excellence, privacy-first, attention to detail, product quality.\n\n---\n\n## **Loop Structure**\n\n| Stage                     | Duration  | Evaluators                                         | What They Test                                 |\n| ------------------------- | --------- | -------------------------------------------------- | ---------------------------------------------- |\n| **Recruiter Screen**      | 30 min    | Recruiter                                          | Fit, motivation, background                    |\n| **Phone Screen (Coding)** | 60 min    | SWE                                                | Hard DSA; problem-solving under pressure       |\n| **Onsite (4–5 rounds)**   | 5–6 hours | SWEs, hiring manager, potentially cross-functional | Coding + design + behavioral + technical depth |\n\n_Note: Apple's process is more interview-heavy than some FAANG companies; you'll do ~2 coding rounds._\n\n---\n\n## **Phone Screen (Coding)**\n\n**What Apple cares about:** Can you solve hard problems correctly?\n\n### **Problem Style**\n\n- Hard LeetCode (Apple-tagged)\n- Examples: [LRU Cache](https://leetcode.com/problems/lru-cache/), [Number of Islands](https://leetcode.com/problems/number-of-islands/), [Binary Tree Max Path Sum](https://leetcode.com/problems/binary-tree-maximum-path-sum/), [Trapping Rain Water](https://leetcode.com/problems/trapping-rain-water/)\n\n### **Evaluation Criteria (1–5 scale)**\n\n- **5:** Optimal solution on first try; clean code; excellent communication\n- **4:** Correct solution; minor optimization; good communication\n- **3:** Correct with hints; acceptable communication\n- **<3:** Incorrect or incomplete\n\n### **Strategy**\n\n1. **Clarify (2 min):** Constraints, edge cases. Apple likes precision.\n2. **Think aloud (5 min):** Explain your approach; don't jump to code.\n3. **Code (20–25 min):** Clean, readable, correct.\n4. **Test (8 min):** Walkthrou"
+  },
+  {
+    "id": 81,
+    "title": "Automotive / Industrial Notes",
+    "section": "Company Notes",
+    "sectionSlug": "company-notes",
+    "href": "/docs/company-notes/04-Automotive-Industrial",
+    "description": "This archetype includes OEMs, Tier-1 suppliers, industrial automation, and safety/regulatory heavy environments.",
+    "keywords": "what to expect what “strong” looks like prep emphasis common failure modes related resources",
+    "content": "# Automotive / Industrial Notes\n\nThis archetype includes OEMs, Tier-1 suppliers, industrial automation, and safety/regulatory heavy environments.\n\n## What to expect\n\n- Longer product cycles and more cross-functional constraints\n- Strong emphasis on validation, reliability, and safety mindset\n- Hybrid stacks: embedded + cloud + data pipelines\n\n## What “strong” looks like\n\n- You can explain how you validate correctness (tests, fault injection, monitoring)\n- You can work within strict constraints (process, compliance, supply chain)\n- You think in failure modes and mitigations\n\n## Prep emphasis\n\n- Show evidence you can build _robust_ systems (not just prototypes)\n- Prepare stories about debugging hard issues and building safety rails\n- For data/ML roles: highlight monitoring and data quality\n\n## Common failure modes\n\n- Treating reliability as an afterthought\n- Vague answers about validation and incident handling\n\n## Related resources\n\n- Incident response: [07-INFRA-DEVOPS/05-Incident-Response.md](../07-INFRA-DEVOPS/05-Incident-Response.md)\n- Observability: [07-INFRA-DEVOPS/06-Observability.md](../07-INFRA-DEVOPS/06-Observability.md)\n"
+  },
+  {
+    "id": 82,
+    "title": "Geography + Leveling Notes",
+    "section": "Company Notes",
+    "sectionSlug": "company-notes",
+    "href": "/docs/company-notes/05-Geography-Leveling",
+    "description": "Compensation structures (base vs equity split)\nVisa sponsorship constraints\nHiring timelines and headcount planning\nRemote/hybrid norms",
+    "keywords": "geography leveling cross-links",
+    "content": "# Geography + Leveling Notes\n\n## Geography\n\nDifferences show up in:\n\n- Compensation structures (base vs equity split)\n- Visa sponsorship constraints\n- Hiring timelines and headcount planning\n- Remote/hybrid norms\n\n## Leveling\n\nMost rejections in mid/senior loops are “level risk” rejections:\n\n- Scope is too small for the target level\n- System design lacks tradeoffs or operational thinking\n- Behavioral lacks ownership/impact\n\nIf you’re repeatedly failing at the same stage, consider whether you should:\n\n- downlevel for a faster entry point,\n- change archetype (enterprise vs FAANG), or\n- take 6–8 weeks to close one specific gap.\n\n## Cross-links\n\n- Handling rejection and iteration: [08-CAREER/06-Handling-Rejection-and-Iteration.md](../08-CAREER/06-Handling-Rejection-and-Iteration.md)\n"
+  },
+  {
+    "id": 83,
+    "title": "Netflix: Detailed Interview Playbook",
+    "section": "Company Notes",
+    "sectionSlug": "company-notes",
+    "href": "/docs/company-notes/05-Netflix-Detailed",
+    "description": "Company Profile: Hiring Software Engineer levels vary; emphasis on L4–L6 equivalent. Culture: data-driven, autonomy, ownership, high performance.",
+    "keywords": "**loop structure** **phone screen (coding)** **problem style** **evaluation criteria (1–5 scale)** **strategy** **real interview tips** **onsite (3–4 rounds)** **round 1: coding (60 min)** **round 2: system design (60 min)** **round 3: behavioral (45 min)**",
+    "content": "# Netflix: Detailed Interview Playbook\n\n**Company Profile:** Hiring Software Engineer levels vary; emphasis on L4–L6 equivalent. Culture: data-driven, autonomy, ownership, high performance.\n\n---\n\n## **Loop Structure**\n\n| Stage                     | Duration  | Evaluators                                     | What They Test                                  |\n| ------------------------- | --------- | ---------------------------------------------- | ----------------------------------------------- |\n| **Recruiter Screen**      | 30 min    | Recruiter                                      | Fit, motivation, background                     |\n| **Phone Screen (Coding)** | 60 min    | SWE                                            | Hard DSA + communication                        |\n| **Onsite (3–4 rounds)**   | 4–5 hours | SWEs, hiring manager, potentially data/product | Coding + design + behavioral + product thinking |\n\n_Note: Netflix's process is faster and more streamlined than Google/Amazon._\n\n---\n\n## **Phone Screen (Coding)**\n\n**What Netflix cares about:** Can you solve hard problems quickly?\n\n### **Problem Style**\n\n- Hard LeetCode (varied; no company-specific tag, but frequently algorithmic)\n- Examples: [LRU Cache](https://leetcode.com/problems/lru-cache/), [Number of Islands](https://leetcode.com/problems/number-of-islands/), [Serialize/Deserialize Binary Tree](https://leetcode.com/problems/serialize-and-deserialize-binary-tree/), [Best Time to Buy and Sell Stock IV](https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iv/)\n\n### **Evaluation Criteria (1–5 scale)**\n\n- **5:** Optimal solution quickly; excellent communication; handles all edge cases\n- **4:** Correct solution; minor inefficiency; good communication\n- **3:** Correct with hints; acceptable communication\n- **<3:** Incorrect or incomplete\n\n### **Strategy**\n\n1. **Clarify (1–2 min):** Constraints, edge cases.\n2. **Think aloud (3–5 min):** Explain your approach before coding.\n3. **Code (15–20 min):** Fas"
+  }
+]

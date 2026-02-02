@@ -1,0 +1,2365 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+// SEO Configuration for Homepage
+const pageTitle = "FAANG Job Prep 2026-2027";
+const pageDescription = "Free complete interview roadmap for Google, Amazon, Meta, Apple, Netflix & BigTech. Master DSA, System Design, Behavioral interviews with 85+ detailed guides, LeetCode patterns, and company-specific preparation strategies.";
+const pageKeywords = "FAANG interview prep 2026, FAANG interview prep 2027, Google interview questions 2026, Amazon Leadership Principles interview, Meta coding interview, Apple system design, Netflix culture interview, software engineer interview preparation, LeetCode patterns, system design interview questions, behavioral interview STAR method, tech job interview tips, BigTech hiring 2026, coding interview preparation free, DSA for interviews, data structures algorithms interview";
+
+// Nerd Font Icons
+const icons = {
+  rocket: "",
+  book: "",
+  target: "",
+  briefcase: "",
+  building: "",
+  brain: "",
+  database: "",
+  server: "",
+  chart: "",
+  code: "",
+  terminal: "",
+  calendar: "",
+  dollar: "",
+  lightbulb: "",
+  arrow: "",
+  star: "",
+  fire: "",
+  git: "",
+  check: "",
+  folder: "",
+};
+
+// Companies you can prepare for with this roadmap
+const companies = [
+  { name: "Google", icon: "" },
+  { name: "Meta", icon: "" },
+  { name: "Amazon", icon: "" },
+  { name: "Apple", icon: "" },
+  { name: "Microsoft", icon: "" },
+  { name: "Netflix", icon: "" },
+  { name: "Stripe", icon: "" },
+  { name: "Uber", icon: "" },
+  { name: "Airbnb", icon: "" },
+  { name: "LinkedIn", icon: "" },
+  { name: "Twitter/X", icon: "" },
+  { name: "Spotify", icon: "" },
+  { name: "Salesforce", icon: "" },
+  { name: "Adobe", icon: "" },
+  { name: "Oracle", icon: "" },
+  { name: "Nvidia", icon: "" },
+  { name: "Intel", icon: "" },
+  { name: "Databricks", icon: "" },
+  { name: "Snowflake", icon: "" },
+  { name: "Coinbase", icon: "" },
+];
+
+const sections = [
+  {
+    icon: icons.rocket,
+    title: "Start Here",
+    description: "Get oriented with the roadmap",
+    href: "/docs/start-here/00-README",
+    items: ["README", "Targeting Your Lane", "Interview Loop"],
+  },
+  {
+    icon: icons.book,
+    title: "Foundations",
+    description: "Core technical knowledge",
+    href: "/docs/foundations/00-Foundations-Index",
+    items: ["DSA & Coding", "Computer Systems", "Databases", "Cloud"],
+  },
+  {
+    icon: icons.target,
+    title: "Role Roadmaps",
+    description: "Career path specific guides",
+    href: "/docs/role-roadmaps/00-Role-Chooser",
+    items: ["SWE", "Backend", "ML Engineer", "Data Engineer"],
+  },
+  {
+    icon: icons.briefcase,
+    title: "Interview Playbooks",
+    description: "Master each interview type",
+    href: "/docs/interviews/00-Interview-Index",
+    items: ["Coding", "System Design", "Behavioral", "SQL"],
+  },
+  {
+    icon: icons.building,
+    title: "System Design",
+    description: "Templates and common problems",
+    href: "/docs/system-design/00-System-Design-Template",
+    items: ["Design Template", "Capacity Planning", "Patterns"],
+  },
+  {
+    icon: icons.brain,
+    title: "ML & MLOps",
+    description: "Machine learning interview prep",
+    href: "/docs/ml-mlops/00-ML-Index",
+    items: ["ML Fundamentals", "Feature Engineering", "LLMs"],
+  },
+  {
+    icon: icons.database,
+    title: "Data",
+    description: "Data engineering essentials",
+    href: "/docs/data/00-Data-Index",
+    items: ["SQL Patterns", "Data Modeling", "Pipelines"],
+  },
+  {
+    icon: icons.server,
+    title: "Infra & DevOps",
+    description: "Infrastructure knowledge",
+    href: "/docs/infra-devops/00-Infra-Index",
+    items: ["Docker", "Kubernetes", "CI/CD", "Observability"],
+  },
+  {
+    icon: icons.chart,
+    title: "Career",
+    description: "Job search and negotiation",
+    href: "/docs/career/00-Career-Index",
+    items: ["Resume", "Networking", "Negotiation"],
+  },
+];
+
+const quickLinks = [
+  {
+    icon: icons.code,
+    name: "DSA & Coding",
+    href: "/docs/foundations/01-DSA-and-Coding",
+  },
+  {
+    icon: icons.terminal,
+    name: "Coding Interview",
+    href: "/docs/interviews/02-Coding-Interview-Playbook",
+  },
+  {
+    icon: icons.building,
+    name: "System Design",
+    href: "/docs/interviews/03-System-Design-Interview-Playbook",
+  },
+  {
+    icon: icons.briefcase,
+    name: "Behavioral",
+    href: "/docs/interviews/06-Behavioral-Interview-Playbook",
+  },
+  {
+    icon: icons.calendar,
+    name: "Prep Calendar",
+    href: "/docs/career/03-Interview-Prep-Calendar",
+  },
+  {
+    icon: icons.dollar,
+    name: "Negotiation",
+    href: "/docs/career/04-Offer-Negotiation",
+  },
+];
+
+// Study Plans - Structured timeline based on experience level
+const studyPlans = [
+  {
+    icon: "",
+    level: "Junior",
+    experience: "0-3 years",
+    duration: "3 months",
+    hoursPerWeek: "20 hrs/week",
+    color: "#a6e3a1",
+    highlights: [
+      "100+ LeetCode problems",
+      "5 STAR behavioral stories",
+      "Basic system design",
+      "4-5 company applications",
+    ],
+    phases: [
+      { name: "Foundation", weeks: "1-4", focus: "DSA + fundamentals" },
+      { name: "Practice", weeks: "5-8", focus: "Mock interviews" },
+      { name: "Refinement", weeks: "9-12", focus: "Polish + targeting" },
+    ],
+    href: "/study-plans/junior",
+  },
+  {
+    icon: "",
+    level: "Mid-Level",
+    experience: "3-7 years",
+    duration: "6 months",
+    hoursPerWeek: "15 hrs/week",
+    color: "#89b4fa",
+    highlights: [
+      "150+ LeetCode problems",
+      "10 behavioral stories",
+      "Full system design prep",
+      "6-8 company targets",
+    ],
+    phases: [
+      { name: "Review", weeks: "1-4", focus: "Refresh DSA" },
+      { name: "Deepen", weeks: "5-12", focus: "System design mastery" },
+      { name: "Execute", weeks: "13-24", focus: "Applications + loops" },
+    ],
+    href: "/study-plans/mid",
+  },
+  {
+    icon: "",
+    level: "Senior",
+    experience: "7+ years",
+    duration: "4 months",
+    hoursPerWeek: "12 hrs/week",
+    color: "#cba6f7",
+    highlights: [
+      "Focus on system design",
+      "Leadership scenarios",
+      "Staff-level behavioral",
+      "Targeted applications",
+    ],
+    phases: [
+      { name: "Assess", weeks: "1-2", focus: "Gap analysis" },
+      { name: "Focus", weeks: "3-12", focus: "Deep system design" },
+      { name: "Execute", weeks: "13-16", focus: "Staff interviews" },
+    ],
+    href: "/study-plans/senior",
+  },
+];
+
+// Company-specific playbooks
+const companyPlaybooks = [
+  {
+    company: "Google",
+    icon: "",
+    color: "#4285F4",
+    levels: "L3-L6",
+    loops: 5,
+    focus: ["Googleyness", "Technical rigor", "Data-driven decisions"],
+    keyTip: "Focus on clean code that would pass code review",
+  },
+  {
+    company: "Amazon",
+    icon: "",
+    color: "#FF9900",
+    levels: "L4-L7",
+    loops: 5,
+    focus: ["14 Leadership Principles", "Customer obsession", "Ownership"],
+    keyTip: "Every answer should tie to a Leadership Principle",
+  },
+  {
+    company: "Meta",
+    icon: "",
+    color: "#0668E1",
+    levels: "E3-E6",
+    loops: 4,
+    focus: ["Move fast", "Impact at scale", "Open collaboration"],
+    keyTip: "Emphasize shipping velocity and measurable impact",
+  },
+  {
+    company: "Apple",
+    icon: "",
+    color: "#555555",
+    levels: "ICT2-ICT5",
+    loops: 6,
+    focus: ["Attention to detail", "Design excellence", "Privacy"],
+    keyTip: "Show passion for user experience and product quality",
+  },
+  {
+    company: "Netflix",
+    icon: "",
+    color: "#E50914",
+    levels: "Senior+",
+    loops: 4,
+    focus: [
+      "Freedom & responsibility",
+      "Context not control",
+      "High performance",
+    ],
+    keyTip: "Demonstrate senior judgment and autonomous decision-making",
+  },
+  {
+    company: "Microsoft",
+    icon: "",
+    color: "#00A4EF",
+    levels: "59-67",
+    loops: 5,
+    focus: ["Growth mindset", "Inclusive culture", "Customer success"],
+    keyTip: "Show continuous learning and cross-team collaboration",
+  },
+];
+
+// DSA Patterns - Key algorithms to master
+const dsaPatterns = [
+  { name: "Sliding Window", problems: 25, difficulty: "Medium", icon: "" },
+  { name: "Two Pointers", problems: 30, difficulty: "Easy-Medium", icon: "" },
+  { name: "Binary Search", problems: 20, difficulty: "Medium", icon: "" },
+  { name: "DFS/BFS", problems: 35, difficulty: "Medium-Hard", icon: "" },
+  { name: "Dynamic Programming", problems: 40, difficulty: "Hard", icon: "" },
+  { name: "Backtracking", problems: 15, difficulty: "Medium-Hard", icon: "" },
+  { name: "Heap/Priority Queue", problems: 15, difficulty: "Medium", icon: "" },
+  { name: "Graphs", problems: 25, difficulty: "Medium-Hard", icon: "" },
+];
+
+// Practice questions by company - with FULL details
+const practiceQuestions = [
+  {
+    company: "Google",
+    icon: "",
+    color: "#4285F4",
+    interviewStyle: "Heavy on algorithms, clean code, Googleyness",
+    rounds: "Phone + 4-5 onsite (2 coding, 1-2 system design, 1 behavioral)",
+    coding: [
+      {
+        name: "Two Sum",
+        difficulty: "Easy",
+        topic: "Hash Map",
+        link: "https://leetcode.com/problems/two-sum/",
+        hint: "Use HashMap for O(n)",
+        timeComplexity: "O(n)",
+        spaceComplexity: "O(n)",
+        pattern: "Hash Map Lookup",
+      },
+      {
+        name: "LRU Cache",
+        difficulty: "Medium",
+        topic: "Design",
+        link: "https://leetcode.com/problems/lru-cache/",
+        hint: "OrderedDict or doubly-linked list + HashMap",
+        timeComplexity: "O(1) get/put",
+        spaceComplexity: "O(capacity)",
+        pattern: "Data Structure Design",
+      },
+      {
+        name: "Word Ladder",
+        difficulty: "Hard",
+        topic: "BFS",
+        link: "https://leetcode.com/problems/word-ladder/",
+        hint: "BFS level-by-level, transform one char at a time",
+        timeComplexity: "O(M² × N)",
+        spaceComplexity: "O(M × N)",
+        pattern: "Shortest Path BFS",
+      },
+      {
+        name: "Median of Two Sorted Arrays",
+        difficulty: "Hard",
+        topic: "Binary Search",
+        link: "https://leetcode.com/problems/median-of-two-sorted-arrays/",
+        hint: "Binary search on smaller array to find partition",
+        timeComplexity: "O(log(min(m,n)))",
+        spaceComplexity: "O(1)",
+        pattern: "Binary Search on Answer",
+      },
+      {
+        name: "Serialize/Deserialize BT",
+        difficulty: "Hard",
+        topic: "Tree",
+        link: "https://leetcode.com/problems/serialize-and-deserialize-binary-tree/",
+        hint: "Preorder DFS with null markers, use queue for deserialize",
+        timeComplexity: "O(n)",
+        spaceComplexity: "O(n)",
+        pattern: "Tree Traversal",
+      },
+    ],
+    systemDesign: [
+      {
+        name: "Design Google Search",
+        focus: "Web crawling, indexing, ranking (PageRank)",
+        keyComponents: ["Crawler", "Inverted Index", "Query Parser", "Ranking Service"],
+        scaleConsiderations: "Billions of pages, sub-second latency",
+        commonFollowUps: ["How to handle spam?", "Personalization?", "Real-time indexing?"],
+      },
+      {
+        name: "Design YouTube",
+        focus: "Video upload, transcoding, streaming, recommendations",
+        keyComponents: ["Upload Service", "Transcoder", "CDN", "Metadata DB", "Recommendation Engine"],
+        scaleConsiderations: "500 hours uploaded/min, 1B daily views",
+        commonFollowUps: ["Adaptive bitrate?", "Live streaming?", "Copyright detection?"],
+      },
+      {
+        name: "Design Google Maps",
+        focus: "Geospatial data, routing algorithms, real-time traffic",
+        keyComponents: ["Tile Server", "Routing Engine", "Traffic Service", "Places API"],
+        scaleConsiderations: "Petabytes of map data, millions of routes/day",
+        commonFollowUps: ["ETA accuracy?", "Offline mode?", "3D buildings?"],
+      },
+      {
+        name: "Design Google Drive",
+        focus: "File storage, sync, collaboration, versioning",
+        keyComponents: ["Block Storage", "Metadata Service", "Sync Engine", "Collaboration Server"],
+        scaleConsiderations: "15GB free per user, real-time sync",
+        commonFollowUps: ["Conflict resolution?", "Deduplication?", "Sharing permissions?"],
+      },
+    ],
+    behavioral: [
+      {
+        question: "Tell me about a time you failed",
+        whatTheyTest: "Self-awareness, learning from mistakes, humility",
+        starTip: "Focus on what you LEARNED, not excuses. Show growth.",
+        exampleStructure: "Situation → What went wrong → Your role → Lessons learned → How you applied them",
+      },
+      {
+        question: "How do you handle ambiguity?",
+        whatTheyTest: "Problem-solving approach, comfort with uncertainty",
+        starTip: "Show structured thinking even when requirements are unclear",
+        exampleStructure: "Ambiguous situation → How you clarified → Actions taken → Positive outcome",
+      },
+      {
+        question: "Describe a complex project you led",
+        whatTheyTest: "Technical leadership, communication, impact",
+        starTip: "Quantify impact (users, latency, revenue). Show YOUR specific contribution.",
+        exampleStructure: "Project scope → Technical challenges → Your decisions → Measurable results",
+      },
+    ],
+  },
+  {
+    company: "Meta",
+    icon: "",
+    color: "#0668E1",
+    interviewStyle: "Fast-paced coding, impact-focused, move fast culture",
+    rounds: "Phone + 4 onsite (2 coding, 1 system design, 1 behavioral)",
+    coding: [
+      {
+        name: "Valid Palindrome II",
+        difficulty: "Easy",
+        topic: "Two Pointers",
+        link: "https://leetcode.com/problems/valid-palindrome-ii/",
+        hint: "Try removing left OR right char when mismatch found",
+        timeComplexity: "O(n)",
+        spaceComplexity: "O(1)",
+        pattern: "Two Pointers",
+      },
+      {
+        name: "Binary Tree Vertical Order",
+        difficulty: "Medium",
+        topic: "BFS",
+        link: "https://leetcode.com/problems/binary-tree-vertical-order-traversal/",
+        hint: "BFS with (node, column) pairs, use HashMap for columns",
+        timeComplexity: "O(n)",
+        spaceComplexity: "O(n)",
+        pattern: "BFS + HashMap",
+      },
+      {
+        name: "Merge K Sorted Lists",
+        difficulty: "Hard",
+        topic: "Heap",
+        link: "https://leetcode.com/problems/merge-k-sorted-lists/",
+        hint: "Min-heap with k nodes, always pop smallest",
+        timeComplexity: "O(N log k)",
+        spaceComplexity: "O(k)",
+        pattern: "K-way Merge",
+      },
+      {
+        name: "Regular Expression Matching",
+        difficulty: "Hard",
+        topic: "DP",
+        link: "https://leetcode.com/problems/regular-expression-matching/",
+        hint: "2D DP: dp[i][j] = s[0..i] matches p[0..j]. Handle * = 0 or more",
+        timeComplexity: "O(m × n)",
+        spaceComplexity: "O(m × n)",
+        pattern: "2D Dynamic Programming",
+      },
+      {
+        name: "Subarray Sum Equals K",
+        difficulty: "Medium",
+        topic: "Prefix Sum",
+        link: "https://leetcode.com/problems/subarray-sum-equals-k/",
+        hint: "Prefix sum + HashMap: count[prefix - k] gives valid subarrays",
+        timeComplexity: "O(n)",
+        spaceComplexity: "O(n)",
+        pattern: "Prefix Sum + HashMap",
+      },
+    ],
+    systemDesign: [
+      {
+        name: "Design Facebook News Feed",
+        focus: "Feed ranking, fanout on write vs read, real-time updates",
+        keyComponents: ["Feed Service", "Ranking Algorithm", "Cache Layer", "Notification Service"],
+        scaleConsiderations: "2B users, 1000+ friends avg, real-time",
+        commonFollowUps: ["Celebrity problem?", "Feed ranking ML?", "Stories vs Feed?"],
+      },
+      {
+        name: "Design Instagram",
+        focus: "Photo upload, filters, feed, stories, explore",
+        keyComponents: ["Media Service", "CDN", "Feed Generator", "Search/Explore"],
+        scaleConsiderations: "500M daily users, 100M photos/day",
+        commonFollowUps: ["Image processing pipeline?", "Hashtag search?", "Reels?"],
+      },
+      {
+        name: "Design Messenger",
+        focus: "1:1 and group chat, read receipts, presence",
+        keyComponents: ["Chat Service", "WebSocket Gateway", "Message Queue", "Presence Service"],
+        scaleConsiderations: "Billions of messages/day, sub-100ms delivery",
+        commonFollowUps: ["End-to-end encryption?", "Offline messages?", "Group chat scaling?"],
+      },
+      {
+        name: "Design WhatsApp",
+        focus: "E2E encryption, offline support, media sharing",
+        keyComponents: ["Message Service", "Encryption Service", "Media Storage", "Sync Service"],
+        scaleConsiderations: "100B messages/day, E2E encrypted",
+        commonFollowUps: ["Key exchange?", "Multi-device sync?", "Status/Stories?"],
+      },
+    ],
+    behavioral: [
+      {
+        question: "Why Meta?",
+        whatTheyTest: "Genuine interest, cultural fit, product knowledge",
+        starTip: "Be specific about products you love. Mention 'move fast' culture genuinely.",
+        exampleStructure: "Specific product passion → How you align with culture → What you'd contribute",
+      },
+      {
+        question: "Move fast and break things - examples?",
+        whatTheyTest: "Bias for action, learning from mistakes, velocity",
+        starTip: "Show you shipped fast but also learned from any breakage",
+        exampleStructure: "Urgent situation → Fast decision → Result (good or learned) → Iteration",
+      },
+      {
+        question: "How do you prioritize competing projects?",
+        whatTheyTest: "Impact-driven thinking, stakeholder management",
+        starTip: "Use frameworks: impact vs effort, urgency vs importance",
+        exampleStructure: "Multiple priorities → Framework used → How you decided → Outcome",
+      },
+    ],
+  },
+  {
+    company: "Amazon",
+    icon: "",
+    color: "#FF9900",
+    interviewStyle: "Leadership Principles driven, STAR format mandatory, customer focus",
+    rounds: "Phone + 4-5 onsite (2 coding, 1-2 system design, 1 bar raiser)",
+    coding: [
+      {
+        name: "Number of Islands",
+        difficulty: "Medium",
+        topic: "DFS/BFS",
+        link: "https://leetcode.com/problems/number-of-islands/",
+        hint: "DFS/BFS from each '1', mark visited, count components",
+        timeComplexity: "O(m × n)",
+        spaceComplexity: "O(m × n) recursion",
+        pattern: "Graph Traversal",
+      },
+      {
+        name: "LRU Cache",
+        difficulty: "Medium",
+        topic: "Design",
+        link: "https://leetcode.com/problems/lru-cache/",
+        hint: "Doubly-linked list (order) + HashMap (O(1) access)",
+        timeComplexity: "O(1) get/put",
+        spaceComplexity: "O(capacity)",
+        pattern: "Data Structure Design",
+      },
+      {
+        name: "Word Search II",
+        difficulty: "Hard",
+        topic: "Trie + DFS",
+        link: "https://leetcode.com/problems/word-search-ii/",
+        hint: "Build Trie from words, DFS on grid with Trie traversal",
+        timeComplexity: "O(m × n × 4^L)",
+        spaceComplexity: "O(total chars)",
+        pattern: "Trie + Backtracking",
+      },
+      {
+        name: "Meeting Rooms II",
+        difficulty: "Medium",
+        topic: "Intervals",
+        link: "https://leetcode.com/problems/meeting-rooms-ii/",
+        hint: "Min-heap of end times, or separate sort start/end arrays",
+        timeComplexity: "O(n log n)",
+        spaceComplexity: "O(n)",
+        pattern: "Interval Scheduling",
+      },
+      {
+        name: "Trapping Rain Water",
+        difficulty: "Hard",
+        topic: "Two Pointers",
+        link: "https://leetcode.com/problems/trapping-rain-water/",
+        hint: "Two pointers from ends, track leftMax/rightMax",
+        timeComplexity: "O(n)",
+        spaceComplexity: "O(1)",
+        pattern: "Two Pointers",
+      },
+    ],
+    systemDesign: [
+      {
+        name: "Design Amazon.com",
+        focus: "Product catalog, search, cart, checkout, inventory",
+        keyComponents: ["Product Service", "Search (Elasticsearch)", "Cart Service", "Order Service", "Inventory"],
+        scaleConsiderations: "350M products, Black Friday scale",
+        commonFollowUps: ["Inventory consistency?", "Recommendation engine?", "1-click ordering?"],
+      },
+      {
+        name: "Design Prime Video",
+        focus: "Video streaming, adaptive bitrate, recommendations",
+        keyComponents: ["Transcoder", "CDN", "DRM", "Playback Service", "Recommendation"],
+        scaleConsiderations: "4K streaming, global CDN, millions concurrent",
+        commonFollowUps: ["Live sports streaming?", "Download for offline?", "X-Ray feature?"],
+      },
+      {
+        name: "Design Alexa",
+        focus: "Voice recognition, NLU, skills, smart home",
+        keyComponents: ["ASR (Speech-to-Text)", "NLU", "Skills Framework", "Response Generator"],
+        scaleConsiderations: "Real-time voice, millions of devices",
+        commonFollowUps: ["Wake word detection?", "Multi-turn conversations?", "Privacy?"],
+      },
+      {
+        name: "Design Order System",
+        focus: "Order lifecycle, payment, fulfillment, notifications",
+        keyComponents: ["Order Service", "Payment Gateway", "Fulfillment", "Notification Service"],
+        scaleConsiderations: "Millions of orders/day, exactly-once processing",
+        commonFollowUps: ["Idempotency?", "Distributed transactions?", "Order tracking?"],
+      },
+    ],
+    behavioral: [
+      {
+        question: "Leadership Principle: Customer Obsession",
+        whatTheyTest: "Customer-first thinking, going beyond requirements",
+        starTip: "ALWAYS tie back to customer impact. Use specific metrics.",
+        exampleStructure: "Customer problem → Your action → Customer outcome → Business impact",
+        lpTip: "Leaders start with the customer and work backwards",
+      },
+      {
+        question: "Tell me about a time you disagreed with your manager",
+        whatTheyTest: "Have Backbone; Disagree and Commit",
+        starTip: "Show you voiced concerns respectfully, then committed fully once decided",
+        exampleStructure: "Disagreement → How you expressed it → Resolution → Your commitment",
+        lpTip: "Disagree respectfully, then commit wholly once decided",
+      },
+      {
+        question: "Describe a time you took ownership beyond your role",
+        whatTheyTest: "Ownership - think long-term, act on behalf of entire company",
+        starTip: "Show you didn't say 'not my job'. Took action without being asked.",
+        exampleStructure: "Gap you noticed → Action you took → Result → Long-term impact",
+        lpTip: "Owners never say 'that's not my job'",
+      },
+    ],
+  },
+  {
+    company: "Apple",
+    icon: "",
+    color: "#555555",
+    interviewStyle: "Secretive, attention to detail, design excellence focus",
+    rounds: "Phone + 5-8 onsite (varies by team, mix of coding/design/behavioral)",
+    coding: [
+      {
+        name: "3Sum",
+        difficulty: "Medium",
+        topic: "Two Pointers",
+        link: "https://leetcode.com/problems/3sum/",
+        hint: "Sort array, fix one element, two pointers for remaining",
+        timeComplexity: "O(n²)",
+        spaceComplexity: "O(1) or O(n)",
+        pattern: "Two Pointers",
+      },
+      {
+        name: "Serialize/Deserialize BT",
+        difficulty: "Hard",
+        topic: "Tree",
+        link: "https://leetcode.com/problems/serialize-and-deserialize-binary-tree/",
+        hint: "Preorder traversal with null markers, reconstruct with queue",
+        timeComplexity: "O(n)",
+        spaceComplexity: "O(n)",
+        pattern: "Tree Serialization",
+      },
+      {
+        name: "Find Median from Stream",
+        difficulty: "Hard",
+        topic: "Heap",
+        link: "https://leetcode.com/problems/find-median-from-data-stream/",
+        hint: "Max-heap for lower half, min-heap for upper half, balance sizes",
+        timeComplexity: "O(log n) add, O(1) find",
+        spaceComplexity: "O(n)",
+        pattern: "Two Heaps",
+      },
+      {
+        name: "Design Tic-Tac-Toe",
+        difficulty: "Medium",
+        topic: "Design",
+        link: "https://leetcode.com/problems/design-tic-tac-toe/",
+        hint: "Track row/col/diag sums; +1 for X, -1 for O; win when |sum|=n",
+        timeComplexity: "O(1) per move",
+        spaceComplexity: "O(n)",
+        pattern: "Game State Design",
+      },
+      {
+        name: "Maximum Product Subarray",
+        difficulty: "Medium",
+        topic: "DP",
+        link: "https://leetcode.com/problems/maximum-product-subarray/",
+        hint: "Track both max and min at each position (negatives can flip)",
+        timeComplexity: "O(n)",
+        spaceComplexity: "O(1)",
+        pattern: "Dynamic Programming",
+      },
+    ],
+    systemDesign: [
+      {
+        name: "Design iCloud",
+        focus: "File sync, conflict resolution, cross-device consistency",
+        keyComponents: ["Sync Engine", "Conflict Resolver", "Metadata Service", "Block Storage"],
+        scaleConsiderations: "2B devices, seamless sync across ecosystem",
+        commonFollowUps: ["Offline support?", "Selective sync?", "End-to-end encryption?"],
+      },
+      {
+        name: "Design Apple Music",
+        focus: "Music streaming, library sync, playlist sharing",
+        keyComponents: ["Streaming Service", "Catalog Service", "Library Sync", "Recommendation"],
+        scaleConsiderations: "100M songs, 100M subscribers",
+        commonFollowUps: ["Lossless audio?", "Lyrics sync?", "Social features?"],
+      },
+      {
+        name: "Design Siri",
+        focus: "Voice assistant, NLU, device integration, privacy",
+        keyComponents: ["Speech Recognition", "NLU Engine", "Intent Handler", "Response Generator"],
+        scaleConsiderations: "On-device processing, low latency, privacy-first",
+        commonFollowUps: ["On-device vs cloud?", "Context awareness?", "Multi-language?"],
+      },
+      {
+        name: "Design App Store",
+        focus: "App distribution, review process, in-app purchases",
+        keyComponents: ["App Catalog", "Review Pipeline", "Payment Service", "Update Service"],
+        scaleConsiderations: "2M apps, billions of downloads, 30% commission",
+        commonFollowUps: ["App review automation?", "Fraud detection?", "Regional pricing?"],
+      },
+    ],
+    behavioral: [
+      {
+        question: "Tell me about attention to detail in your work",
+        whatTheyTest: "Quality standards, polish, user experience focus",
+        starTip: "Apple obsesses over details. Show you care about the last 1%.",
+        exampleStructure: "Project → Specific detail you caught → Impact on user experience",
+      },
+      {
+        question: "Describe an innovative solution you created",
+        whatTheyTest: "Creativity, thinking differently, challenging status quo",
+        starTip: "Show you didn't just follow the obvious path",
+        exampleStructure: "Problem → Why obvious solutions failed → Your novel approach → Result",
+      },
+      {
+        question: "How do you collaborate across teams?",
+        whatTheyTest: "Cross-functional work, communication, influence without authority",
+        starTip: "Apple teams are siloed; show you can navigate that",
+        exampleStructure: "Cross-team project → Communication challenges → How you bridged gaps → Outcome",
+      },
+    ],
+  },
+  {
+    company: "Microsoft",
+    icon: "",
+    color: "#00A4EF",
+    interviewStyle: "Growth mindset, inclusive culture, customer success focus",
+    rounds: "Phone + 4-5 onsite (coding, system design, behavioral, as-appropriate)",
+    coding: [
+      {
+        name: "Reverse Linked List",
+        difficulty: "Easy",
+        topic: "Linked List",
+        link: "https://leetcode.com/problems/reverse-linked-list/",
+        hint: "Iterative: prev, curr, next pointers. Or recursive with backtracking.",
+        timeComplexity: "O(n)",
+        spaceComplexity: "O(1) iter / O(n) recursive",
+        pattern: "Linked List Manipulation",
+      },
+      {
+        name: "Course Schedule",
+        difficulty: "Medium",
+        topic: "Graph",
+        link: "https://leetcode.com/problems/course-schedule/",
+        hint: "Topological sort using Kahn's algorithm or DFS cycle detection",
+        timeComplexity: "O(V + E)",
+        spaceComplexity: "O(V + E)",
+        pattern: "Topological Sort",
+      },
+      {
+        name: "Longest Increasing Subsequence",
+        difficulty: "Medium",
+        topic: "DP",
+        link: "https://leetcode.com/problems/longest-increasing-subsequence/",
+        hint: "DP: dp[i] = longest ending at i. Optimize with binary search.",
+        timeComplexity: "O(n log n)",
+        spaceComplexity: "O(n)",
+        pattern: "DP + Binary Search",
+      },
+      {
+        name: "Alien Dictionary",
+        difficulty: "Hard",
+        topic: "Graph",
+        link: "https://leetcode.com/problems/alien-dictionary/",
+        hint: "Build graph from adjacent word pairs, then topological sort",
+        timeComplexity: "O(C) where C = total chars",
+        spaceComplexity: "O(1) (26 letters)",
+        pattern: "Graph + Topological Sort",
+      },
+      {
+        name: "Word Break",
+        difficulty: "Medium",
+        topic: "DP",
+        link: "https://leetcode.com/problems/word-break/",
+        hint: "dp[i] = true if s[0..i] can be segmented. Check all word endings.",
+        timeComplexity: "O(n² × m)",
+        spaceComplexity: "O(n)",
+        pattern: "Dynamic Programming",
+      },
+    ],
+    systemDesign: [
+      {
+        name: "Design Azure Blob Storage",
+        focus: "Object storage, tiering, replication, consistency",
+        keyComponents: ["Blob Service", "Partition Layer", "Stream Layer", "Fabric Controller"],
+        scaleConsiderations: "Exabytes of data, 99.999999999% durability",
+        commonFollowUps: ["Hot/cool/archive tiers?", "Geo-replication?", "Consistency models?"],
+      },
+      {
+        name: "Design Microsoft Teams",
+        focus: "Real-time messaging, video conferencing, file sharing",
+        keyComponents: ["Chat Service", "Presence", "Media Server", "File Storage", "Notifications"],
+        scaleConsiderations: "270M monthly users, enterprise scale",
+        commonFollowUps: ["Meeting recording?", "Screen sharing?", "Guest access?"],
+      },
+      {
+        name: "Design OneDrive",
+        focus: "File sync, collaboration, versioning, sharing",
+        keyComponents: ["Sync Engine", "Diff Service", "Sharing Service", "Version Control"],
+        scaleConsiderations: "1B files synced/day, Office integration",
+        commonFollowUps: ["Conflict resolution?", "Files on-demand?", "Ransomware protection?"],
+      },
+      {
+        name: "Design Xbox Live",
+        focus: "Gaming platform, matchmaking, achievements, social",
+        keyComponents: ["Profile Service", "Matchmaking", "Achievement System", "Social Graph"],
+        scaleConsiderations: "100M gamers, real-time multiplayer",
+        commonFollowUps: ["Skill-based matchmaking?", "Anti-cheat?", "Cross-platform?"],
+      },
+    ],
+    behavioral: [
+      {
+        question: "Tell me about a time you demonstrated growth mindset",
+        whatTheyTest: "Learning from failure, embracing challenges, continuous improvement",
+        starTip: "Show you sought feedback and improved, not just succeeded",
+        exampleStructure: "Challenge/failure → What you learned → How you grew → New outcome",
+      },
+      {
+        question: "Describe how you've created an inclusive environment",
+        whatTheyTest: "Diversity, empathy, psychological safety",
+        starTip: "Microsoft values inclusion highly. Show specific actions.",
+        exampleStructure: "Situation with exclusion → Your awareness → Action taken → Team impact",
+      },
+      {
+        question: "How have you driven customer success?",
+        whatTheyTest: "Customer obsession, understanding enterprise needs",
+        starTip: "Focus on understanding customer problems, not just shipping features",
+        exampleStructure: "Customer pain point → Your investigation → Solution → Customer outcome",
+      },
+    ],
+  },
+  {
+    company: "Netflix",
+    icon: "",
+    color: "#E50914",
+    interviewStyle: "Senior-focused, freedom & responsibility, high performance culture",
+    rounds: "Phone + 4-6 onsite (coding, system design, culture fit - bar is very high)",
+    coding: [
+      {
+        name: "Top K Frequent Elements",
+        difficulty: "Medium",
+        topic: "Heap",
+        link: "https://leetcode.com/problems/top-k-frequent-elements/",
+        hint: "Count frequencies, then min-heap of size k OR bucket sort O(n)",
+        timeComplexity: "O(n log k)",
+        spaceComplexity: "O(n)",
+        pattern: "Top K Pattern",
+      },
+      {
+        name: "Design Hit Counter",
+        difficulty: "Medium",
+        topic: "Design",
+        link: "https://leetcode.com/problems/design-hit-counter/",
+        hint: "Circular array of 300 buckets, or deque with timestamp cleanup",
+        timeComplexity: "O(1) amortized",
+        spaceComplexity: "O(300) = O(1)",
+        pattern: "Sliding Window Design",
+      },
+      {
+        name: "Sliding Window Maximum",
+        difficulty: "Hard",
+        topic: "Deque",
+        link: "https://leetcode.com/problems/sliding-window-maximum/",
+        hint: "Monotonic decreasing deque: remove smaller elements, max is front",
+        timeComplexity: "O(n)",
+        spaceComplexity: "O(k)",
+        pattern: "Monotonic Deque",
+      },
+      {
+        name: "Graph Valid Tree",
+        difficulty: "Medium",
+        topic: "Union Find",
+        link: "https://leetcode.com/problems/graph-valid-tree/",
+        hint: "Tree: exactly n-1 edges AND connected (no cycles). Use Union-Find.",
+        timeComplexity: "O(n × α(n))",
+        spaceComplexity: "O(n)",
+        pattern: "Union Find",
+      },
+      {
+        name: "Clone Graph",
+        difficulty: "Medium",
+        topic: "Graph",
+        link: "https://leetcode.com/problems/clone-graph/",
+        hint: "DFS/BFS with HashMap: old node → new node mapping",
+        timeComplexity: "O(V + E)",
+        spaceComplexity: "O(V)",
+        pattern: "Graph Traversal + Cloning",
+      },
+    ],
+    systemDesign: [
+      {
+        name: "Design Netflix Streaming",
+        focus: "Video delivery, adaptive bitrate, global CDN",
+        keyComponents: ["Open Connect CDN", "Playback Service", "ABR Algorithm", "DRM"],
+        scaleConsiderations: "250M subscribers, 15% global internet traffic",
+        commonFollowUps: ["ABR algorithm?", "Pre-positioning content?", "Quality of Experience?"],
+      },
+      {
+        name: "Design Recommendation System",
+        focus: "ML-based recommendations, personalization at scale",
+        keyComponents: ["Feature Store", "Model Serving", "A/B Testing", "Candidate Generation"],
+        scaleConsiderations: "Billions of ratings, real-time personalization",
+        commonFollowUps: ["Cold start problem?", "Diversity vs relevance?", "Exploration vs exploitation?"],
+      },
+      {
+        name: "Design Video Upload Pipeline",
+        focus: "Ingestion, transcoding, quality control, metadata",
+        keyComponents: ["Upload Service", "Transcoding Farm", "QC Pipeline", "Asset Management"],
+        scaleConsiderations: "Hours of 4K/HDR content daily, multiple formats",
+        commonFollowUps: ["Resumable uploads?", "Parallel transcoding?", "Audio normalization?"],
+      },
+      {
+        name: "Design CDN (Open Connect)",
+        focus: "Content delivery, cache hierarchy, peering",
+        keyComponents: ["Edge Servers", "Origin Shield", "Cache Manager", "Traffic Steering"],
+        scaleConsiderations: "Terabits/sec, global presence",
+        commonFollowUps: ["Cache eviction?", "ISP peering?", "Failure handling?"],
+      },
+    ],
+    behavioral: [
+      {
+        question: "Describe a time you took a risk without permission",
+        whatTheyTest: "Freedom & responsibility, judgment, bias for action",
+        starTip: "Netflix values informed risk-taking. Show good judgment.",
+        exampleStructure: "Opportunity you saw → Risk assessment → Action without approval → Outcome",
+        cultureTip: "Netflix: 'Don't seek to please your boss. Seek to do what's best for the company.'",
+      },
+      {
+        question: "Tell me about managing a low performer",
+        whatTheyTest: "High performance culture, direct feedback, tough decisions",
+        starTip: "Netflix has 'keeper test'. Show you can give hard feedback.",
+        exampleStructure: "Performance issue → Direct feedback given → Support offered → Outcome",
+        cultureTip: "Netflix: 'Adequate performance gets a generous severance.'",
+      },
+      {
+        question: "How do you make decisions with incomplete information?",
+        whatTheyTest: "Judgment, context over control, senior-level thinking",
+        starTip: "Show you can make good decisions without micromanagement",
+        exampleStructure: "Ambiguous situation → How you gathered context → Decision framework → Result",
+        cultureTip: "Netflix: 'Highly aligned, loosely coupled.'",
+      },
+    ],
+  },
+];
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  keywords={pageKeywords}
+  showSidebar={false}
+  type="website"
+>
+  <div class="hero">
+    <!-- Terminal Window -->
+    <div class="hero-terminal">
+      <div class="hero-terminal-bar">
+        <span class="terminal-dot red"></span>
+        <span class="terminal-dot yellow"></span>
+        <span class="terminal-dot green"></span>
+        <span class="terminal-title">~/faang-roadmap</span>
+      </div>
+      <pre
+        class="hero-ascii">{`
+  ╭──────────────────────────────────────────────────────────────────╮
+  │                                                                  │
+  │   ███████╗ █████╗  █████╗ ███╗   ██╗ ██████╗                     │
+  │   ██╔════╝██╔══██╗██╔══██╗████╗  ██║██╔════╝                     │
+  │   █████╗  ███████║███████║██╔██╗ ██║██║  ███╗                    │
+  │   ██╔══╝  ██╔══██║██╔══██║██║╚██╗██║██║   ██║                    │
+  │   ██║     ██║  ██║██║  ██║██║ ╚████║╚██████╔╝                    │
+  │   ╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝ ╚═════╝                     │
+  │                                                                  │
+  │    Interview Roadmap                                             │
+  │                                                                  │
+  ╰──────────────────────────────────────────────────────────────────╯
+      `}</pre>
+    </div>
+
+    <p class="hero-tagline">
+      <span class="nf">{icons.terminal}</span> Your complete guide to landing top
+      tech jobs
+    </p>
+
+    <p class="hero-subtitle">
+      A comprehensive, practical roadmap for FAANG and Big Tech interview
+      preparation. From DSA fundamentals to system design, behavioral interviews
+      to offer negotiation.
+    </p>
+
+    <!-- Companies Section -->
+    <div class="companies-section">
+      <p class="companies-label">
+        <span class="nf">{icons.building}</span> Prepare for top companies
+      </p>
+      <div class="companies-grid">
+        {
+          companies.map((company) => (
+            <span class="company-badge">
+              <span class="nf">{company.icon}</span>
+              {company.name}
+            </span>
+          ))
+        }
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat">
+        <div class="stat-value">140+</div>
+        <div class="stat-label">Documents</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">9</div>
+        <div class="stat-label">Sections</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">59K+</div>
+        <div class="stat-label">Words</div>
+      </div>
+    </div>
+
+    <!-- CTA Buttons -->
+    <div class="hero-actions">
+      <a href="/docs/start-here/00-README" is-="button">
+        <span class="nf">{icons.rocket}</span>
+        Get Started
+      </a>
+      <a
+        href="/docs/interviews/00-Interview-Index"
+        is-="button"
+        box-="square"
+        variant-="secondary"
+      >
+        <span class="nf">{icons.book}</span>
+        Browse Docs
+      </a>
+    </div>
+  </div>
+
+  <!-- Documentation Sections -->
+  <h2 class="section-header">
+    <span class="nf">{icons.folder}</span>
+    Documentation
+  </h2>
+
+  <div class="cards-grid">
+    {
+      sections.map((section) => (
+        <a href={section.href} class="card">
+          <h3 class="card-title">
+            <span class="nf">{section.icon}</span>
+            {section.title}
+          </h3>
+          <p class="card-description">{section.description}</p>
+          <ul class="card-list">
+            {section.items.map((item) => (
+              <li>{item}</li>
+            ))}
+          </ul>
+        </a>
+      ))
+    }
+  </div>
+
+  <!-- Quick Links -->
+  <h2 class="section-header">
+    <span class="nf">{icons.arrow}</span>
+    Quick Links
+  </h2>
+
+  <div class="quick-links">
+    {
+      quickLinks.map((link) => (
+        <a href={link.href} class="quick-link">
+          <span class="nf">{link.icon}</span>
+          {link.name}
+        </a>
+      ))
+    }
+  </div>
+
+  <!-- Study Plans Section -->
+  <h2 class="section-header">
+    <span class="nf">{icons.calendar}</span>
+    Study Plans by Experience Level
+  </h2>
+
+  <p class="section-description">
+    Choose a structured study plan based on your experience level. Each plan
+    includes weekly schedules, LeetCode problem counts, and phase-by-phase
+    milestones.
+  </p>
+
+  <div class="study-plans-grid">
+    {
+      studyPlans.map((plan) => (
+        <div class="study-plan-card" style={`--plan-color: ${plan.color}`}>
+          <div class="plan-header">
+            <span class="plan-icon">{plan.icon}</span>
+            <div class="plan-meta">
+              <h3>{plan.level} Engineer</h3>
+              <span class="plan-experience">{plan.experience}</span>
+            </div>
+          </div>
+
+          <div class="plan-stats">
+            <div class="stat-item">
+              <span class="stat-icon" />
+              <span>{plan.duration}</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-icon" />
+              <span>{plan.hoursPerWeek}</span>
+            </div>
+          </div>
+
+          <div class="plan-phases">
+            <h4> Phases</h4>
+            {plan.phases.map((phase) => (
+              <div class="phase-item">
+                <span class="phase-name">{phase.name}</span>
+                <span class="phase-weeks">Weeks {phase.weeks}</span>
+                <span class="phase-focus">{phase.focus}</span>
+              </div>
+            ))}
+          </div>
+
+          <div class="plan-highlights">
+            <h4> What You'll Achieve</h4>
+            <ul>
+              {plan.highlights.map((h) => (
+                <li>
+                  <span class="check-icon" />
+                  {h}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      ))
+    }
+  </div>
+
+  <!-- DSA Patterns Section -->
+  <h2 class="section-header">
+    <span class="nf">{icons.code}</span>
+    Master These DSA Patterns
+  </h2>
+
+  <p class="section-description">
+    Don't just memorize solutions—learn the underlying patterns. These 8
+    patterns cover 80% of coding interviews.
+  </p>
+
+  <div class="dsa-patterns-grid">
+    {
+      dsaPatterns.map((pattern) => (
+        <a href="/docs/foundations/01-DSA-and-Coding" class="dsa-pattern-card">
+          <span class="pattern-icon">{pattern.icon}</span>
+          <div class="pattern-info">
+            <h4>{pattern.name}</h4>
+            <div class="pattern-meta">
+              <span class="pattern-problems">{pattern.problems} problems</span>
+              <span
+                class={`pattern-diff ${pattern.difficulty.toLowerCase().replace("-", " ").split(" ")[0]}`}
+              >
+                {pattern.difficulty}
+              </span>
+            </div>
+          </div>
+        </a>
+      ))
+    }
+  </div>
+
+  <!-- Company Playbooks Section -->
+  <h2 class="section-header">
+    <span class="nf">{icons.building}</span>
+    Company-Specific Interview Playbooks
+  </h2>
+
+  <p class="section-description">
+    Each company has unique interview culture, evaluation criteria, and red
+    flags. Study the specific playbook for your target companies.
+  </p>
+
+  <div class="company-playbooks-grid">
+    {
+      companyPlaybooks.map((company) => (
+        <div class="playbook-card" style={`--company-color: ${company.color}`}>
+          <div class="playbook-header">
+            <span class="playbook-icon">{company.icon}</span>
+            <div>
+              <h3>{company.company}</h3>
+              <span class="playbook-levels">Levels: {company.levels}</span>
+            </div>
+          </div>
+
+          <div class="playbook-loops">
+            <span class="nf" /> {company.loops} interview rounds
+          </div>
+
+          <div class="playbook-focus">
+            <h4>Key Focus Areas</h4>
+            <ul>
+              {company.focus.map((f) => (
+                <li>{f}</li>
+              ))}
+            </ul>
+          </div>
+
+          <div class="playbook-tip">
+            <span class="tip-icon" />
+            <span>{company.keyTip}</span>
+          </div>
+        </div>
+      ))
+    }
+  </div>
+
+  <!-- Practice Questions by Company (DETAILED) -->
+  <h2 class="section-header">
+    <span class="nf">{icons.fire}</span>
+    Practice Questions by Company
+  </h2>
+
+  <p class="section-description">
+    Real interview questions frequently asked at top tech companies. Each includes
+    complexity analysis, solution hints, and what interviewers are looking for.
+  </p>
+
+  <div class="company-questions-detailed">
+    {
+      practiceQuestions.map((company) => (
+        <div class="company-detail-card" style={`--company-color: ${company.color}`}>
+          <!-- Company Header -->
+          <div class="company-detail-header">
+            <div class="company-title">
+              <span class="company-logo">{company.icon}</span>
+              <div>
+                <h3>{company.company}</h3>
+                <p class="company-style">{company.interviewStyle}</p>
+              </div>
+            </div>
+            <div class="company-rounds">
+              <span class="rounds-badge">{company.rounds}</span>
+            </div>
+          </div>
+
+          <!-- Coding Questions -->
+          <div class="detail-section">
+            <h4 class="section-title">
+              <span class="nf">{icons.code}</span> Coding Questions
+              <span class="section-count">{company.coding.length} problems</span>
+            </h4>
+            <div class="coding-questions-list">
+              {company.coding.map((q) => (
+                <div class="coding-question-item">
+                  <div class="q-header">
+                    <a href={q.link} target="_blank" rel="noopener" class="q-title-link">
+                      <span class="q-name">{q.name}</span>
+                      <span class="external-icon"></span>
+                    </a>
+                    <div class="q-badges">
+                      <span class={`q-diff ${q.difficulty.toLowerCase()}`}>{q.difficulty}</span>
+                      <span class="q-topic">{q.topic}</span>
+                    </div>
+                  </div>
+                  <div class="q-details">
+                    <div class="q-complexity">
+                      <span class="complexity-item">
+                        <span class="complexity-label">Time:</span> {q.timeComplexity}
+                      </span>
+                      <span class="complexity-item">
+                        <span class="complexity-label">Space:</span> {q.spaceComplexity}
+                      </span>
+                    </div>
+                    <div class="q-hint-box">
+                      <span class="hint-icon"></span>
+                      <span class="hint-text">{q.hint}</span>
+                    </div>
+                    <div class="q-pattern">
+                      <span class="pattern-label">Pattern:</span> {q.pattern}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <!-- System Design Questions -->
+          <div class="detail-section">
+            <h4 class="section-title">
+              <span class="nf">{icons.building}</span> System Design
+              <span class="section-count">{company.systemDesign.length} problems</span>
+            </h4>
+            <div class="system-design-list">
+              {company.systemDesign.map((sd) => (
+                <div class="sd-question-item">
+                  <div class="sd-header">
+                    <h5>{sd.name}</h5>
+                    <span class="sd-focus">{sd.focus}</span>
+                  </div>
+                  <div class="sd-components">
+                    <span class="components-label"> Key Components:</span>
+                    <div class="components-tags">
+                      {sd.keyComponents.map((c) => (
+                        <span class="component-tag">{c}</span>
+                      ))}
+                    </div>
+                  </div>
+                  <div class="sd-scale">
+                    <span class="scale-icon"></span>
+                    <span class="scale-text">{sd.scaleConsiderations}</span>
+                  </div>
+                  <div class="sd-followups">
+                    <span class="followup-label"> Follow-ups:</span>
+                    <span class="followup-text">{sd.commonFollowUps.join(" • ")}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <!-- Behavioral Questions -->
+          <div class="detail-section">
+            <h4 class="section-title">
+              <span class="nf">{icons.briefcase}</span> Behavioral
+              <span class="section-count">{company.behavioral.length} questions</span>
+            </h4>
+            <div class="behavioral-list">
+              {company.behavioral.map((bq) => (
+                <div class="behavioral-item">
+                  <div class="bq-question">"{bq.question}"</div>
+                  <div class="bq-details">
+                    <div class="bq-test">
+                      <span class="test-label"> Tests:</span>
+                      <span>{bq.whatTheyTest}</span>
+                    </div>
+                    <div class="bq-tip">
+                      <span class="tip-label"> STAR Tip:</span>
+                      <span>{bq.starTip}</span>
+                    </div>
+                    <div class="bq-structure">
+                      <span class="structure-label"> Structure:</span>
+                      <span class="structure-text">{bq.exampleStructure}</span>
+                    </div>
+                    {bq.lpTip && (
+                      <div class="bq-lp">
+                        <span class="lp-label"> LP:</span>
+                        <span class="lp-text">"{bq.lpTip}"</span>
+                      </div>
+                    )}
+                    {bq.cultureTip && (
+                      <div class="bq-culture">
+                        <span class="culture-label"> Culture:</span>
+                        <span class="culture-text">{bq.cultureTip}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      ))
+    }
+  </div>
+
+  <!-- Resources & External Links -->
+  <h2 class="section-header">
+    <span class="nf">{icons.star}</span>
+    Curated Resources
+  </h2>
+
+  <div class="resources-grid">
+    <a
+      href="https://leetcode.com"
+      target="_blank"
+      rel="noopener"
+      class="resource-card"
+    >
+      <span class="resource-icon"></span>
+      <div>
+        <h4>LeetCode</h4>
+        <p>2000+ coding problems with solutions</p>
+      </div>
+    </a>
+    <a
+      href="https://neetcode.io/roadmap"
+      target="_blank"
+      rel="noopener"
+      class="resource-card"
+    >
+      <span class="resource-icon"></span>
+      <div>
+        <h4>NeetCode Roadmap</h4>
+        <p>Curated 150 problems by pattern</p>
+      </div>
+    </a>
+    <a
+      href="https://www.techinterviewhandbook.org/"
+      target="_blank"
+      rel="noopener"
+      class="resource-card"
+    >
+      <span class="resource-icon"></span>
+      <div>
+        <h4>Tech Interview Handbook</h4>
+        <p>Comprehensive interview guide</p>
+      </div>
+    </a>
+    <a
+      href="https://github.com/donnemartin/system-design-primer"
+      target="_blank"
+      rel="noopener"
+      class="resource-card"
+    >
+      <span class="resource-icon"></span>
+      <div>
+        <h4>System Design Primer</h4>
+        <p>Learn system design concepts</p>
+      </div>
+    </a>
+    <a
+      href="https://www.pramp.com/"
+      target="_blank"
+      rel="noopener"
+      class="resource-card"
+    >
+      <span class="resource-icon"></span>
+      <div>
+        <h4>Pramp</h4>
+        <p>Free mock interviews with peers</p>
+      </div>
+    </a>
+    <a
+      href="https://levels.fyi"
+      target="_blank"
+      rel="noopener"
+      class="resource-card"
+    >
+      <span class="resource-icon"></span>
+      <div>
+        <h4>Levels.fyi</h4>
+        <p>Compensation data & leveling</p>
+      </div>
+    </a>
+  </div>
+
+  <!-- Tip Box -->
+  <div class="tip-box">
+    <div class="tip-title">
+      <span class="nf">{icons.lightbulb}</span>
+      Pro Tip
+    </div>
+    <p style="color: var(--foreground1);">
+      Press <span class="kbd">Ctrl</span> + <span class="kbd">K</span> to open the
+      command palette and search across all documentation.
+    </p>
+  </div>
+</Layout>
+
+<style>
+  /* Section description */
+  .section-description {
+    color: var(--subtext0);
+    margin-bottom: var(--spacing-lg);
+    max-width: 700px;
+  }
+
+  /* Study Plans Section */
+  .study-plans-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .study-plan-card {
+    background: var(--mantle);
+    border: 1px solid var(--surface0);
+    border-top: 3px solid var(--plan-color);
+    padding: var(--spacing-md);
+  }
+
+  .plan-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .plan-icon {
+    font-size: 2em;
+    color: var(--plan-color);
+  }
+
+  .plan-meta h3 {
+    margin: 0;
+    color: var(--text);
+    font-size: 1.1em;
+  }
+
+  .plan-experience {
+    font-size: 0.85em;
+    color: var(--subtext0);
+  }
+
+  .plan-stats {
+    display: flex;
+    gap: var(--spacing-md);
+    padding: var(--spacing-sm) 0;
+    border-bottom: 1px dashed var(--surface0);
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .stat-item {
+    display: flex;
+    align-items: center;
+    gap: 0.3ch;
+    font-size: 0.85em;
+    color: var(--subtext1);
+  }
+
+  .stat-icon {
+    color: var(--plan-color);
+  }
+
+  .plan-phases,
+  .plan-highlights {
+    margin-top: var(--spacing-sm);
+  }
+
+  .plan-phases h4,
+  .plan-highlights h4 {
+    font-size: 0.8em;
+    color: var(--subtext0);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: var(--spacing-xs);
+  }
+
+  .phase-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5ch;
+    font-size: 0.85em;
+    padding: 0.2rem 0;
+  }
+
+  .phase-name {
+    color: var(--plan-color);
+    font-weight: 600;
+    min-width: 70px;
+  }
+
+  .phase-weeks {
+    color: var(--subtext0);
+    font-size: 0.8em;
+  }
+
+  .phase-focus {
+    color: var(--subtext1);
+    margin-left: auto;
+  }
+
+  .plan-highlights ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .plan-highlights li {
+    display: flex;
+    align-items: center;
+    gap: 0.5ch;
+    font-size: 0.85em;
+    color: var(--subtext1);
+    padding: 0.15rem 0;
+  }
+
+  .check-icon {
+    color: var(--green);
+  }
+
+  /* DSA Patterns Section */
+  .dsa-patterns-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .dsa-pattern-card {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    background: var(--mantle);
+    border: 1px solid var(--surface0);
+    padding: var(--spacing-sm) var(--spacing-md);
+    text-decoration: none;
+    transition: var(--transition-fast);
+  }
+
+  .dsa-pattern-card:hover {
+    border-color: var(--accent-blue);
+    background: var(--surface0);
+  }
+
+  .pattern-icon {
+    font-size: 1.3em;
+    color: var(--accent-green);
+  }
+
+  .pattern-info h4 {
+    margin: 0;
+    color: var(--text);
+    font-size: 0.95em;
+  }
+
+  .pattern-meta {
+    display: flex;
+    gap: 0.5ch;
+    font-size: 0.75em;
+    margin-top: 0.2rem;
+  }
+
+  .pattern-problems {
+    color: var(--subtext0);
+  }
+
+  .pattern-diff {
+    padding: 0.1em 0.4em;
+    border-radius: 2px;
+  }
+
+  .pattern-diff.easy {
+    background: var(--green);
+    color: var(--crust);
+  }
+  .pattern-diff.medium {
+    background: var(--yellow);
+    color: var(--crust);
+  }
+  .pattern-diff.hard {
+    background: var(--red);
+    color: var(--crust);
+  }
+
+  /* Company Playbooks Section */
+  .company-playbooks-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .playbook-card {
+    background: var(--mantle);
+    border: 1px solid var(--surface0);
+    border-left: 4px solid var(--company-color);
+    padding: var(--spacing-md);
+  }
+
+  .playbook-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .playbook-icon {
+    font-size: 1.5em;
+  }
+
+  .playbook-header h3 {
+    margin: 0;
+    color: var(--text);
+  }
+
+  .playbook-levels {
+    font-size: 0.8em;
+    color: var(--subtext0);
+  }
+
+  .playbook-loops {
+    font-size: 0.85em;
+    color: var(--subtext1);
+    margin-bottom: var(--spacing-sm);
+    padding-bottom: var(--spacing-xs);
+    border-bottom: 1px dashed var(--surface0);
+  }
+
+  .playbook-focus h4 {
+    font-size: 0.75em;
+    color: var(--subtext0);
+    text-transform: uppercase;
+    margin-bottom: var(--spacing-xs);
+  }
+
+  .playbook-focus ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 var(--spacing-sm) 0;
+  }
+
+  .playbook-focus li {
+    font-size: 0.85em;
+    color: var(--subtext1);
+    padding: 0.1rem 0;
+  }
+
+  .playbook-focus li::before {
+    content: "› ";
+    color: var(--company-color);
+  }
+
+  .playbook-tip {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5ch;
+    font-size: 0.8em;
+    color: var(--yellow);
+    background: rgba(249, 226, 175, 0.1);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: 2px;
+  }
+
+  .tip-icon {
+    flex-shrink: 0;
+  }
+
+  /* Resources Section */
+  .resources-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .resource-card {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    background: var(--mantle);
+    border: 1px solid var(--surface0);
+    padding: var(--spacing-sm) var(--spacing-md);
+    text-decoration: none;
+    transition: var(--transition-fast);
+  }
+
+  .resource-card:hover {
+    border-color: var(--accent-cyan);
+    background: var(--surface0);
+  }
+
+  .resource-icon {
+    font-size: 1.5em;
+    color: var(--accent-cyan);
+  }
+
+  .resource-card h4 {
+    margin: 0;
+    color: var(--text);
+    font-size: 0.95em;
+  }
+
+  .resource-card p {
+    margin: 0;
+    font-size: 0.8em;
+    color: var(--subtext0);
+  }
+
+  /* Practice Questions Section */
+  .company-questions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .company-card {
+    background: var(--mantle);
+    border: 1px solid var(--surface0);
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .company-card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75ch;
+    padding: var(--spacing-md);
+    background: var(--surface0);
+    border-left: 4px solid var(--accent-blue);
+  }
+
+  .company-card-header h3 {
+    font-size: 1.1em;
+    color: var(--text);
+    margin: 0;
+  }
+
+  .company-icon {
+    font-size: 1.3em;
+  }
+
+  .question-section {
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-bottom: 1px dashed var(--surface0);
+  }
+
+  .question-section:last-child {
+    border-bottom: none;
+  }
+
+  .question-section h4 {
+    display: flex;
+    align-items: center;
+    gap: 0.5ch;
+    font-size: 0.85em;
+    color: var(--subtext1);
+    margin: 0 0 var(--spacing-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .question-section h4 .nf {
+    color: var(--accent-green);
+  }
+
+  .question-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 0.85em;
+  }
+
+  .question-list li {
+    display: flex;
+    align-items: center;
+    gap: 0.5ch;
+    padding: 0.2rem 0;
+    color: var(--subtext1);
+    flex-wrap: wrap;
+  }
+
+  .question-list li::before {
+    content: "›";
+    color: var(--surface2);
+    margin-right: 0.25ch;
+  }
+
+  .question-list.simple li {
+    display: block;
+    padding-left: 1.5ch;
+    position: relative;
+  }
+
+  .question-list.simple li::before {
+    position: absolute;
+    left: 0;
+  }
+
+  .q-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5ch;
+    text-decoration: none;
+    flex-wrap: wrap;
+  }
+
+  .q-link:hover .q-name {
+    color: var(--accent-blue);
+    text-decoration: underline;
+  }
+
+  .q-name {
+    color: var(--text);
+    flex-shrink: 0;
+  }
+
+  .q-diff {
+    font-size: 0.75em;
+    padding: 0.1em 0.5em;
+    border-radius: 2px;
+    font-weight: 600;
+  }
+
+  .q-diff.easy {
+    background: var(--green);
+    color: var(--crust);
+  }
+
+  .q-diff.medium {
+    background: var(--yellow);
+    color: var(--crust);
+  }
+
+  .q-diff.hard {
+    background: var(--red);
+    color: var(--crust);
+  }
+
+  .q-topic {
+    font-size: 0.75em;
+    color: var(--subtext0);
+    padding: 0.1em 0.5em;
+    background: var(--surface0);
+    border: 1px solid var(--surface1);
+  }
+
+  .q-hint {
+    cursor: help;
+    color: var(--yellow);
+    font-size: 0.9em;
+    margin-left: auto;
+  }
+
+  .q-hint:hover {
+    color: var(--peach);
+  }
+
+  /* ============================================
+     DETAILED COMPANY PRACTICE QUESTIONS
+     ============================================ */
+
+  .company-questions-detailed {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2xl);
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .company-detail-card {
+    background: var(--mantle);
+    border: 1px solid var(--surface0);
+    border-top: 4px solid var(--company-color);
+    overflow: hidden;
+  }
+
+  .company-detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: var(--spacing-lg);
+    background: linear-gradient(135deg, var(--surface0) 0%, var(--mantle) 100%);
+    border-bottom: 1px solid var(--surface0);
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+  }
+
+  .company-title {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+  }
+
+  .company-logo {
+    font-size: 2.5em;
+  }
+
+  .company-title h3 {
+    margin: 0;
+    font-size: 1.5em;
+    color: var(--text);
+  }
+
+  .company-style {
+    margin: 0.25rem 0 0 0;
+    font-size: 0.85em;
+    color: var(--subtext0);
+  }
+
+  .company-rounds {
+    text-align: right;
+  }
+
+  .rounds-badge {
+    font-size: 0.8em;
+    color: var(--subtext1);
+    background: var(--surface0);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: 2px;
+    border: 1px dashed var(--surface1);
+  }
+
+  /* Detail Section */
+  .detail-section {
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-bottom: 1px dashed var(--surface0);
+  }
+
+  .detail-section:last-child {
+    border-bottom: none;
+  }
+
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5ch;
+    font-size: 0.9em;
+    color: var(--text);
+    margin: 0 0 var(--spacing-md);
+    padding-bottom: var(--spacing-xs);
+    border-bottom: 1px solid var(--surface0);
+  }
+
+  .section-title .nf {
+    color: var(--company-color);
+  }
+
+  .section-count {
+    margin-left: auto;
+    font-size: 0.8em;
+    font-weight: normal;
+    color: var(--subtext0);
+  }
+
+  /* Coding Questions */
+  .coding-questions-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+
+  .coding-question-item {
+    background: var(--base);
+    border: 1px solid var(--surface0);
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+
+  .q-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5ch;
+    margin-bottom: var(--spacing-xs);
+  }
+
+  .q-title-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5ch;
+    text-decoration: none;
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .q-title-link:hover {
+    color: var(--accent-blue);
+  }
+
+  .external-icon {
+    font-size: 0.8em;
+    color: var(--subtext0);
+  }
+
+  .q-badges {
+    display: flex;
+    gap: 0.5ch;
+  }
+
+  .q-details {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    font-size: 0.85em;
+  }
+
+  .q-complexity {
+    display: flex;
+    gap: var(--spacing-md);
+    color: var(--subtext1);
+  }
+
+  .complexity-item {
+    display: flex;
+    gap: 0.3ch;
+  }
+
+  .complexity-label {
+    color: var(--subtext0);
+  }
+
+  .q-hint-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5ch;
+    color: var(--yellow);
+    background: rgba(249, 226, 175, 0.05);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: 2px;
+    border-left: 2px solid var(--yellow);
+  }
+
+  .hint-icon {
+    flex-shrink: 0;
+  }
+
+  .hint-text {
+    color: var(--subtext1);
+  }
+
+  .q-pattern {
+    color: var(--subtext0);
+    font-size: 0.9em;
+  }
+
+  .pattern-label {
+    color: var(--accent-purple);
+    font-weight: 600;
+  }
+
+  /* System Design */
+  .system-design-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+
+  .sd-question-item {
+    background: var(--base);
+    border: 1px solid var(--surface0);
+    padding: var(--spacing-md);
+  }
+
+  .sd-header {
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .sd-header h5 {
+    margin: 0 0 0.25rem 0;
+    color: var(--text);
+    font-size: 1em;
+  }
+
+  .sd-focus {
+    font-size: 0.85em;
+    color: var(--subtext0);
+  }
+
+  .sd-components {
+    margin-bottom: var(--spacing-xs);
+  }
+
+  .components-label {
+    font-size: 0.8em;
+    color: var(--accent-green);
+    display: block;
+    margin-bottom: 0.3rem;
+  }
+
+  .components-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+  }
+
+  .component-tag {
+    font-size: 0.75em;
+    background: var(--surface0);
+    color: var(--subtext1);
+    padding: 0.15em 0.5em;
+    border-radius: 2px;
+    border: 1px solid var(--surface1);
+  }
+
+  .sd-scale {
+    display: flex;
+    align-items: center;
+    gap: 0.5ch;
+    font-size: 0.85em;
+    color: var(--accent-cyan);
+    margin: var(--spacing-xs) 0;
+  }
+
+  .scale-icon {
+    color: var(--accent-cyan);
+  }
+
+  .scale-text {
+    color: var(--subtext1);
+  }
+
+  .sd-followups {
+    font-size: 0.8em;
+    padding-top: var(--spacing-xs);
+    border-top: 1px dashed var(--surface0);
+  }
+
+  .followup-label {
+    color: var(--peach);
+  }
+
+  .followup-text {
+    color: var(--subtext0);
+  }
+
+  /* Behavioral */
+  .behavioral-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+
+  .behavioral-item {
+    background: var(--base);
+    border: 1px solid var(--surface0);
+    padding: var(--spacing-md);
+  }
+
+  .bq-question {
+    font-size: 1em;
+    color: var(--text);
+    font-weight: 600;
+    margin-bottom: var(--spacing-sm);
+    padding-left: var(--spacing-sm);
+    border-left: 3px solid var(--company-color);
+  }
+
+  .bq-details {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    font-size: 0.85em;
+  }
+
+  .bq-test, .bq-tip, .bq-structure, .bq-lp, .bq-culture {
+    display: flex;
+    gap: 0.5ch;
+    flex-wrap: wrap;
+  }
+
+  .test-label {
+    color: var(--accent-blue);
+    font-weight: 600;
+    min-width: 50px;
+  }
+
+  .tip-label {
+    color: var(--yellow);
+    font-weight: 600;
+    min-width: 70px;
+  }
+
+  .structure-label {
+    color: var(--accent-green);
+    font-weight: 600;
+    min-width: 75px;
+  }
+
+  .structure-text {
+    color: var(--subtext0);
+    font-family: var(--font-family);
+  }
+
+  .lp-label {
+    color: var(--peach);
+    font-weight: 600;
+    min-width: 30px;
+  }
+
+  .lp-text {
+    color: var(--subtext0);
+    font-style: italic;
+  }
+
+  .culture-label {
+    color: var(--red);
+    font-weight: 600;
+    min-width: 65px;
+  }
+
+  .culture-text {
+    color: var(--subtext0);
+    font-style: italic;
+  }
+
+  .bq-test span, .bq-tip span, .bq-structure span {
+    color: var(--subtext1);
+  }
+
+  @media (max-width: 768px) {
+    .company-questions-detailed {
+      gap: var(--spacing-lg);
+    }
+
+    .company-detail-header {
+      flex-direction: column;
+      padding: var(--spacing-md);
+    }
+
+    .company-logo {
+      font-size: 2em;
+    }
+
+    .company-title h3 {
+      font-size: 1.2em;
+    }
+
+    .rounds-badge {
+      font-size: 0.7em;
+    }
+
+    .detail-section {
+      padding: var(--spacing-sm) var(--spacing-md);
+    }
+
+    .q-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .q-complexity {
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .sd-components .components-tags {
+      gap: 0.2rem;
+    }
+
+    .bq-test, .bq-tip, .bq-structure {
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    .study-plans-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .company-playbooks-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .dsa-patterns-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .resources-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .phase-focus {
+      display: none;
+    }
+  }
+</style>

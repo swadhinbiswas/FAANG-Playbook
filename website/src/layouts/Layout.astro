@@ -1,0 +1,1240 @@
+---
+import "../styles/global.css";
+
+interface Props {
+  title: string;
+  description?: string;
+  activeSection?: string;
+  showSidebar?: boolean;
+  keywords?: string;
+  image?: string;
+  type?: string;
+}
+
+const canonicalURL = new URL(
+  Astro.url.pathname,
+  Astro.site || "https://faang-roadmap.dev",
+);
+
+const {
+  title,
+  description = "FAANG Interview Prep 2026 & 2027 - Complete roadmap to land your dream job at Google, Amazon, Meta, Apple, Netflix & top tech companies. DSA, System Design, Behavioral interviews.",
+  activeSection = "",
+  showSidebar = true,
+  keywords = "FAANG interview prep 2026, FAANG interview prep 2027, Google interview preparation, Amazon interview guide, Meta interview tips, Apple coding interview, Netflix hiring process, software engineer interview, system design interview, DSA preparation, LeetCode patterns, behavioral interview STAR method, tech interview roadmap, SWE interview guide, BigTech jobs, coding interview questions, algorithm interview, data structures interview",
+  image = "/og-image.png",
+  type = "website",
+} = Astro.props;
+
+const siteTitle = "FAANG Job Prep 2026-2027 | Complete Interview Roadmap";
+const fullTitle = title ? `${title} | ${siteTitle}` : siteTitle;
+
+// Nerd Font Icons
+const icons = {
+  home: "",
+  docs: "󰈙",
+  github: "",
+  search: "",
+  sun: "",
+  moon: "\uf186",
+  menu: "\ueb94",
+  close: "󰅗",
+  folder: "",
+  file: "",
+  code: "",
+  terminal: "",
+  rocket: "󰑣",
+  book: "󰂺",
+  target: "󰓾",
+  briefcase: "",
+  building: "",
+  brain: "󰧑",
+  database: "",
+  server: "󰒋",
+  chart: "",
+  check: "",
+  chevron: "",
+  palette: "󱥚",
+  cat: "󰄛",
+  leetcode: "\uf0c0d",
+};
+
+const navigation = [
+  {
+    title: "Hiring Pipeline",
+    icon: icons.target,
+    section: "hiring-pipeline",
+    items: [
+      { name: "Pipeline Overview", href: "/docs/hiring-pipeline/00-Index" },
+      {
+        name: "ATS & Shortlisting",
+        href: "/docs/hiring-pipeline/01-ATS-and-Shortlisting",
+      },
+      {
+        name: "Recruiter Screen",
+        href: "/docs/hiring-pipeline/02-Recruiter-Screen",
+      },
+      {
+        name: "Online Assessments",
+        href: "/docs/hiring-pipeline/03-Online-Assessments",
+      },
+      { name: "Phone Screens", href: "/docs/hiring-pipeline/04-Phone-Screens" },
+      { name: "Onsite Loop", href: "/docs/hiring-pipeline/05-Onsite-Loop" },
+      {
+        name: "Debrief & Decision",
+        href: "/docs/hiring-pipeline/06-Debrief-and-Decision",
+      },
+      {
+        name: "Offer & Closing",
+        href: "/docs/hiring-pipeline/07-Offer-and-Closing",
+      },
+    ],
+  },
+  {
+    title: "Start Here",
+    icon: icons.rocket,
+    section: "start-here",
+    items: [
+      { name: "README", href: "/docs/start-here/00-README" },
+      {
+        name: "Targeting Your Lane",
+        href: "/docs/start-here/01-Targeting-Your-Lane",
+      },
+      {
+        name: "Interview Loop",
+        href: "/docs/start-here/02-Interview-Loop-At-A-Glance",
+      },
+    ],
+  },
+  {
+    title: "Foundations",
+    icon: icons.book,
+    section: "foundations",
+    items: [
+      { name: "Index", href: "/docs/foundations/00-Foundations-Index" },
+      { name: "DSA & Coding", href: "/docs/foundations/01-DSA-and-Coding" },
+      {
+        name: "Computer Systems",
+        href: "/docs/foundations/02-Computer-Systems",
+      },
+      { name: "Databases", href: "/docs/foundations/03-Databases" },
+      {
+        name: "Software Engineering",
+        href: "/docs/foundations/04-Software-Engineering-Practices",
+      },
+      {
+        name: "Cloud & Reliability",
+        href: "/docs/foundations/05-Cloud-and-Reliability-Basics",
+      },
+    ],
+  },
+  {
+    title: "Role Roadmaps",
+    icon: icons.target,
+    section: "role-roadmaps",
+    items: [
+      { name: "Role Chooser", href: "/docs/role-roadmaps/00-Role-Chooser" },
+      { name: "SWE Generalist", href: "/docs/role-roadmaps/01-SWE-Generalist" },
+      {
+        name: "Backend Engineer",
+        href: "/docs/role-roadmaps/02-Backend-Engineer",
+      },
+      {
+        name: "ML Engineer",
+        href: "/docs/role-roadmaps/03-Machine-Learning-Engineer",
+      },
+      { name: "Data Engineer", href: "/docs/role-roadmaps/04-Data-Engineer" },
+      { name: "Data Scientist", href: "/docs/role-roadmaps/05-Data-Scientist" },
+      { name: "DevOps / SRE", href: "/docs/role-roadmaps/06-DevOps-SRE" },
+      { name: "MLOps Engineer", href: "/docs/role-roadmaps/07-MLOps-Engineer" },
+    ],
+  },
+  {
+    title: "Interviews",
+    icon: icons.briefcase,
+    section: "interviews",
+    items: [
+      { name: "Index", href: "/docs/interviews/00-Interview-Index" },
+      {
+        name: "Recruiter Screen",
+        href: "/docs/interviews/01-Recruiter-Screen-Playbook",
+      },
+      {
+        name: "Coding Interview",
+        href: "/docs/interviews/02-Coding-Interview-Playbook",
+      },
+      {
+        name: "System Design",
+        href: "/docs/interviews/03-System-Design-Interview-Playbook",
+      },
+      {
+        name: "ML System Design",
+        href: "/docs/interviews/04-ML-System-Design-Interview",
+      },
+      { name: "SQL & Data", href: "/docs/interviews/05-SQL-Data-Interview" },
+      {
+        name: "Behavioral",
+        href: "/docs/interviews/06-Behavioral-Interview-Playbook",
+      },
+      {
+        name: "Take-Home Projects",
+        href: "/docs/interviews/07-Take-Home-and-Project-Interviews",
+      },
+    ],
+  },
+  {
+    title: "System Design",
+    icon: icons.building,
+    section: "system-design",
+    items: [
+      {
+        name: "Design Template",
+        href: "/docs/system-design/00-System-Design-Template",
+      },
+      {
+        name: "Capacity Planning",
+        href: "/docs/system-design/01-Capacity-Planning-Cheatsheet",
+      },
+      {
+        name: "Design Patterns",
+        href: "/docs/system-design/02-Design-Patterns-and-Failure-Handling",
+      },
+      {
+        name: "Common Prompts",
+        href: "/docs/system-design/03-Common-Prompts-and-What-They-Test",
+      },
+    ],
+  },
+  {
+    title: "ML & MLOps",
+    icon: icons.brain,
+    section: "ml-mlops",
+    items: [
+      { name: "Index", href: "/docs/ml-mlops/00-ML-Index" },
+      {
+        name: "ML Fundamentals",
+        href: "/docs/ml-mlops/01-ML-Fundamentals-for-Interviews",
+      },
+      {
+        name: "Feature Engineering",
+        href: "/docs/ml-mlops/02-Feature-Engineering-and-Data-Leakage",
+      },
+      {
+        name: "ML System Design",
+        href: "/docs/ml-mlops/03-ML-System-Design-Templates",
+      },
+      {
+        name: "ML Testing",
+        href: "/docs/ml-mlops/04-ML-Testing-and-ML-Test-Score",
+      },
+      {
+        name: "LLM Applications",
+        href: "/docs/ml-mlops/05-LLM-Applications-and-Evaluation",
+      },
+    ],
+  },
+  {
+    title: "Data",
+    icon: icons.database,
+    section: "data",
+    items: [
+      { name: "Index", href: "/docs/data/00-Data-Index" },
+      { name: "SQL Patterns", href: "/docs/data/01-SQL-Patterns" },
+      { name: "Data Modeling", href: "/docs/data/02-Data-Modeling" },
+      { name: "Pipelines", href: "/docs/data/03-Pipelines-and-Orchestration" },
+      { name: "Data Quality", href: "/docs/data/04-Data-Quality" },
+      { name: "Streaming", href: "/docs/data/05-Streaming-and-Late-Data" },
+    ],
+  },
+  {
+    title: "Infra & DevOps",
+    icon: icons.server,
+    section: "infra-devops",
+    items: [
+      { name: "Index", href: "/docs/infra-devops/00-Infra-Index" },
+      {
+        name: "Linux & Networking",
+        href: "/docs/infra-devops/01-Linux-Networking-Fundamentals",
+      },
+      { name: "Docker", href: "/docs/infra-devops/02-Docker" },
+      { name: "Kubernetes", href: "/docs/infra-devops/03-Kubernetes" },
+      { name: "CI/CD", href: "/docs/infra-devops/04-CICD-and-Safe-Rollouts" },
+      {
+        name: "Incident Response",
+        href: "/docs/infra-devops/05-Incident-Response",
+      },
+    ],
+  },
+  {
+    title: "Career",
+    icon: icons.chart,
+    section: "career",
+    items: [
+      { name: "Index", href: "/docs/career/00-Career-Index" },
+      {
+        name: "Resume & LinkedIn",
+        href: "/docs/career/01-Resume-LinkedIn-GitHub",
+      },
+      {
+        name: "Applications",
+        href: "/docs/career/02-Applications-and-Networking",
+      },
+      {
+        name: "Prep Calendar",
+        href: "/docs/career/03-Interview-Prep-Calendar",
+      },
+      { name: "Offer Negotiation", href: "/docs/career/04-Offer-Negotiation" },
+      {
+        name: "Company Archetypes",
+        href: "/docs/career/05-Company-Archetypes-and-How-to-Prepare",
+      },
+    ],
+  },
+  {
+    title: "Study Plans",
+    icon: icons.book,
+    section: "study-plans",
+    items: [
+      {
+        name: "Junior 3-Month Plan",
+        href: "/docs/study-plans/01-Junior-3-Month-Plan",
+      },
+      {
+        name: "Mid 6-Month Plan",
+        href: "/docs/study-plans/02-Mid-6-Month-Plan",
+      },
+      {
+        name: "Senior 4-Month Plan",
+        href: "/docs/study-plans/03-Senior-4-Month-Plan",
+      },
+    ],
+  },
+  {
+    title: "Company Notes",
+    icon: icons.building,
+    section: "company-notes",
+    items: [
+      { name: "Index", href: "/docs/company-notes/00-Index" },
+      {
+        name: "Google Detailed",
+        href: "/docs/company-notes/01-Google-Detailed",
+      },
+      {
+        name: "Amazon Detailed",
+        href: "/docs/company-notes/02-Amazon-Detailed",
+      },
+      { name: "Meta Detailed", href: "/docs/company-notes/03-Meta-Detailed" },
+      { name: "Apple Detailed", href: "/docs/company-notes/04-Apple-Detailed" },
+      {
+        name: "Netflix Detailed",
+        href: "/docs/company-notes/05-Netflix-Detailed",
+      },
+      { name: "FAANG & BigTech", href: "/docs/company-notes/01-FAANG-BigTech" },
+      {
+        name: "Unicorns & Startups",
+        href: "/docs/company-notes/02-Unicorns-Startups",
+      },
+      {
+        name: "Enterprise Software",
+        href: "/docs/company-notes/03-Enterprise-Software",
+      },
+      {
+        name: "Automotive & Industrial",
+        href: "/docs/company-notes/04-Automotive-Industrial",
+      },
+      {
+        name: "Geography & Leveling",
+        href: "/docs/company-notes/05-Geography-Leveling",
+      },
+    ],
+  },
+  {
+    title: "Mock Interviews",
+    icon: icons.terminal,
+    section: "mock-interviews",
+    items: [
+      {
+        name: "Self-Evaluation Rubric",
+        href: "/docs/mock-interviews/01-Self-Evaluation-Rubric",
+      },
+      {
+        name: "Peer Feedback Template",
+        href: "/docs/mock-interviews/02-Peer-Feedback-Template",
+      },
+    ],
+  },
+  {
+    title: "LeetCode Questions",
+    icon: icons.puzzle,
+    section: "leetcode",
+    items: [
+      { name: "All Companies", href: "/leetcode" },
+      { name: "Google", href: "/leetcode/google" },
+      { name: "Amazon", href: "/leetcode/amazon" },
+      { name: "Meta", href: "/leetcode/meta" },
+      { name: "Apple", href: "/leetcode/apple" },
+      { name: "Microsoft", href: "/leetcode/microsoft" },
+      { name: "Netflix", href: "/leetcode/netflix" },
+    ],
+  },
+];
+
+// Catppuccin Themes
+const themes = [
+  { id: "mocha", name: "Mocha", icon: icons.moon, desc: "Dark" },
+  { id: "macchiato", name: "Macchiato", icon: icons.moon, desc: "Dark" },
+  { id: "frappe", name: "Frappé", icon: icons.moon, desc: "Dark" },
+  { id: "latte", name: "Latte", icon: icons.sun, desc: "Light" },
+];
+---
+
+<!doctype html>
+<html lang="en" data-theme="mocha">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Primary Meta Tags -->
+    <title>{fullTitle}</title>
+    <meta name="title" content={fullTitle} />
+    <meta name="description" content={description} />
+    <meta name="keywords" content={keywords} />
+    <meta name="author" content="FAANG Roadmap Team" />
+    <meta
+      name="robots"
+      content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+    />
+    <meta name="googlebot" content="index, follow" />
+    <meta name="bingbot" content="index, follow" />
+    <link rel="canonical" href={canonicalURL} />
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#1e1e2e" />
+    <meta name="msapplication-TileColor" content="#1e1e2e" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content={type} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta
+      property="og:image"
+      content={new URL(image, Astro.site || "https://faang-roadmap.dev")}
+    />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="FAANG Job Prep 2026-2027 - Complete Interview Roadmap"
+    />
+    <meta property="og:site_name" content="FAANG Job Prep Roadmap" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content={canonicalURL} />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta
+      name="twitter:image"
+      content={new URL(image, Astro.site || "https://faang-roadmap.dev")}
+    />
+    <meta
+      name="twitter:image:alt"
+      content="FAANG Job Prep 2026-2027 - Complete Interview Roadmap"
+    />
+    <meta name="twitter:creator" content="@faangroadmap" />
+    <meta name="twitter:site" content="@faangroadmap" />
+
+    <!-- LinkedIn -->
+    <meta property="linkedin:owner" content="FAANG Roadmap" />
+
+    <!-- Additional SEO -->
+    <meta name="rating" content="General" />
+    <meta name="revisit-after" content="3 days" />
+    <meta name="language" content="English" />
+    <meta name="distribution" content="global" />
+    <meta name="coverage" content="Worldwide" />
+    <meta name="target" content="all" />
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="MobileOptimized" content="320" />
+    <meta name="format-detection" content="telephone=no" />
+
+    <!-- Structured Data / JSON-LD -->
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        name: "FAANG Job Prep 2026-2027",
+        alternateName: [
+          "FAANG Interview Prep",
+          "BigTech Interview Roadmap",
+          "Tech Interview Guide",
+        ],
+        url: "https://faang-roadmap.dev",
+        description: description,
+        publisher: {
+          "@type": "Organization",
+          name: "FAANG Roadmap",
+          logo: {
+            "@type": "ImageObject",
+            url: "https://faang-roadmap.dev/og-image.png",
+          },
+        },
+        potentialAction: {
+          "@type": "SearchAction",
+          target: "https://faang-roadmap.dev/search?q={search_term_string}",
+          "query-input": "required name=search_term_string",
+        },
+        sameAs: [
+          "https://github.com/faang-roadmap",
+          "https://twitter.com/faangroadmap",
+        ],
+      })}
+    />
+
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "EducationalOrganization",
+        name: "FAANG Job Prep Roadmap",
+        description:
+          "Complete guide for FAANG and BigTech interview preparation 2026-2027",
+        url: "https://faang-roadmap.dev",
+        logo: "https://faang-roadmap.dev/og-image.png",
+        foundingDate: "2024",
+        keywords:
+          "FAANG, Google, Amazon, Meta, Apple, Netflix, Interview Prep, System Design, DSA, Coding Interview, Software Engineer",
+        knowsAbout: [
+          "Software Engineering Interviews",
+          "System Design",
+          "Data Structures and Algorithms",
+          "Behavioral Interviews",
+          "FAANG Hiring Process",
+        ],
+      })}
+    />
+
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Home",
+            item: "https://faang-roadmap.dev",
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: title,
+            item: canonicalURL.toString(),
+          },
+        ],
+      })}
+    />
+
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- Fira Code Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="site-wrapper">
+      <!-- Top Navigation -->
+      <nav class="top-nav">
+        <div class="nav-left">
+          <button
+            class="mobile-menu-btn"
+            id="mobile-menu-btn"
+            aria-label="Toggle menu"
+          >
+            <span class="nf">{icons.menu}</span>
+          </button>
+          <a href="/" class="nav-brand">
+            <span class="nav-logo">&lt;/&gt;</span>
+            <span>FAANG Roadmap</span>
+          </a>
+        </div>
+
+        <div class="nav-right">
+          <a href="/docs/start-here/00-README" class="nav-link">
+            <span class="nf">{icons.docs}</span>
+            <span>Docs</span>
+          </a>
+          <a
+            href="https://github.com"
+            class="nav-link"
+            target="_blank"
+            rel="noopener"
+          >
+            <span class="nf">{icons.github}</span>
+            <span>GitHub</span>
+          </a>
+          <a href="/leetcode" class="nav-link">
+            <span class="nf">{icons.leetcode}</span>
+            <span>LeetCode</span>
+          </a>
+
+          <button class="search-btn" id="search-btn">
+            <span class="nf">{icons.search}</span>
+            <span class="search-text">Search</span>
+            <span class="kbd">^K</span>
+          </button>
+
+          <div class="theme-toggle">
+            <button class="theme-btn" id="theme-btn" aria-label="Toggle theme">
+              <span class="nf" id="theme-icon">{icons.cat}</span>
+            </button>
+            <div class="theme-dropdown" id="theme-dropdown">
+              <div class="theme-dropdown-header">
+                <span class="nf">{icons.palette}</span>
+                Catppuccin Themes
+              </div>
+              {
+                themes.map((theme) => (
+                  <div class="theme-option" data-theme={theme.id}>
+                    <span class="check">{icons.check}</span>
+                    <span class="nf">{theme.icon}</span>
+                    <span>{theme.name}</span>
+                    <span class="theme-desc">{theme.desc}</span>
+                  </div>
+                ))
+              }
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Main Layout -->
+      <div class="main-layout">
+        {
+          showSidebar && (
+            <aside class="sidebar" id="sidebar">
+              {navigation.map((group) => (
+                <div class="sidebar-section" data-section={group.section}>
+                  <div class="sidebar-title">
+                    <span class="nf">{group.icon}</span>
+                    {group.title}
+                    <span
+                      class="section-progress"
+                      data-section-progress={group.section}
+                    />
+                  </div>
+                  <div class="progress-container">
+                    <div class="progress-bar">
+                      <div
+                        class="progress-fill"
+                        data-progress-bar={group.section}
+                        style="width: 0%"
+                      />
+                    </div>
+                    <div
+                      class="progress-text"
+                      data-progress-text={group.section}
+                    >
+                      0/0
+                    </div>
+                  </div>
+                  <ul class="sidebar-list">
+                    {group.items.map((item) => (
+                      <li class="sidebar-link-wrapper">
+                        <input
+                          type="checkbox"
+                          class="topic-checkbox"
+                          data-topic={item.href}
+                          id={`cb-${item.href.replace(/\//g, "-")}`}
+                        />
+                        <a
+                          href={item.href}
+                          class={`sidebar-link ${activeSection === group.section ? "active" : ""}`}
+                          data-link={item.href}
+                        >
+                          {item.name}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </aside>
+          )
+        }
+
+        <!-- Main Content -->
+        <main class={`main-content ${!showSidebar ? "full-width" : ""}`}>
+          <slot />
+        </main>
+      </div>
+
+      <!-- Footer -->
+      <footer class="site-footer">
+        <div class="footer-content">
+          <div class="footer-brand">
+            <span class="nav-logo">&lt;/&gt;</span>
+            <span>FAANG Roadmap</span>
+          </div>
+          <div class="footer-links">
+            <a href="https://catppuccin.com" target="_blank" rel="noopener">
+              <span class="nf">{icons.cat}</span>
+              Catppuccin Theme
+            </a>
+            <a href="https://astro.build" target="_blank" rel="noopener">
+              <span class="nf">{icons.rocket}</span>
+              Powered by Astro
+            </a>
+          </div>
+          <p
+            style="margin-top: var(--spacing-sm); font-size: 0.85em; color: var(--subtext0);"
+          >
+            Terminal-style documentation for interview preparation
+          </p>
+        </div>
+      </footer>
+    </div>
+
+    <!-- Command Palette Overlay -->
+    <div class="command-palette-overlay" id="command-overlay"></div>
+
+    <!-- Command Palette -->
+    <div class="command-palette" id="command-palette">
+      <div class="command-header">
+        <span class="nf">{icons.search}</span>
+        <input
+          type="text"
+          class="command-input"
+          placeholder="Search documentation..."
+          id="command-input"
+        />
+      </div>
+      <div class="command-results" id="command-results"></div>
+      <div class="command-hint">
+        <span><span class="kbd">↑↓</span> Navigate</span>
+        <span><span class="kbd">↵</span> Select</span>
+        <span><span class="kbd">Esc</span> Close</span>
+      </div>
+    </div>
+
+    <script is:inline>
+      // Theme handling - runs immediately
+      (function () {
+        const savedTheme = localStorage.getItem("catppuccin-theme") || "mocha";
+        document.documentElement.setAttribute("data-theme", savedTheme);
+      })();
+    </script>
+
+    <script>
+      import Fuse from "fuse.js";
+
+      // DOM Elements
+      const searchBtn = document.getElementById("search-btn");
+      const palette = document.getElementById("command-palette");
+      const overlay = document.getElementById("command-overlay");
+      const commandInput = document.getElementById(
+        "command-input",
+      ) as HTMLInputElement;
+      const commandResults = document.getElementById("command-results");
+      const themeBtn = document.getElementById("theme-btn");
+      const themeDropdown = document.getElementById("theme-dropdown");
+      const themeOptions = document.querySelectorAll(".theme-option");
+      const mobileMenuBtn = document.getElementById("mobile-menu-btn");
+      const sidebar = document.getElementById("sidebar");
+
+      // Search functionality
+      let fuse: Fuse<any> | null = null;
+      let searchIndex: any[] = [];
+      let selectedIndex = 0;
+
+      // Load search index
+      async function loadSearchIndex() {
+        try {
+          const response = await fetch("/search-index.json");
+          searchIndex = await response.json();
+          fuse = new Fuse(searchIndex, {
+            keys: [
+              { name: "title", weight: 0.4 },
+              { name: "section", weight: 0.2 },
+              { name: "keywords", weight: 0.25 },
+              { name: "description", weight: 0.15 },
+            ],
+            threshold: 0.4,
+            includeMatches: true,
+            minMatchCharLength: 2,
+          });
+        } catch (error) {
+          console.error("Failed to load search index:", error);
+        }
+      }
+
+      // Render search results
+      function renderResults(results: any[]) {
+        if (!commandResults) return;
+
+        if (results.length === 0) {
+          commandResults.innerHTML = `
+            <div class="no-results">
+              <span class="nf"></span>
+              <span>No results found</span>
+            </div>
+          `;
+          return;
+        }
+
+        selectedIndex = 0;
+        commandResults.innerHTML = results
+          .slice(0, 10)
+          .map(
+            (result, idx) => `
+          <a href="${result.item.href}" class="search-result ${idx === 0 ? "selected" : ""}" data-index="${idx}">
+            <div class="result-header">
+              <span class="result-title">${result.item.title}</span>
+              <span class="result-section">${result.item.section}</span>
+            </div>
+            <div class="result-description">${result.item.description || ""}</div>
+          </a>
+        `,
+          )
+          .join("");
+
+        // Add click handlers
+        const resultElements =
+          commandResults.querySelectorAll(".search-result");
+        resultElements.forEach((el) => {
+          el.addEventListener("click", (e) => {
+            closePalette();
+          });
+        });
+      }
+
+      // Handle keyboard navigation in results
+      function updateSelectedResult() {
+        const results = commandResults?.querySelectorAll(".search-result");
+        results?.forEach((el, idx) => {
+          el.classList.toggle("selected", idx === selectedIndex);
+        });
+      }
+
+      // Command Palette
+      function openPalette() {
+        palette?.classList.add("open");
+        overlay?.classList.add("open");
+        commandInput?.focus();
+        if (!fuse) loadSearchIndex();
+      }
+
+      function closePalette() {
+        palette?.classList.remove("open");
+        overlay?.classList.remove("open");
+        if (commandInput) commandInput.value = "";
+        if (commandResults) commandResults.innerHTML = "";
+        selectedIndex = 0;
+      }
+
+      // Search input handler
+      commandInput?.addEventListener("input", (e) => {
+        const query = (e.target as HTMLInputElement).value.trim();
+        if (!fuse || query.length < 2) {
+          if (commandResults) commandResults.innerHTML = "";
+          return;
+        }
+        const results = fuse.search(query);
+        renderResults(results);
+      });
+
+      // Keyboard navigation in results
+      commandInput?.addEventListener("keydown", (e) => {
+        const results = commandResults?.querySelectorAll(".search-result");
+        if (!results || results.length === 0) return;
+
+        if (e.key === "ArrowDown") {
+          e.preventDefault();
+          selectedIndex = Math.min(selectedIndex + 1, results.length - 1);
+          updateSelectedResult();
+        } else if (e.key === "ArrowUp") {
+          e.preventDefault();
+          selectedIndex = Math.max(selectedIndex - 1, 0);
+          updateSelectedResult();
+        } else if (e.key === "Enter") {
+          e.preventDefault();
+          const selected = results[selectedIndex] as HTMLAnchorElement;
+          if (selected) {
+            window.location.href = selected.href;
+            closePalette();
+          }
+        }
+      });
+
+      searchBtn?.addEventListener("click", openPalette);
+      overlay?.addEventListener("click", closePalette);
+
+      document.addEventListener("keydown", (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === "k") {
+          e.preventDefault();
+          if (palette?.classList.contains("open")) {
+            closePalette();
+          } else {
+            openPalette();
+          }
+        }
+        if (e.key === "Escape") {
+          closePalette();
+          themeDropdown?.classList.remove("open");
+        }
+      });
+
+      // Theme Toggle
+      function setTheme(theme: string) {
+        document.documentElement.setAttribute("data-theme", theme);
+        localStorage.setItem("catppuccin-theme", theme);
+
+        // Update active state
+        themeOptions.forEach((opt) => {
+          opt.classList.toggle(
+            "active",
+            opt.getAttribute("data-theme") === theme,
+          );
+        });
+
+        themeDropdown?.classList.remove("open");
+      }
+
+      themeBtn?.addEventListener("click", (e) => {
+        e.stopPropagation();
+        themeDropdown?.classList.toggle("open");
+      });
+
+      themeOptions.forEach((opt) => {
+        opt.addEventListener("click", () => {
+          const theme = opt.getAttribute("data-theme");
+          if (theme) setTheme(theme);
+        });
+      });
+
+      // Initialize theme state
+      const currentTheme = localStorage.getItem("catppuccin-theme") || "mocha";
+      themeOptions.forEach((opt) => {
+        opt.classList.toggle(
+          "active",
+          opt.getAttribute("data-theme") === currentTheme,
+        );
+      });
+
+      // Close dropdown when clicking outside
+      document.addEventListener("click", (e) => {
+        if (
+          !themeBtn?.contains(e.target as Node) &&
+          !themeDropdown?.contains(e.target as Node)
+        ) {
+          themeDropdown?.classList.remove("open");
+        }
+      });
+
+      // Mobile Menu
+      mobileMenuBtn?.addEventListener("click", () => {
+        sidebar?.classList.toggle("open");
+        const icon = mobileMenuBtn.querySelector(".nf");
+        if (icon) {
+          icon.textContent = sidebar?.classList.contains("open") ? "" : "";
+        }
+      });
+
+      // Close sidebar on link click (mobile)
+      const sidebarLinks = document.querySelectorAll(".sidebar-link");
+      sidebarLinks.forEach((link) => {
+        link.addEventListener("click", () => {
+          if (window.innerWidth <= 900) {
+            sidebar?.classList.remove("open");
+          }
+        });
+      });
+
+      // ============================================
+      // Progress Tracking System
+      // ============================================
+
+      const PROGRESS_KEY = "faang-roadmap-progress";
+
+      // Load saved progress from localStorage
+      function loadProgress(): Record<string, boolean> {
+        try {
+          const saved = localStorage.getItem(PROGRESS_KEY);
+          return saved ? JSON.parse(saved) : {};
+        } catch {
+          return {};
+        }
+      }
+
+      // Save progress to localStorage
+      function saveProgress(progress: Record<string, boolean>) {
+        localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
+      }
+
+      // Update progress bars for all sections
+      function updateProgressBars() {
+        const sections = document.querySelectorAll(".sidebar-section");
+
+        sections.forEach((section) => {
+          const sectionId = section.getAttribute("data-section");
+          if (!sectionId) return;
+
+          const checkboxes = section.querySelectorAll(".topic-checkbox");
+          const total = checkboxes.length;
+          const completed = Array.from(checkboxes).filter(
+            (cb) => (cb as HTMLInputElement).checked,
+          ).length;
+
+          const progressBar = document.querySelector(
+            `[data-progress-bar="${sectionId}"]`,
+          ) as HTMLElement;
+          const progressText = document.querySelector(
+            `[data-progress-text="${sectionId}"]`,
+          ) as HTMLElement;
+
+          if (progressBar) {
+            const percentage = total > 0 ? (completed / total) * 100 : 0;
+            progressBar.style.width = `${percentage}%`;
+          }
+
+          if (progressText) {
+            progressText.textContent = `${completed}/${total}`;
+          }
+        });
+      }
+
+      // Initialize progress tracking
+      function initProgressTracking() {
+        const progress = loadProgress();
+        const checkboxes = document.querySelectorAll(".topic-checkbox");
+
+        checkboxes.forEach((checkbox) => {
+          const topic = checkbox.getAttribute("data-topic");
+          if (!topic) return;
+
+          const input = checkbox as HTMLInputElement;
+
+          // Restore saved state
+          if (progress[topic]) {
+            input.checked = true;
+            // Update link styling
+            const link = document.querySelector(`[data-link="${topic}"]`);
+            link?.classList.add("completed");
+          }
+
+          // Add change handler
+          input.addEventListener("change", () => {
+            const newProgress = loadProgress();
+            newProgress[topic] = input.checked;
+            saveProgress(newProgress);
+
+            // Update link styling
+            const link = document.querySelector(`[data-link="${topic}"]`);
+            if (input.checked) {
+              link?.classList.add("completed");
+            } else {
+              link?.classList.remove("completed");
+            }
+
+            updateProgressBars();
+          });
+        });
+
+        // Initial update
+        updateProgressBars();
+      }
+
+      // Initialize on page load
+      initProgressTracking();
+    </script>
+
+    <style>
+      .theme-dropdown-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75ch;
+        padding: var(--spacing-sm) var(--spacing-md);
+        color: var(--accent-pink);
+        font-size: 0.85em;
+        font-weight: var(--font-weight-bold);
+        border-bottom: 1px solid var(--surface0);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .theme-desc {
+        margin-left: auto;
+        font-size: 0.8em;
+        color: var(--subtext0);
+      }
+
+      /* Search Results Styling */
+      .command-results {
+        max-height: 400px;
+        overflow-y: auto;
+      }
+
+      .command-results:empty {
+        display: none;
+      }
+
+      .search-result {
+        display: block;
+        padding: var(--spacing-sm) var(--spacing-md);
+        padding-left: calc(var(--spacing-md) + 2px);
+        text-decoration: none;
+        border-bottom: 1px solid var(--surface0);
+        border-left: 2px solid transparent;
+        transition:
+          background-color 0.15s ease,
+          border-color 0.15s ease;
+      }
+
+      .search-result:last-child {
+        border-bottom: none;
+      }
+
+      .search-result:hover,
+      .search-result.selected {
+        background: var(--surface0);
+        border-left-color: var(--blue);
+      }
+
+      .result-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1ch;
+        margin-bottom: 0.25em;
+      }
+
+      .result-title {
+        color: var(--text);
+        font-weight: var(--font-weight-bold);
+        font-size: 0.95em;
+      }
+
+      .result-section {
+        color: var(--subtext0);
+        font-size: 0.75em;
+        padding: 0.1em 0.5em;
+        background: var(--surface1);
+        border-radius: 2px;
+        white-space: nowrap;
+      }
+
+      .result-description {
+        color: var(--subtext1);
+        font-size: 0.8em;
+        line-height: 1.4;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+      }
+
+      .no-results {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: var(--spacing-xl);
+        color: var(--subtext0);
+        gap: 0.5em;
+      }
+
+      .no-results .nf {
+        font-size: 1.5em;
+        color: var(--surface2);
+      }
+
+      /* Progress Bar Styling */
+      .progress-container {
+        margin-top: var(--spacing-sm);
+        margin-bottom: var(--spacing-xs);
+      }
+
+      .progress-bar {
+        height: 4px;
+        background: var(--surface0);
+        border-radius: 2px;
+        overflow: hidden;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--green), var(--teal));
+        transition: width 0.3s ease;
+        border-radius: 2px;
+      }
+
+      .progress-text {
+        font-size: 0.7em;
+        color: var(--subtext0);
+        margin-top: 2px;
+        text-align: right;
+      }
+
+      /* Checkbox Styling for Progress Tracking */
+      .topic-checkbox {
+        appearance: none;
+        width: 14px;
+        height: 14px;
+        border: 1px solid var(--surface2);
+        border-radius: 2px;
+        background: var(--surface0);
+        cursor: pointer;
+        vertical-align: middle;
+        margin-right: 0.5ch;
+        position: relative;
+        flex-shrink: 0;
+      }
+
+      .topic-checkbox:checked {
+        background: var(--green);
+        border-color: var(--green);
+      }
+
+      .topic-checkbox:checked::after {
+        content: "";
+        position: absolute;
+        left: 4px;
+        top: 1px;
+        width: 4px;
+        height: 8px;
+        border: solid var(--base);
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+      }
+
+      .topic-checkbox:hover {
+        border-color: var(--blue);
+      }
+
+      .sidebar-link-wrapper {
+        display: flex;
+        align-items: center;
+      }
+
+      .sidebar-link.completed {
+        text-decoration: line-through;
+        color: var(--subtext0);
+      }
+    </style>
+  </body>
+</html>

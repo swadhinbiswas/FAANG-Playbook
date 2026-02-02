@@ -1,0 +1,38 @@
+{
+  "name": "faang-job-prep-2026-2027",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "FAANG Job Prep 2026-2027 - Complete interview roadmap for Google, Amazon, Meta, Apple, Netflix & BigTech companies",
+  "keywords": [
+    "faang",
+    "interview-prep",
+    "google-interview",
+    "amazon-interview",
+    "meta-interview",
+    "system-design",
+    "dsa",
+    "leetcode",
+    "coding-interview",
+    "tech-interview",
+    "software-engineer"
+  ],
+  "author": "FAANG Roadmap Team",
+  "license": "MIT",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "node scripts/generate-search-index.js && astro build",
+    "build:db": "bun run scripts/build-leetcode-db.ts",
+    "build:all": "bun run build:db && bun run build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.0",
+    "@libsql/client": "^0.17.0",
+    "@webtui/css": "^0.1.6",
+    "@webtui/plugin-nf": "^0.1.1",
+    "astro": "^5.17.1",
+    "csv-parse": "^6.1.0",
+    "fuse.js": "^7.1.0"
+  }
+}

@@ -1,0 +1,706 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+// Company icon helper - NerdFonts icons
+function getCompanyIcon(name: string): string {
+  const icons: Record<string, string> = {
+    // FAANG / Big Tech
+    google: '󰊭',      // nf-md-google
+    amazon: '󰸏',      // nf-md-amazon
+    apple: '󰀵',       // nf-md-apple
+    meta: '󰈌',        // nf-md-facebook
+    facebook: '󰈌',    // nf-md-facebook
+    microsoft: '󰍲',   // nf-md-microsoft
+    netflix: '󰝆',     // nf-md-netflix
+
+    // Tech Giants
+    uber: '󰜧',        // nf-md-car
+    lyft: '󰜧',        // nf-md-car
+    airbnb: '󰜡',      // nf-md-home_city
+    linkedin: '󰌻',    // nf-md-linkedin
+    twitter: '󰕄',     // nf-md-twitter
+    stripe: '󰄬',      // nf-md-credit_card
+    salesforce: '󰅴',  // nf-md-cloud
+    adobe: '󰣯',       // nf-md-adobe
+    oracle: '󰆼',      // nf-md-database
+    nvidia: '󰾲',      // nf-md-chip
+    intel: '󰻠',       // nf-md-memory
+    ibm: '󰖳',         // nf-md-cube_outline
+
+    // Social / Media
+    spotify: '󰓇',     // nf-md-spotify
+    snap: '󰒶',        // nf-md-snapchat
+    snapchat: '󰒶',    // nf-md-snapchat
+    pinterest: '󰐪',   // nf-md-pinterest
+    reddit: '󰑍',      // nf-md-reddit
+    tiktok: '󰗃',      // nf-md-music_note
+    youtube: '󰗃',     // nf-md-youtube
+    twitch: '󰕃',      // nf-md-twitch
+    discord: '󰙯',     // nf-md-discord (using message icon)
+
+    // Cloud / Dev Tools
+    dropbox: '󰇣',     // nf-md-dropbox
+    slack: '󰒱',       // nf-md-slack
+    zoom: '󰕧',        // nf-md-video
+    atlassian: '󰑜',   // nf-md-jira (Atlassian owns Jira)
+    github: '󰊤',      // nf-md-github
+    gitlab: '󰮠',      // nf-md-gitlab
+
+    // Finance
+    bloomberg: '󰊴',   // nf-md-chart_line
+    citadel: '󰊴',     // nf-md-chart_line
+    goldman: '󰊴',     // nf-md-chart_line
+    jpmorgan: '󰊴',    // nf-md-chart_line
+    morgan: '󰊴',      // nf-md-chart_line
+    'two-sigma': '󰊴', // nf-md-chart_line
+    robinhood: '󰊴',   // nf-md-chart_line
+    coinbase: '󰆓',    // nf-md-bitcoin
+    paypal: '󰄬',      // nf-md-credit_card
+    visa: '󰄬',        // nf-md-credit_card
+    mastercard: '󰄬',  // nf-md-credit_card
+    'capital-one': '󰊴', // nf-md-chart_line
+    barclays: '󰊴',    // nf-md-chart_line
+    blackrock: '󰊴',   // nf-md-chart_line
+
+    // E-commerce / Delivery
+    ebay: '󰒍',        // nf-md-cart
+    walmart: '󰒍',     // nf-md-cart
+    shopify: '󰒍',     // nf-md-cart
+    doordash: '󰩱',    // nf-md-food
+    instacart: '󰒍',   // nf-md-cart
+    wish: '󰒍',        // nf-md-cart
+    wayfair: '󰋞',     // nf-md-sofa
+
+    // Data / Cloud
+    databricks: '󰆼',  // nf-md-database
+    snowflake: '󰆼',   // nf-md-database
+    palantir: '󰆼',    // nf-md-database
+    splunk: '󰆼',      // nf-md-database
+    elastic: '󰆼',     // nf-md-database
+    mongodb: '󰆼',     // nf-md-database
+
+    // Hardware / Semiconductor
+    qualcomm: '󰻠',    // nf-md-memory
+    amd: '󰻠',         // nf-md-memory
+    samsung: '󰄜',     // nf-md-cellphone
+    sony: '󰊖',        // nf-md-gamepad
+
+    // Gaming
+    roblox: '󰊖',      // nf-md-gamepad
+    zynga: '󰊖',       // nf-md-gamepad
+    ea: '󰊖',          // nf-md-gamepad
+    valve: '󰊖',       // nf-md-gamepad
+    blizzard: '󰊖',    // nf-md-gamepad
+
+    // Enterprise / B2B
+    vmware: '󰅴',      // nf-md-cloud
+    cisco: '󰛳',       // nf-md-lan
+    sap: '󰖳',         // nf-md-cube_outline
+    servicenow: '󰖳',  // nf-md-cube_outline
+    workday: '󰖳',     // nf-md-cube_outline
+
+    // Travel / Transport
+    booking: '󱃵',     // nf-md-airplane
+    expedia: '󱃵',     // nf-md-airplane
+    tripadvisor: '󱃵', // nf-md-airplane
+    tesla: '󰜧',       // nf-md-car
+    rivian: '󰜧',      // nf-md-car
+
+    // Telecom
+    verizon: '󰄜',     // nf-md-cellphone
+    att: '󰄜',         // nf-md-cellphone
+    tmobile: '󰄜',     // nf-md-cellphone
+
+    // Security
+    crowdstrike: '󰒃', // nf-md-shield
+    palo: '󰒃',        // nf-md-shield
+    zscaler: '󰒃',     // nf-md-shield
+
+    // China Tech
+    bytedance: '󰗃',   // nf-md-music_note (TikTok parent)
+    tencent: '󱜸',     // nf-md-qqchat
+    alibaba: '󰒍',     // nf-md-cart
+    baidu: '󰊭',       // nf-md-google (search engine)
+    huawei: '󰄜',      // nf-md-cellphone
+    xiaomi: '󰄜',      // nf-md-cellphone
+    didi: '󰜧',        // nf-md-car
+
+    // Other Tech
+    yahoo: '󰑫',       // nf-md-yahoo
+    yelp: '󰊯',        // nf-md-star
+    zillow: '󰜡',      // nf-md-home_city
+    docusign: '󰈙',    // nf-md-file_document
+    box: '󰉘',         // nf-md-folder
+    asana: '󰄹',       // nf-md-check_circle
+    notion: '󰈙',      // nf-md-file_document
+    figma: '󰈉',       // nf-md-drawing
+    canva: '󰈉',       // nf-md-drawing
+
+    // Default fallbacks by category keywords
+    bank: '󰊴',        // nf-md-chart_line
+    capital: '󰊴',     // nf-md-chart_line
+    tech: '󰌌',        // nf-md-laptop
+    software: '󰌌',    // nf-md-laptop
+    labs: '󰂔',        // nf-md-flask
+    ai: '󰧑',          // nf-md-robot
+    health: '󰺆',      // nf-md-hospital
+    bio: '󰂔',         // nf-md-flask
+  };
+
+  const lowerName = name?.toLowerCase() || '';
+  for (const [key, icon] of Object.entries(icons)) {
+    if (lowerName.includes(key)) {
+      return icon;
+    }
+  }
+  return '󰈔'; // Default: nf-md-office_building
+}
+
+// Read the pre-generated JSON data
+let leetcodeData: any = null;
+try {
+  const response = await fetch(new URL('/leetcode-data.json', Astro.url.origin));
+  if (response.ok) {
+    leetcodeData = await response.json();
+  }
+} catch (e) {
+  // Try to read from file during build
+  try {
+    const fs = await import('fs');
+    const path = await import('path');
+    const jsonPath = path.join(process.cwd(), 'public', 'leetcode-data.json');
+    if (fs.existsSync(jsonPath)) {
+      leetcodeData = JSON.parse(fs.readFileSync(jsonPath, 'utf-8'));
+    }
+  } catch (e2) {
+    console.log('LeetCode data not available yet. Run: bun run scripts/build-leetcode-db.ts');
+  }
+}
+
+const pageTitle = "LeetCode Questions by Company";
+const pageDescription = "Browse company-tagged LeetCode problems for FAANG interview preparation. Filter by company, difficulty, and time period.";
+---
+
+<Layout title={pageTitle} description={pageDescription}>
+  <div class="leetcode-page">
+    <header class="page-header">
+      <h1>
+        <span class="nf"></span>
+        LeetCode Questions by Company
+      </h1>
+      <p class="page-subtitle">
+        Real interview questions from top tech companies. Filter by company and timeframe to focus your preparation.
+      </p>
+
+      {leetcodeData && (
+        <div class="stats-bar">
+          <div class="stat-item">
+            <span class="stat-value">{leetcodeData.stats.totalCompanies}</span>
+            <span class="stat-label">Companies</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value">{leetcodeData.stats.totalProblems}</span>
+            <span class="stat-label">Problems</span>
+          </div>
+          <div class="stat-item easy">
+            <span class="stat-value">{leetcodeData.stats.byDifficulty?.Easy || 0}</span>
+            <span class="stat-label">Easy</span>
+          </div>
+          <div class="stat-item medium">
+            <span class="stat-value">{leetcodeData.stats.byDifficulty?.Medium || 0}</span>
+            <span class="stat-label">Medium</span>
+          </div>
+          <div class="stat-item hard">
+            <span class="stat-value">{leetcodeData.stats.byDifficulty?.Hard || 0}</span>
+            <span class="stat-label">Hard</span>
+          </div>
+        </div>
+      )}
+    </header>
+
+    <!-- Search and Filter Section -->
+    <div class="controls-section">
+      <div class="search-box">
+        <span class="nf"></span>
+        <input
+          type="text"
+          id="company-search"
+          placeholder="Search companies (Google, Amazon, Meta...)"
+          autocomplete="off"
+        />
+      </div>
+
+      <div class="filter-chips">
+        <button class="filter-chip active" data-filter="all">All Companies</button>
+        <button class="filter-chip" data-filter="faang">FAANG</button>
+        <button class="filter-chip" data-filter="finance">Finance</button>
+        <button class="filter-chip" data-filter="startup">Startups</button>
+      </div>
+    </div>
+
+    {!leetcodeData ? (
+      <div class="no-data-message">
+        <span class="nf">󰋼</span>
+        <h3>Database Not Built Yet</h3>
+        <p>Run the database builder to generate LeetCode data:</p>
+        <pre><code>cd website && bun run scripts/build-leetcode-db.ts</code></pre>
+      </div>
+    ) : (
+      <>
+        <!-- Top Companies Grid -->
+        <section class="companies-section">
+          <h2>
+            <span class="nf"></span>
+            Top Companies by Problem Count
+          </h2>
+
+          <div class="companies-grid" id="companies-grid">
+            {leetcodeData.topCompanies.map((company: any) => (
+              <a
+                href={`/leetcode/${company.name}`}
+                class="company-card"
+                data-company={company.name}
+                data-problems={company.problemCount}
+              >
+                <div class="company-icon">
+                  {getCompanyIcon(company.name)}
+                </div>
+                <div class="company-info">
+                  <h3>{company.displayName}</h3>
+                  <span class="problem-count">
+                    <span class="nf"></span>
+                    {company.problemCount} problems
+                  </span>
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
+
+        <!-- All Companies List -->
+        <section class="all-companies-section">
+          <h2>
+            <span class="nf"></span>
+            All Companies
+          </h2>
+
+          <div class="companies-list" id="companies-list">
+            {leetcodeData.companies.map((company: any) => (
+              <a
+                href={`/leetcode/${company.name}`}
+                class="company-list-item"
+                data-company={company.name}
+                data-problems={company.totalProblems}
+              >
+                <span class="company-name">{company.displayName}</span>
+                <span class="company-meta">
+                  <span class="problem-badge">{company.totalProblems} problems</span>
+                  {company.timeframes?.length > 0 && (
+                    <span class="timeframe-badge">
+                      {company.timeframes.includes('6months') && '6M '}
+                      {company.timeframes.includes('1year') && '1Y '}
+                      {company.timeframes.includes('2year') && '2Y '}
+                    </span>
+                  )}
+                </span>
+              </a>
+            ))}
+          </div>
+        </section>
+      </>
+    )}
+  </div>
+</Layout>
+
+<script>
+  // Company search functionality
+  const searchInput = document.getElementById('company-search') as HTMLInputElement;
+  const companiesGrid = document.getElementById('companies-grid');
+  const companiesList = document.getElementById('companies-list');
+  const filterChips = document.querySelectorAll('.filter-chip');
+
+  // FAANG and category mappings
+  const faangCompanies = ['google', 'amazon', 'apple', 'meta', 'facebook', 'netflix', 'microsoft'];
+  const financeCompanies = ['goldman', 'goldmansachs', 'jpmorgan', 'morgan-stanley', 'citadel', 'two-sigma', 'jane-street', 'bloomberg', 'capital-one', 'robinhood', 'stripe'];
+  const startupCompanies = ['airbnb', 'uber', 'lyft', 'doordash', 'instacart', 'coinbase', 'databricks', 'snowflake', 'figma', 'notion', 'discord'];
+
+  function filterCompanies(query: string, category: string = 'all') {
+    const gridCards = companiesGrid?.querySelectorAll('.company-card');
+    const listItems = companiesList?.querySelectorAll('.company-list-item');
+
+    const filterFn = (el: Element) => {
+      const companyName = el.getAttribute('data-company')?.toLowerCase() || '';
+      const matchesSearch = !query || companyName.includes(query.toLowerCase());
+
+      let matchesCategory = true;
+      if (category === 'faang') {
+        matchesCategory = faangCompanies.some(f => companyName.includes(f));
+      } else if (category === 'finance') {
+        matchesCategory = financeCompanies.some(f => companyName.includes(f));
+      } else if (category === 'startup') {
+        matchesCategory = startupCompanies.some(f => companyName.includes(f));
+      }
+
+      return matchesSearch && matchesCategory;
+    };
+
+    gridCards?.forEach(card => {
+      (card as HTMLElement).style.display = filterFn(card) ? '' : 'none';
+    });
+
+    listItems?.forEach(item => {
+      (item as HTMLElement).style.display = filterFn(item) ? '' : 'none';
+    });
+  }
+
+  // Search input handler
+  searchInput?.addEventListener('input', (e) => {
+    const activeFilter = document.querySelector('.filter-chip.active')?.getAttribute('data-filter') || 'all';
+    filterCompanies((e.target as HTMLInputElement).value, activeFilter);
+  });
+
+  // Filter chip handlers
+  filterChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      filterChips.forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      const category = chip.getAttribute('data-filter') || 'all';
+      filterCompanies(searchInput?.value || '', category);
+    });
+  });
+</script>
+
+<style>
+  .leetcode-page {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: var(--spacing-lg);
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .page-header h1 {
+    font-size: 2rem;
+    margin-bottom: var(--spacing-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+  }
+
+  .page-header h1 .nf {
+    color: var(--mauve);
+  }
+
+  .page-subtitle {
+    color: var(--subtext0);
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto var(--spacing-lg);
+  }
+
+  .stats-bar {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-lg);
+    flex-wrap: wrap;
+  }
+
+  .stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--surface0);
+    border-radius: var(--radius-md);
+    min-width: 80px;
+  }
+
+  .stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .stat-label {
+    font-size: 0.75rem;
+    color: var(--subtext0);
+    text-transform: uppercase;
+  }
+
+  .stat-item.easy .stat-value { color: var(--green); }
+  .stat-item.medium .stat-value { color: var(--yellow); }
+  .stat-item.hard .stat-value { color: var(--red); }
+
+  /* Controls Section */
+  .controls-section {
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .search-box {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    background: var(--surface0);
+    border: 1px solid var(--surface1);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-sm) var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .search-box .nf {
+    color: var(--subtext0);
+    font-size: 1.2rem;
+  }
+
+  .search-box input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text);
+    font-size: 1rem;
+    outline: none;
+  }
+
+  .search-box input::placeholder {
+    color: var(--subtext0);
+  }
+
+  .filter-chips {
+    display: flex;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+  }
+
+  .filter-chip {
+    padding: var(--spacing-xs) var(--spacing-md);
+    background: var(--surface0);
+    border: 1px solid var(--surface1);
+    border-radius: var(--radius-full);
+    color: var(--subtext1);
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .filter-chip:hover {
+    background: var(--surface1);
+    color: var(--text);
+  }
+
+  .filter-chip.active {
+    background: var(--mauve);
+    color: var(--base);
+    border-color: var(--mauve);
+  }
+
+  /* Companies Grid */
+  .companies-section h2,
+  .all-companies-section h2 {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+    font-size: 1.25rem;
+  }
+
+  .companies-section h2 .nf { color: var(--blue); }
+  .all-companies-section h2 .nf { color: var(--teal); }
+
+  .companies-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .company-card {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md);
+    background: var(--surface0);
+    border: 1px solid var(--surface1);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .company-card:hover {
+    background: var(--surface1);
+    border-color: var(--mauve);
+    transform: translateY(-2px);
+  }
+
+  .company-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface1);
+    border-radius: var(--radius-sm);
+    font-size: 1.25rem;
+  }
+
+  .company-info h3 {
+    font-size: 0.95rem;
+    color: var(--text);
+    margin: 0;
+  }
+
+  .problem-count {
+    font-size: 0.75rem;
+    color: var(--subtext0);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .problem-count .nf {
+    color: var(--green);
+  }
+
+  /* All Companies List */
+  .all-companies-section {
+    margin-top: var(--spacing-xl);
+  }
+
+  .companies-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--spacing-xs);
+  }
+
+  .company-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--surface0);
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+
+  .company-list-item:hover {
+    background: var(--surface1);
+  }
+
+  .company-name {
+    color: var(--text);
+    font-size: 0.9rem;
+  }
+
+  .company-meta {
+    display: flex;
+    gap: var(--spacing-xs);
+    align-items: center;
+  }
+
+  .problem-badge {
+    font-size: 0.75rem;
+    color: var(--subtext0);
+    background: var(--surface1);
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+  }
+
+  .timeframe-badge {
+    font-size: 0.7rem;
+    color: var(--mauve);
+  }
+
+  /* No Data Message */
+  .no-data-message {
+    text-align: center;
+    padding: var(--spacing-xl);
+    background: var(--surface0);
+    border-radius: var(--radius-md);
+    border: 1px dashed var(--surface2);
+  }
+
+  .no-data-message .nf {
+    font-size: 3rem;
+    color: var(--yellow);
+  }
+
+  .no-data-message h3 {
+    margin: var(--spacing-md) 0 var(--spacing-sm);
+  }
+
+  .no-data-message pre {
+    background: var(--mantle);
+    padding: var(--spacing-md);
+    border-radius: var(--radius-sm);
+    overflow-x: auto;
+    margin-top: var(--spacing-md);
+  }
+
+  .no-data-message code {
+    color: var(--green);
+  }
+
+  @media (max-width: 768px) {
+    .stats-bar {
+      gap: var(--spacing-sm);
+    }
+
+    .stat-item {
+      min-width: 60px;
+      padding: var(--spacing-xs) var(--spacing-sm);
+    }
+
+    .stat-value {
+      font-size: 1.2rem;
+    }
+
+    .companies-grid {
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    }
+  }
+</style>
+
+<!-- Helper function for company icons -->
+<script is:inline define:vars={{ }}>
+  function getCompanyIcon(name) {
+    const icons = {
+      google: '',
+      amazon: '',
+      apple: '',
+      meta: '',
+      facebook: '',
+      microsoft: '',
+      netflix: '󰝆',
+      uber: '',
+      airbnb: '',
+      linkedin: '',
+      twitter: '',
+      stripe: '',
+      salesforce: '󰢎',
+      adobe: '',
+      oracle: '',
+      nvidia: '󰾲',
+      intel: '',
+      ibm: '',
+      spotify: '',
+      snap: '󰒶',
+      pinterest: '',
+      reddit: '',
+      dropbox: '',
+      slack: '󰒱',
+      zoom: '󰕧',
+      default: ''
+    };
+
+    for (const [key, icon] of Object.entries(icons)) {
+      if (name.toLowerCase().includes(key)) {
+        return icon;
+      }
+    }
+    return icons.default;
+  }
+</script>

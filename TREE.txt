@@ -1,0 +1,54 @@
+V2 (recommended front door)
+00-Hiring-Pipeline/
+  00-Index.md
+  01-ATS-and-Shortlisting.md
+  02-Recruiter-Screen.md
+  03-Online-Assessments.md
+  04-Phone-Screens.md
+  05-Onsite-Loop.md
+  06-Debrief-and-Decision.md
+  07-Offer-and-Closing.md
+01-Foundations/
+  00-Index.md
+02-Role-Roadmaps/
+  00-Index.md
+  01-SWE-Generalist.md
+  02-Backend-Engineer.md
+  03-Machine-Learning-Engineer.md
+  04-Data-Engineer.md
+  05-Data-Scientist.md
+  06-DevOps-SRE.md
+  07-MLOps-Engineer.md
+03-Interviews/
+  00-Index.md
+04-System-Design-Library/
+  00-Index.md
+05-ML-MLOps/
+  00-Index.md
+06-Data/
+  00-Index.md
+07-Infra-DevOps/
+  00-Index.md
+08-Company-Specific-Notes/
+  00-Index.md
+  01-FAANG-BigTech.md
+  02-Unicorns-Startups.md
+  03-Enterprise-Software.md
+  04-Automotive-Industrial.md
+  05-Geography-Leveling.md
+
+V1 (legacy detailed folders)
+00-START-HERE/
+01-FOUNDATIONS/
+02-ROLE-ROADMAPS/
+03-INTERVIEWS/
+04-SYSTEM-DESIGN-LIBRARY/
+05-ML-MLOPS/
+06-DATA/
+07-INFRA-DEVOPS/
+08-CAREER/
+
+Root
+README.md
+RESOURCES.md
+scripts/

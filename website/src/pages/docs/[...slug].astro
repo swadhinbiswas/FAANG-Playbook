@@ -1,0 +1,444 @@
+---
+import fs from "node:fs";
+import path from "node:path";
+import Layout from "../../layouts/Layout.astro";
+
+// Map URL slugs to actual folder names - defined at module level
+const sectionMap: Record<string, string> = {
+  "hiring-pipeline": "00-Hiring-Pipeline",
+  "start-here": "00-START-HERE",
+  foundations: "01-FOUNDATIONS",
+  "role-roadmaps": "02-ROLE-ROADMAPS",
+  interviews: "03-INTERVIEWS",
+  "system-design": "04-SYSTEM-DESIGN-LIBRARY",
+  "ml-mlops": "05-ML-MLOPS",
+  "mock-interviews": "05-Mock-Interviews",
+  data: "06-DATA",
+  "study-plans": "06-Study-Plans",
+  "infra-devops": "07-INFRA-DEVOPS",
+  career: "08-CAREER",
+  "company-notes": "08-Company-Specific-Notes",
+};
+
+// Section titles for display (using Nerd Font icons)
+const sectionTitles: Record<string, string> = {
+  "hiring-pipeline": " Hiring Pipeline",
+  "start-here": " Start Here",
+  foundations: " Foundations",
+  "role-roadmaps": " Role Roadmaps",
+  interviews: " Interviews",
+  "system-design": " System Design",
+  "ml-mlops": " ML & MLOps",
+  "mock-interviews": " Mock Interviews",
+  data: " Data",
+  "study-plans": " Study Plans",
+  "infra-devops": " Infra & DevOps",
+  career: " Career",
+  "company-notes": " Company Notes",
+};
+
+export async function getStaticPaths() {
+  // Inline the section map in the function for build compatibility
+  const sections: Record<string, string> = {
+    "hiring-pipeline": "00-Hiring-Pipeline",
+    "start-here": "00-START-HERE",
+    foundations: "01-FOUNDATIONS",
+    "role-roadmaps": "02-ROLE-ROADMAPS",
+    interviews: "03-INTERVIEWS",
+    "system-design": "04-SYSTEM-DESIGN-LIBRARY",
+    "ml-mlops": "05-ML-MLOPS",
+    "mock-interviews": "05-Mock-Interviews",
+    data: "06-DATA",
+    "study-plans": "06-Study-Plans",
+    "infra-devops": "07-INFRA-DEVOPS",
+    career: "08-CAREER",
+    "company-notes": "08-Company-Specific-Notes",
+  };
+
+  const paths: {
+    params: { slug: string };
+    props: { section: string; file: string; title: string };
+  }[] = [];
+  const rootDir = path.resolve(process.cwd(), "..");
+
+  for (const [urlSlug, folderName] of Object.entries(sections)) {
+    const folderPath = path.join(rootDir, folderName);
+
+    if (fs.existsSync(folderPath)) {
+      const files = fs.readdirSync(folderPath).filter((f) => f.endsWith(".md"));
+
+      for (const file of files) {
+        const fileSlug = file.replace(".md", "");
+        const title = fileSlug.replace(/^\d+-/, "").replace(/-/g, " ");
+
+        paths.push({
+          params: { slug: `${urlSlug}/${fileSlug}` },
+          props: {
+            section: urlSlug,
+            file: path.join(folderPath, file),
+            title,
+          },
+        });
+      }
+    }
+  }
+
+  return paths;
+}
+
+const { section, file, title } = Astro.props;
+
+// Read and parse the markdown content
+const content = fs.readFileSync(file, "utf-8");
+
+// Map folder names to URL slugs for link transformation
+const folderToSlug: Record<string, string> = {
+  "00-Hiring-Pipeline": "hiring-pipeline",
+  "00-START-HERE": "start-here",
+  "01-FOUNDATIONS": "foundations",
+  "02-ROLE-ROADMAPS": "role-roadmaps",
+  "03-INTERVIEWS": "interviews",
+  "04-SYSTEM-DESIGN-LIBRARY": "system-design",
+  "05-ML-MLOPS": "ml-mlops",
+  "05-Mock-Interviews": "mock-interviews",
+  "06-DATA": "data",
+  "06-Study-Plans": "study-plans",
+  "07-INFRA-DEVOPS": "infra-devops",
+  "08-CAREER": "career",
+  "08-Company-Specific-Notes": "company-notes",
+  // Also handle lowercase/titlecase variants
+  "04-System-Design-Library": "system-design",
+  "05-ML-MLOps": "ml-mlops",
+  "06-Data": "data",
+  "07-Infra-DevOps": "infra-devops",
+};
+
+// Transform internal markdown links to website URLs
+function transformInternalLinks(md: string): string {
+  // Match markdown links: [text](path)
+  return md.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (match, text, href) => {
+    // Skip external links
+    if (
+      href.startsWith("http://") ||
+      href.startsWith("https://") ||
+      href.startsWith("#")
+    ) {
+      return match;
+    }
+
+    // Check if it's an internal .md link
+    if (href.includes(".md")) {
+      // Extract folder and file from path like ../../04-SYSTEM-DESIGN-LIBRARY/00-System-Design-Template.md
+      const parts = href.split("/");
+      let folder = "";
+      let file = "";
+
+      for (const part of parts) {
+        // Check if this part matches a known folder
+        if (folderToSlug[part]) {
+          folder = folderToSlug[part];
+        }
+        // Check if this is the .md file
+        if (part.endsWith(".md")) {
+          file = part.replace(".md", "");
+        }
+      }
+
+      if (folder && file) {
+        return `[${text}](/docs/${folder}/${file})`;
+      }
+    }
+
+    // Return original if we can't transform it
+    return match;
+  });
+}
+
+// Simple markdown to HTML conversion for headings, links, code, etc.
+function markdownToHtml(md: string): string {
+  // First transform internal links
+  const transformed = transformInternalLinks(md);
+
+  return (
+    transformed
+      // Escape HTML entities first
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      // Code blocks (fenced)
+      .replace(
+        /```(\w*)\n([\s\S]*?)```/g,
+        '<pre><code class="language-$1">$2</code></pre>',
+      )
+      // Inline code
+      .replace(/`([^`]+)`/g, "<code>$1</code>")
+      // Headers
+      .replace(/^#### (.*$)/gim, "<h4>$1</h4>")
+      .replace(/^### (.*$)/gim, "<h3>$1</h3>")
+      .replace(/^## (.*$)/gim, "<h2>$1</h2>")
+      .replace(/^# (.*$)/gim, "<h1>$1</h1>")
+      // Bold and italic
+      .replace(/\*\*\*(.+?)\*\*\*/g, "<strong><em>$1</em></strong>")
+      .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+      .replace(/\*(.+?)\*/g, "<em>$1</em>")
+      // Links
+      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
+      // Horizontal rules
+      .replace(/^---$/gim, "<hr>")
+      // Blockquotes
+      .replace(/^&gt; (.*$)/gim, "<blockquote>$1</blockquote>")
+      // Unordered lists
+      .replace(/^\s*[-*+] (.*)$/gim, "<li>$1</li>")
+      // Ordered lists
+      .replace(/^\s*\d+\. (.*)$/gim, "<li>$1</li>")
+      // Wrap consecutive list items
+      .replace(/(<li>.*<\/li>\n?)+/g, "<ul>$&</ul>")
+      // Tables (basic)
+      .replace(/^\|(.+)\|$/gim, (match, content) => {
+        const cells = content.split("|").map((c: string) => c.trim());
+        const row = cells.map((c: string) => `<td>${c}</td>`).join("");
+        return `<tr>${row}</tr>`;
+      })
+      // Wrap table rows
+      .replace(/(<tr>.*<\/tr>\n?)+/g, "<table>$&</table>")
+      // Clean up table separator rows
+      .replace(/<tr><td>[-:]+<\/td>.*?<\/tr>/g, "")
+      // Paragraphs - wrap remaining text blocks
+      .replace(/^(?!<[hupoblt]|$)(.+)$/gim, "<p>$1</p>")
+      // Clean up multiple newlines
+      .replace(/\n\n+/g, "\n")
+  );
+}
+
+const htmlContent = markdownToHtml(content);
+---
+
+<Layout title={title} activeSection={section}>
+  <article class="markdown-content">
+    <nav class="breadcrumb">
+      <a href="/">Home</a>
+      <span>/</span>
+      <a
+        href={`/docs/${section}/00-${
+          section === "start-here"
+            ? "README"
+            : section
+                .split("-")
+                .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+                .join("-") + "-Index"
+        }`}
+      >
+        {sectionTitles[section]}
+      </a>
+      <span>/</span>
+      <span>{title}</span>
+    </nav>
+
+    <Fragment set:html={htmlContent} />
+  </article>
+</Layout>
+
+<style>
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5ch;
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 1px solid var(--surface0);
+    color: var(--subtext0);
+    font-size: 0.9em;
+  }
+
+  .breadcrumb a {
+    color: var(--subtext1);
+    text-decoration: none;
+  }
+
+  .breadcrumb a:hover {
+    color: var(--accent-blue);
+    text-decoration: underline;
+  }
+
+  .breadcrumb span {
+    color: var(--surface2);
+  }
+
+  .markdown-content {
+    max-width: 75ch;
+    line-height: 1.75;
+  }
+
+  .markdown-content :global(h1) {
+    font-size: 1.6em;
+    margin: var(--spacing-xl) 0 var(--spacing-md);
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 1px solid var(--surface0);
+    color: var(--text);
+  }
+
+  .markdown-content :global(h1)::before {
+    content: "# ";
+    color: var(--green);
+  }
+
+  .markdown-content :global(h2) {
+    font-size: 1.3em;
+    margin: var(--spacing-xl) 0 var(--spacing-md);
+    color: var(--text);
+  }
+
+  .markdown-content :global(h2)::before {
+    content: "## ";
+    color: var(--yellow);
+  }
+
+  .markdown-content :global(h3) {
+    font-size: 1.15em;
+    margin: var(--spacing-lg) 0 var(--spacing-sm);
+    color: var(--text);
+  }
+
+  .markdown-content :global(h3)::before {
+    content: "### ";
+    color: var(--mauve);
+  }
+
+  .markdown-content :global(h4) {
+    font-size: 1em;
+    margin: var(--spacing-md) 0 var(--spacing-sm);
+    color: var(--text);
+  }
+
+  .markdown-content :global(h4)::before {
+    content: "#### ";
+    color: var(--teal);
+  }
+
+  .markdown-content :global(p) {
+    margin: var(--spacing-md) 0;
+    color: var(--subtext1);
+  }
+
+  .markdown-content :global(a) {
+    color: var(--blue);
+    text-decoration: none;
+  }
+
+  .markdown-content :global(a:hover) {
+    text-decoration: underline;
+    color: var(--sky);
+  }
+
+  .markdown-content :global(code) {
+    background: var(--surface0);
+    padding: 0.1rem 0.5ch;
+    font-family: var(--font-family);
+    color: var(--green);
+    font-size: 0.95em;
+  }
+
+  .markdown-content :global(pre) {
+    background: var(--crust);
+    border: 1px solid var(--surface0);
+    padding: var(--spacing-md);
+    overflow-x: auto;
+    margin: var(--spacing-md) 0;
+  }
+
+  .markdown-content :global(pre code) {
+    background: none;
+    padding: 0;
+    color: var(--subtext1);
+  }
+
+  .markdown-content :global(ul),
+  .markdown-content :global(ol) {
+    margin: var(--spacing-md) 0;
+    padding-left: var(--spacing-xl);
+  }
+
+  .markdown-content :global(li) {
+    margin: var(--spacing-xs) 0;
+    color: var(--subtext1);
+  }
+
+  .markdown-content :global(li)::marker {
+    color: var(--surface2);
+  }
+
+  .markdown-content :global(blockquote) {
+    border-left: 3px solid var(--blue);
+    padding: var(--spacing-sm) var(--spacing-md);
+    margin: var(--spacing-md) 0;
+    background: var(--mantle);
+    color: var(--subtext0);
+  }
+
+  .markdown-content :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    margin: var(--spacing-md) 0;
+    font-size: 0.9em;
+  }
+
+  .markdown-content :global(th),
+  .markdown-content :global(td) {
+    border: 1px solid var(--surface0);
+    padding: var(--spacing-sm) var(--spacing-md);
+    text-align: left;
+  }
+
+  .markdown-content :global(th) {
+    background: var(--surface0);
+    color: var(--text);
+    font-weight: var(--font-weight-bold);
+  }
+
+  .markdown-content :global(tr:nth-child(even)) {
+    background: var(--mantle);
+  }
+
+  .markdown-content :global(hr) {
+    border: none;
+    border-top: 1px dashed var(--surface1);
+    margin: var(--spacing-xl) 0;
+  }
+
+  .markdown-content :global(strong) {
+    color: var(--text);
+    font-weight: var(--font-weight-bold);
+  }
+
+  .markdown-content :global(em) {
+    color: var(--subtext0);
+    font-style: italic;
+  }
+
+  .markdown-content :global(img) {
+    max-width: 100%;
+    height: auto;
+    border: 1px solid var(--surface0);
+    margin: var(--spacing-md) 0;
+  }
+
+  @media (max-width: 768px) {
+    .markdown-content {
+      font-size: 0.95em;
+    }
+
+    .markdown-content :global(h1) {
+      font-size: 1.4em;
+    }
+
+    .markdown-content :global(h2) {
+      font-size: 1.2em;
+    }
+
+    .markdown-content :global(pre) {
+      padding: var(--spacing-sm);
+      font-size: 0.9em;
+    }
+  }
+</style>

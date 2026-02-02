@@ -1,0 +1,936 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { readFileSync, existsSync, readdirSync } from 'fs';
+import { join } from 'path';
+import { parse } from 'csv-parse/sync';
+
+// Get company name from URL
+const { company } = Astro.params;
+
+// Read CSV data directly (simpler approach for static site)
+const CSV_DIR = join(process.cwd(), '..', 'leetcode Question ');
+
+// Generate static paths for all companies
+export async function getStaticPaths() {
+  const csvDir = join(process.cwd(), '..', 'leetcode Question ');
+
+  if (!existsSync(csvDir)) {
+    return [];
+  }
+
+  const files = readdirSync(csvDir).filter(f => f.endsWith('.csv'));
+  const companies = new Set<string>();
+
+  for (const file of files) {
+    const name = file.replace('.csv', '');
+    const parts = name.split('_');
+    parts.pop(); // Remove timeframe
+    const companyName = parts.join('_');
+    companies.add(companyName);
+  }
+
+  return Array.from(companies).map(company => ({
+    params: { company },
+  }));
+}
+
+// Company icon helper - NerdFonts icons
+function getCompanyIcon(name: string): string {
+  const icons: Record<string, string> = {
+    // FAANG / Big Tech
+    google: '󰊭',      // nf-md-google
+    amazon: '󰸏',      // nf-md-amazon
+    apple: '󰀵',       // nf-md-apple
+    meta: '󰈌',        // nf-md-facebook
+    facebook: '󰈌',    // nf-md-facebook
+    microsoft: '󰍲',   // nf-md-microsoft
+    netflix: '󰝆',     // nf-md-netflix
+
+    // Tech Giants
+    uber: '󰜧',        // nf-md-car
+    lyft: '󰜧',        // nf-md-car
+    airbnb: '󰜡',      // nf-md-home_city
+    linkedin: '󰌻',    // nf-md-linkedin
+    twitter: '󰕄',     // nf-md-twitter
+    stripe: '󰄬',      // nf-md-credit_card
+    salesforce: '󰅴',  // nf-md-cloud
+    adobe: '󰣯',       // nf-md-adobe
+    oracle: '󰆼',      // nf-md-database
+    nvidia: '󰾲',      // nf-md-chip
+    intel: '󰻠',       // nf-md-memory
+    ibm: '󰖳',         // nf-md-cube_outline
+
+    // Social / Media
+    spotify: '󰓇',     // nf-md-spotify
+    snap: '󰒶',        // nf-md-snapchat
+    snapchat: '󰒶',    // nf-md-snapchat
+    pinterest: '󰐪',   // nf-md-pinterest
+    reddit: '󰑍',      // nf-md-reddit
+    tiktok: '󰗃',      // nf-md-music_note
+    youtube: '󰗃',     // nf-md-youtube
+    twitch: '󰕃',      // nf-md-twitch
+    discord: '󰙯',     // nf-md-discord (using message icon)
+
+    // Cloud / Dev Tools
+    dropbox: '󰇣',     // nf-md-dropbox
+    slack: '󰒱',       // nf-md-slack
+    zoom: '󰕧',        // nf-md-video
+    atlassian: '󰑜',   // nf-md-jira (Atlassian owns Jira)
+    github: '󰊤',      // nf-md-github
+    gitlab: '󰮠',      // nf-md-gitlab
+
+    // Finance
+    bloomberg: '󰊴',   // nf-md-chart_line
+    citadel: '󰊴',     // nf-md-chart_line
+    goldman: '󰊴',     // nf-md-chart_line
+    jpmorgan: '󰊴',    // nf-md-chart_line
+    morgan: '󰊴',      // nf-md-chart_line
+    'two-sigma': '󰊴', // nf-md-chart_line
+    robinhood: '󰊴',   // nf-md-chart_line
+    coinbase: '󰆓',    // nf-md-bitcoin
+    paypal: '󰄬',      // nf-md-credit_card
+    visa: '󰄬',        // nf-md-credit_card
+    mastercard: '󰄬',  // nf-md-credit_card
+    'capital-one': '󰊴', // nf-md-chart_line
+    barclays: '󰊴',    // nf-md-chart_line
+    blackrock: '󰊴',   // nf-md-chart_line
+
+    // E-commerce / Delivery
+    ebay: '󰒍',        // nf-md-cart
+    walmart: '󰒍',     // nf-md-cart
+    shopify: '󰒍',     // nf-md-cart
+    doordash: '󰩱',    // nf-md-food
+    instacart: '󰒍',   // nf-md-cart
+    wish: '󰒍',        // nf-md-cart
+    wayfair: '󰋞',     // nf-md-sofa
+
+    // Data / Cloud
+    databricks: '󰆼',  // nf-md-database
+    snowflake: '󰆼',   // nf-md-database
+    palantir: '󰆼',    // nf-md-database
+    splunk: '󰆼',      // nf-md-database
+    elastic: '󰆼',     // nf-md-database
+    mongodb: '󰆼',     // nf-md-database
+
+    // Hardware / Semiconductor
+    qualcomm: '󰻠',    // nf-md-memory
+    amd: '󰻠',         // nf-md-memory
+    samsung: '󰄜',     // nf-md-cellphone
+    sony: '󰊖',        // nf-md-gamepad
+
+    // Gaming
+    roblox: '󰊖',      // nf-md-gamepad
+    zynga: '󰊖',       // nf-md-gamepad
+    ea: '󰊖',          // nf-md-gamepad
+    valve: '󰊖',       // nf-md-gamepad
+    blizzard: '󰊖',    // nf-md-gamepad
+
+    // Enterprise / B2B
+    vmware: '󰅴',      // nf-md-cloud
+    cisco: '󰛳',       // nf-md-lan
+    sap: '󰖳',         // nf-md-cube_outline
+    servicenow: '󰖳',  // nf-md-cube_outline
+    workday: '󰖳',     // nf-md-cube_outline
+
+    // Travel / Transport
+    booking: '󱃵',     // nf-md-airplane
+    expedia: '󱃵',     // nf-md-airplane
+    tripadvisor: '󱃵', // nf-md-airplane
+    tesla: '󰜧',       // nf-md-car
+    rivian: '󰜧',      // nf-md-car
+
+    // Telecom
+    verizon: '󰄜',     // nf-md-cellphone
+    att: '󰄜',         // nf-md-cellphone
+    tmobile: '󰄜',     // nf-md-cellphone
+
+    // Security
+    crowdstrike: '󰒃', // nf-md-shield
+    palo: '󰒃',        // nf-md-shield
+    zscaler: '󰒃',     // nf-md-shield
+
+    // China Tech
+    bytedance: '󰗃',   // nf-md-music_note (TikTok parent)
+    tencent: '󱜸',     // nf-md-qqchat
+    alibaba: '󰒍',     // nf-md-cart
+    baidu: '󰊭',       // nf-md-google (search engine)
+    huawei: '󰄜',      // nf-md-cellphone
+    xiaomi: '󰄜',      // nf-md-cellphone
+    didi: '󰜧',        // nf-md-car
+
+    // Other Tech
+    yahoo: '󰑫',       // nf-md-yahoo
+    yelp: '󰊯',        // nf-md-star
+    zillow: '󰜡',      // nf-md-home_city
+    docusign: '󰈙',    // nf-md-file_document
+    box: '󰉘',         // nf-md-folder
+    asana: '󰄹',       // nf-md-check_circle
+    notion: '󰈙',      // nf-md-file_document
+    figma: '󰈉',       // nf-md-drawing
+    canva: '󰈉',       // nf-md-drawing
+
+    // Default fallbacks by category keywords
+    bank: '󰊴',        // nf-md-chart_line
+    capital: '󰊴',     // nf-md-chart_line
+    tech: '󰌌',        // nf-md-laptop
+    software: '󰌌',    // nf-md-laptop
+    labs: '󰂔',        // nf-md-flask
+    ai: '󰧑',          // nf-md-robot
+    health: '󰺆',      // nf-md-hospital
+    bio: '󰂔',         // nf-md-flask
+  };
+
+  const lowerName = name?.toLowerCase() || '';
+  for (const [key, icon] of Object.entries(icons)) {
+    if (lowerName.includes(key)) {
+      return icon;
+    }
+  }
+  return '󰈔'; // Default: nf-md-office_building
+}
+
+interface Problem {
+  id: number;
+  title: string;
+  acceptance: string;
+  difficulty: 'Easy' | 'Medium' | 'Hard';
+  frequency: number;
+  url: string;
+}
+
+interface TimeframeData {
+  timeframe: string;
+  label: string;
+  problems: Problem[];
+}
+
+function formatCompanyName(name: string): string {
+  return name
+    .split(/[-_]/)
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
+
+function parseCSV(filepath: string): Problem[] {
+  if (!existsSync(filepath)) return [];
+
+  try {
+    const content = readFileSync(filepath, 'utf-8');
+    const records = parse(content, {
+      skip_empty_lines: true,
+      relax_column_count: true,
+      trim: true,
+    });
+
+    return records
+      .filter((r: any[]) => r.length >= 5)
+      .map((r: any[]) => ({
+        id: parseInt(r[0], 10),
+        title: r[1]?.trim() || '',
+        acceptance: r[2]?.trim() || '0%',
+        difficulty: (['Easy', 'Medium', 'Hard'].includes(r[3]) ? r[3] : 'Medium') as 'Easy' | 'Medium' | 'Hard',
+        frequency: parseFloat(r[4]) || 0,
+        url: r[5]?.trim() || `https://leetcode.com/problems/${r[0]}`,
+      }))
+      .filter((p: Problem) => !isNaN(p.id));
+  } catch (e) {
+    return [];
+  }
+}
+
+// Load all timeframes for this company
+const timeframes: TimeframeData[] = [];
+const timeframeConfig = [
+  { suffix: '6months', label: 'Last 6 Months' },
+  { suffix: '1year', label: 'Last 1 Year' },
+  { suffix: '2year', label: 'Last 2 Years' },
+  { suffix: 'alltime', label: 'All Time' },
+];
+
+for (const tf of timeframeConfig) {
+  const filepath = join(CSV_DIR, `${company}_${tf.suffix}.csv`);
+  const problems = parseCSV(filepath);
+  if (problems.length > 0) {
+    timeframes.push({
+      timeframe: tf.suffix,
+      label: tf.label,
+      problems,
+    });
+  }
+}
+
+// Get display name
+const displayName = formatCompanyName(company || '');
+
+// Calculate stats
+const allProblems = timeframes.flatMap(tf => tf.problems);
+const uniqueProblems = [...new Map(allProblems.map(p => [p.id, p])).values()];
+const stats = {
+  total: uniqueProblems.length,
+  easy: uniqueProblems.filter(p => p.difficulty === 'Easy').length,
+  medium: uniqueProblems.filter(p => p.difficulty === 'Medium').length,
+  hard: uniqueProblems.filter(p => p.difficulty === 'Hard').length,
+};
+
+// Check if company exists
+const companyExists = timeframes.length > 0;
+
+const pageTitle = `${displayName} LeetCode Questions | FAANG Prep`;
+const pageDescription = `${stats.total} LeetCode problems asked at ${displayName} interviews. Practice company-specific coding questions.`;
+---
+
+<Layout title={pageTitle} description={pageDescription}>
+  <div class="company-page">
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb">
+      <a href="/leetcode">
+        <span class="nf"></span>
+        LeetCode Questions
+      </a>
+      <span class="separator">/</span>
+      <span class="current">{displayName}</span>
+    </nav>
+
+    {!companyExists ? (
+      <div class="not-found">
+        <span class="nf">󰋼</span>
+        <h2>Company Not Found</h2>
+        <p>No LeetCode problems found for "{company}"</p>
+        <a href="/leetcode" class="back-btn">
+          <span class="nf"></span>
+          Back to Companies
+        </a>
+      </div>
+    ) : (
+      <>
+        <!-- Company Header -->
+        <header class="company-header">
+          <div class="company-title">
+            <span class="company-icon">{getCompanyIcon(company)}</span>
+            <h1>{displayName}</h1>
+          </div>
+
+          <div class="company-stats">
+            <div class="stat total">
+              <span class="value">{stats.total}</span>
+              <span class="label">Total</span>
+            </div>
+            <div class="stat easy">
+              <span class="value">{stats.easy}</span>
+              <span class="label">Easy</span>
+            </div>
+            <div class="stat medium">
+              <span class="value">{stats.medium}</span>
+              <span class="label">Medium</span>
+            </div>
+            <div class="stat hard">
+              <span class="value">{stats.hard}</span>
+              <span class="label">Hard</span>
+            </div>
+          </div>
+        </header>
+
+        <!-- Timeframe Tabs -->
+        <div class="timeframe-tabs">
+          {timeframes.map((tf, index) => (
+            <button
+              class={`tab ${index === 0 ? 'active' : ''}`}
+              data-timeframe={tf.timeframe}
+            >
+              {tf.label}
+              <span class="count">{tf.problems.length}</span>
+            </button>
+          ))}
+        </div>
+
+        <!-- Filters -->
+        <div class="filters-bar">
+          <div class="search-filter">
+            <span class="nf"></span>
+            <input
+              type="text"
+              id="problem-search"
+              placeholder="Search problems..."
+            />
+          </div>
+
+          <div class="difficulty-filters">
+            <button class="diff-filter active" data-difficulty="all">All</button>
+            <button class="diff-filter easy" data-difficulty="Easy">Easy</button>
+            <button class="diff-filter medium" data-difficulty="Medium">Medium</button>
+            <button class="diff-filter hard" data-difficulty="Hard">Hard</button>
+          </div>
+
+          <div class="sort-filter">
+            <select id="sort-select">
+              <option value="frequency">Frequency ↓</option>
+              <option value="id">Problem # ↑</option>
+              <option value="difficulty">Difficulty</option>
+              <option value="acceptance">Acceptance ↓</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Problems Tables -->
+        {timeframes.map((tf, index) => (
+          <div
+            class={`problems-section ${index === 0 ? 'active' : ''}`}
+            data-timeframe={tf.timeframe}
+          >
+            <table class="problems-table">
+              <thead>
+                <tr>
+                  <th class="col-status"></th>
+                  <th class="col-id">#</th>
+                  <th class="col-title">Problem</th>
+                  <th class="col-difficulty">Difficulty</th>
+                  <th class="col-acceptance">Acceptance</th>
+                  <th class="col-frequency">Frequency</th>
+                </tr>
+              </thead>
+              <tbody>
+                {tf.problems.map(problem => (
+                  <tr
+                    class="problem-row"
+                    data-id={problem.id}
+                    data-title={problem.title.toLowerCase()}
+                    data-difficulty={problem.difficulty}
+                    data-frequency={problem.frequency}
+                    data-acceptance={parseFloat(problem.acceptance)}
+                  >
+                    <td class="col-status">
+                      <input
+                        type="checkbox"
+                        class="problem-checkbox"
+                        data-problem-id={`${company}-${problem.id}`}
+                      />
+                    </td>
+                    <td class="col-id">{problem.id}</td>
+                    <td class="col-title">
+                      <a href={problem.url} target="_blank" rel="noopener">
+                        {problem.title}
+                        <span class="external-icon">↗</span>
+                      </a>
+                    </td>
+                    <td class={`col-difficulty ${problem.difficulty.toLowerCase()}`}>
+                      {problem.difficulty}
+                    </td>
+                    <td class="col-acceptance">{problem.acceptance}</td>
+                    <td class="col-frequency">
+                      <div class="frequency-bar">
+                        <div
+                          class="frequency-fill"
+                          style={`width: ${Math.min(problem.frequency * 15, 100)}%`}
+                        ></div>
+                      </div>
+                      <span class="frequency-value">{problem.frequency.toFixed(1)}</span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ))}
+
+        <!-- Progress Summary -->
+        <div class="progress-summary" id="progress-summary">
+          <span class="nf"></span>
+          <span class="progress-text">
+            <span id="completed-count">0</span> / {stats.total} completed
+          </span>
+        </div>
+      </>
+    )}
+  </div>
+</Layout>
+
+<script>
+  // Tab switching
+  const tabs = document.querySelectorAll('.tab');
+  const sections = document.querySelectorAll('.problems-section');
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const timeframe = tab.getAttribute('data-timeframe');
+
+      tabs.forEach(t => t.classList.remove('active'));
+      sections.forEach(s => s.classList.remove('active'));
+
+      tab.classList.add('active');
+      document.querySelector(`.problems-section[data-timeframe="${timeframe}"]`)?.classList.add('active');
+    });
+  });
+
+  // Difficulty filtering
+  const diffFilters = document.querySelectorAll('.diff-filter');
+
+  diffFilters.forEach(filter => {
+    filter.addEventListener('click', () => {
+      diffFilters.forEach(f => f.classList.remove('active'));
+      filter.classList.add('active');
+      applyFilters();
+    });
+  });
+
+  // Search filtering
+  const searchInput = document.getElementById('problem-search') as HTMLInputElement;
+  searchInput?.addEventListener('input', applyFilters);
+
+  // Sorting
+  const sortSelect = document.getElementById('sort-select') as HTMLSelectElement;
+  sortSelect?.addEventListener('change', applySorting);
+
+  function applyFilters() {
+    const searchQuery = searchInput?.value.toLowerCase() || '';
+    const activeDiff = document.querySelector('.diff-filter.active')?.getAttribute('data-difficulty') || 'all';
+
+    document.querySelectorAll('.problem-row').forEach(row => {
+      const title = row.getAttribute('data-title') || '';
+      const difficulty = row.getAttribute('data-difficulty') || '';
+
+      const matchesSearch = title.includes(searchQuery);
+      const matchesDiff = activeDiff === 'all' || difficulty === activeDiff;
+
+      (row as HTMLElement).style.display = matchesSearch && matchesDiff ? '' : 'none';
+    });
+  }
+
+  function applySorting() {
+    const sortBy = sortSelect?.value || 'frequency';
+    const activeSection = document.querySelector('.problems-section.active');
+    if (!activeSection) return;
+
+    const tbody = activeSection.querySelector('tbody');
+    if (!tbody) return;
+
+    const rows = Array.from(tbody.querySelectorAll('.problem-row'));
+
+    rows.sort((a, b) => {
+      switch (sortBy) {
+        case 'frequency':
+          return parseFloat(b.getAttribute('data-frequency') || '0') - parseFloat(a.getAttribute('data-frequency') || '0');
+        case 'id':
+          return parseInt(a.getAttribute('data-id') || '0') - parseInt(b.getAttribute('data-id') || '0');
+        case 'difficulty':
+          const diffOrder = { 'Easy': 1, 'Medium': 2, 'Hard': 3 };
+          return (diffOrder[a.getAttribute('data-difficulty') as keyof typeof diffOrder] || 0) -
+                 (diffOrder[b.getAttribute('data-difficulty') as keyof typeof diffOrder] || 0);
+        case 'acceptance':
+          return parseFloat(b.getAttribute('data-acceptance') || '0') - parseFloat(a.getAttribute('data-acceptance') || '0');
+        default:
+          return 0;
+      }
+    });
+
+    rows.forEach(row => tbody.appendChild(row));
+  }
+
+  // Checkbox persistence
+  const checkboxes = document.querySelectorAll('.problem-checkbox');
+  const completedCountEl = document.getElementById('completed-count');
+
+  function updateProgress() {
+    const checked = document.querySelectorAll('.problem-checkbox:checked').length;
+    if (completedCountEl) {
+      completedCountEl.textContent = checked.toString();
+    }
+  }
+
+  // Load saved state
+  checkboxes.forEach(checkbox => {
+    const input = checkbox as HTMLInputElement;
+    const problemId = input.getAttribute('data-problem-id');
+    if (problemId) {
+      const saved = localStorage.getItem(`leetcode-${problemId}`);
+      if (saved === 'true') {
+        input.checked = true;
+      }
+    }
+
+    input.addEventListener('change', () => {
+      const problemId = input.getAttribute('data-problem-id');
+      if (problemId) {
+        localStorage.setItem(`leetcode-${problemId}`, input.checked.toString());
+      }
+      updateProgress();
+    });
+  });
+
+  updateProgress();
+</script>
+
+<style>
+  .company-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--spacing-lg);
+  }
+
+  /* Breadcrumb */
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-lg);
+    font-size: 0.9rem;
+  }
+
+  .breadcrumb a {
+    color: var(--mauve);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .breadcrumb a:hover {
+    text-decoration: underline;
+  }
+
+  .breadcrumb .separator {
+    color: var(--surface2);
+  }
+
+  .breadcrumb .current {
+    color: var(--subtext0);
+  }
+
+  /* Company Header */
+  .company-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+    padding: var(--spacing-lg);
+    background: var(--surface0);
+    border-radius: var(--radius-md);
+  }
+
+  .company-title {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+  }
+
+  .company-icon {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface1);
+    border-radius: var(--radius-md);
+    font-size: 1.5rem;
+  }
+
+  .company-title h1 {
+    margin: 0;
+    font-size: 1.75rem;
+  }
+
+  .company-stats {
+    display: flex;
+    gap: var(--spacing-md);
+  }
+
+  .company-stats .stat {
+    text-align: center;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--mantle);
+    border-radius: var(--radius-sm);
+    min-width: 60px;
+  }
+
+  .company-stats .value {
+    display: block;
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+
+  .company-stats .label {
+    font-size: 0.7rem;
+    color: var(--subtext0);
+    text-transform: uppercase;
+  }
+
+  .company-stats .total .value { color: var(--blue); }
+  .company-stats .easy .value { color: var(--green); }
+  .company-stats .medium .value { color: var(--yellow); }
+  .company-stats .hard .value { color: var(--red); }
+
+  /* Timeframe Tabs */
+  .timeframe-tabs {
+    display: flex;
+    gap: var(--spacing-xs);
+    margin-bottom: var(--spacing-md);
+    border-bottom: 1px solid var(--surface1);
+    padding-bottom: var(--spacing-xs);
+  }
+
+  .tab {
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: transparent;
+    border: none;
+    color: var(--subtext0);
+    font-size: 0.9rem;
+    cursor: pointer;
+    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+  }
+
+  .tab:hover {
+    color: var(--text);
+    background: var(--surface0);
+  }
+
+  .tab.active {
+    color: var(--mauve);
+    background: var(--surface0);
+    border-bottom: 2px solid var(--mauve);
+  }
+
+  .tab .count {
+    font-size: 0.75rem;
+    background: var(--surface1);
+    padding: 2px 6px;
+    border-radius: var(--radius-full);
+  }
+
+  .tab.active .count {
+    background: var(--mauve);
+    color: var(--base);
+  }
+
+  /* Filters Bar */
+  .filters-bar {
+    display: flex;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: var(--spacing-md);
+    padding: var(--spacing-sm);
+    background: var(--surface0);
+    border-radius: var(--radius-sm);
+  }
+
+  .search-filter {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .search-filter .nf {
+    color: var(--subtext0);
+  }
+
+  .search-filter input {
+    background: transparent;
+    border: none;
+    color: var(--text);
+    outline: none;
+    width: 100%;
+  }
+
+  .difficulty-filters {
+    display: flex;
+    gap: 4px;
+  }
+
+  .diff-filter {
+    padding: 4px 12px;
+    background: var(--surface1);
+    border: none;
+    border-radius: var(--radius-full);
+    color: var(--subtext1);
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .diff-filter:hover { background: var(--surface2); }
+  .diff-filter.active { color: var(--base); }
+  .diff-filter.active[data-difficulty="all"] { background: var(--blue); }
+  .diff-filter.easy.active { background: var(--green); }
+  .diff-filter.medium.active { background: var(--yellow); }
+  .diff-filter.hard.active { background: var(--red); }
+
+  .sort-filter select {
+    padding: 4px 8px;
+    background: var(--surface1);
+    border: none;
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-size: 0.8rem;
+    cursor: pointer;
+  }
+
+  /* Problems Table */
+  .problems-section {
+    display: none;
+  }
+
+  .problems-section.active {
+    display: block;
+  }
+
+  .problems-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+
+  .problems-table th {
+    text-align: left;
+    padding: var(--spacing-sm);
+    background: var(--surface0);
+    color: var(--subtext0);
+    font-weight: 500;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--surface1);
+  }
+
+  .problems-table td {
+    padding: var(--spacing-sm);
+    border-bottom: 1px solid var(--surface0);
+  }
+
+  .problem-row:hover {
+    background: var(--surface0);
+  }
+
+  .col-status { width: 30px; }
+  .col-id { width: 60px; color: var(--subtext0); }
+  .col-difficulty { width: 80px; }
+  .col-acceptance { width: 90px; color: var(--subtext0); }
+  .col-frequency { width: 120px; }
+
+  .col-title a {
+    color: var(--text);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .col-title a:hover {
+    color: var(--mauve);
+  }
+
+  .external-icon {
+    font-size: 0.75rem;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .col-title a:hover .external-icon {
+    opacity: 1;
+  }
+
+  .col-difficulty.easy { color: var(--green); }
+  .col-difficulty.medium { color: var(--yellow); }
+  .col-difficulty.hard { color: var(--red); }
+
+  .frequency-bar {
+    width: 60px;
+    height: 4px;
+    background: var(--surface1);
+    border-radius: 2px;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 8px;
+  }
+
+  .frequency-fill {
+    height: 100%;
+    background: var(--mauve);
+    border-radius: 2px;
+  }
+
+  .frequency-value {
+    font-size: 0.75rem;
+    color: var(--subtext0);
+  }
+
+  .problem-checkbox {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: var(--green);
+  }
+
+  /* Progress Summary */
+  .progress-summary {
+    position: fixed;
+    bottom: var(--spacing-lg);
+    right: var(--spacing-lg);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--surface0);
+    border: 1px solid var(--surface1);
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: 0.85rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  .progress-summary .nf {
+    color: var(--green);
+  }
+
+  /* Not Found */
+  .not-found {
+    text-align: center;
+    padding: var(--spacing-xl);
+  }
+
+  .not-found .nf {
+    font-size: 4rem;
+    color: var(--yellow);
+  }
+
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    margin-top: var(--spacing-md);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--mauve);
+    color: var(--base);
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+  }
+
+  @media (max-width: 768px) {
+    .company-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .company-stats {
+      width: 100%;
+      justify-content: space-between;
+    }
+
+    .filters-bar {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .timeframe-tabs {
+      overflow-x: auto;
+    }
+
+    .col-frequency {
+      display: none;
+    }
+  }
+</style>
