@@ -15,7 +15,7 @@ Two reference frames this repo uses:
 - Rules of ML (engineering-first approach)
 - ML Test Score (tests/monitoring rubric for production readiness)
 
-See [RESOURCES.md](../RESOURCES.md).
+See the [README](../00-START-HERE/00-README.md) for the full resource list.
 
 ## What changes in 2025–2026
 

@@ -1,0 +1,370 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import { readFileSync, existsSync, readdirSync } from 'fs';
+import { join } from 'path';
+import { parse } from 'csv-parse/sync';
+import { classifyPattern } from '../../../lib/leetcode-patterns';
+
+const CSV_DIR = join(process.cwd(), '..', 'leetcode Question ');
+
+interface Problem {
+  id: number;
+  title: string;
+  acceptance: string;
+  difficulty: 'Easy' | 'Medium' | 'Hard';
+  frequency: number;
+  url: string;
+}
+
+interface ProblemAgg {
+  id: number;
+  title: string;
+  acceptance: string;
+  difficulty: 'Easy' | 'Medium' | 'Hard';
+  pattern: string;
+  companies: { slug: string; freq: number }[];
+}
+
+export function getStaticPaths() {
+  const CSV_DIR = join(process.cwd(), '..', 'leetcode Question ');
+  const PROBLEM_MAP = new Map<number, ProblemAgg>();
+
+  function parseCSV(filepath: string): Problem[] {
+    if (!existsSync(filepath)) return [];
+    try {
+      const content = readFileSync(filepath, 'utf-8');
+      const records = parse(content, {
+        skip_empty_lines: true,
+        relax_column_count: true,
+        trim: true,
+      });
+      return records
+        .filter((r: any[]) => r.length >= 5)
+        .map((r: any[]) => ({
+          id: parseInt(r[0], 10),
+          title: r[1]?.trim() || '',
+          acceptance: r[2]?.trim() || '0%',
+          difficulty: (['Easy', 'Medium', 'Hard'].includes(r[3]) ? r[3] : 'Medium') as 'Easy' | 'Medium' | 'Hard',
+          frequency: parseFloat(r[4]) || 0,
+          url: r[5]?.trim() || `https://leetcode.com/problems/${r[0]}`,
+        }))
+        .filter((p: Problem) => !isNaN(p.id));
+    } catch {
+      return [];
+    }
+  }
+
+  if (!existsSync(CSV_DIR)) return [];
+  const files = readdirSync(CSV_DIR).filter((f) => f.endsWith('.csv'));
+  const companyByFile = new Map<string, string>();
+  for (const file of files) {
+    const parts = file.replace('.csv', '').split('_');
+    parts.pop();
+    companyByFile.set(file, parts.join('_'));
+  }
+  for (const [file, slug] of companyByFile) {
+    for (const p of parseCSV(join(CSV_DIR, file))) {
+      let agg = PROBLEM_MAP.get(p.id);
+      if (!agg) {
+        agg = {
+          id: p.id,
+          title: p.title,
+          acceptance: p.acceptance,
+          difficulty: p.difficulty,
+          pattern: classifyPattern(p.title),
+          companies: [],
+        };
+        PROBLEM_MAP.set(p.id, agg);
+      } else if (p.frequency > (agg.companies.find((c) => c.slug === slug)?.freq ?? 0)) {
+        agg.acceptance = p.acceptance;
+        agg.difficulty = p.difficulty;
+      }
+      const existing = agg.companies.find((c) => c.slug === slug);
+      if (existing) {
+        if (p.frequency > existing.freq) existing.freq = p.frequency;
+      } else {
+        agg.companies.push({ slug, freq: p.frequency });
+      }
+    }
+  }
+
+  return Array.from(PROBLEM_MAP.entries()).map(([id, agg]) => ({
+    params: { id: id.toString() },
+    props: { agg },
+  }));
+}
+
+const { agg } = Astro.props;
+const { id } = Astro.params;
+
+const totalFreq = agg.companies.reduce((a, c) => a + c.freq, 0);
+const repeatCount = agg.companies.filter((c) => c.freq >= 2).length;
+const sortedCompanies = [...agg.companies].sort((a, b) => b.freq - a.freq);
+const maxFreq = Math.max(1, ...agg.companies.map((c) => c.freq));
+
+const diffColor =
+  agg.difficulty === 'Easy' ? 'var(--green)' : agg.difficulty === 'Medium' ? 'var(--yellow)' : 'var(--red)';
+
+function companyName(slug: string): string {
+  if (slug === 'facebook') return 'Meta';
+  return slug
+    .split(/[-_]/)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ');
+}
+
+const pageTitle = `${agg.title} — LeetCode ${agg.difficulty} | FAANG Prep`;
+const pageDescription = `${agg.title}: a ${agg.difficulty.toLowerCase()} LeetCode problem asked at ${agg.companies.length} companies. Pattern: ${agg.pattern}.`;
+---
+
+<Layout title={pageTitle} description={pageDescription} activeSection="leetcode">
+  <div class="problem-page">
+    <nav class="breadcrumb">
+      <a href="/leetcode"><span class="nf">󰅖</span> LeetCode</a>
+      <span class="separator">/</span>
+      <a href="/leetcode/patterns">Patterns</a>
+      <span class="separator">/</span>
+      <span class="current">#{id}</span>
+    </nav>
+
+    <header class="problem-header">
+      <div class="problem-title-row">
+        <span class="problem-diff" style={`background: ${diffColor}`}>{agg.difficulty}</span>
+        <h1>{agg.title}</h1>
+        <a href={`https://leetcode.com/problems/${agg.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')}/`} target="_blank" rel="noopener" class="lc-link">
+          <span class="nf">󰇎</span> Solve on LeetCode
+        </a>
+      </div>
+
+      <div class="problem-chips">
+        <span class="chip"><span class="chip-label">Pattern</span> {agg.pattern}</span>
+        <span class="chip"><span class="chip-label">Acceptance</span> {agg.acceptance}</span>
+        <span class="chip"><span class="chip-label">Companies</span> {agg.companies.length}</span>
+        <span class="chip"><span class="chip-label">Total freq</span> {totalFreq}</span>
+        <span class="chip repeater"><span class="chip-label">Repeater</span> ×{repeatCount} hot at 2+</span>
+      </div>
+    </header>
+
+    <section class="company-section">
+      <h2><span class="nf">󰉖</span> Asked at {agg.companies.length} companies</h2>
+      {sortedCompanies.length === 0 ? (
+        <p class="empty">No company data for this problem.</p>
+      ) : (
+        <div class="company-table">
+          {sortedCompanies.map((c) => (
+            <a class="company-row" href={`/leetcode/${c.slug}`}>
+              <span class="company-name">{companyName(c.slug)}</span>
+              <span class="company-bar"><span class="company-fill" style={`width: ${Math.round((c.freq / maxFreq) * 100)}%`}></span></span>
+              <span class="company-freq">{c.freq.toFixed(1)}</span>
+              <span class={`freq-tag ${c.freq >= 2 ? 'hot' : ''}`}>{c.freq >= 2 ? 'repeater' : 'recent'}</span>
+            </a>
+          ))}
+        </div>
+      )}
+    </section>
+
+    <section class="related-section">
+      <h2><span class="nf">󰧑</span> Related</h2>
+      <div class="related-links">
+        <a href="/leetcode/patterns" class="related-link">All patterns across companies</a>
+        <a href="/leetcode" class="related-link">Browse companies</a>
+        <a href="/docs/foundations/01-DSA-and-Coding" class="related-link">DSA foundations</a>
+      </div>
+    </section>
+  </div>
+</Layout>
+
+<style>
+  .problem-page {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: var(--spacing-lg);
+  }
+
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-lg);
+    font-size: 0.9rem;
+  }
+
+  .breadcrumb a { color: var(--mauve); text-decoration: none; }
+  .breadcrumb a:hover { text-decoration: underline; }
+  .breadcrumb .separator { color: var(--surface2); }
+  .breadcrumb .current { color: var(--subtext0); }
+
+  .problem-title-row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+    margin-bottom: var(--spacing-md);
+  }
+
+  .problem-diff {
+    padding: 4px 12px;
+    border-radius: 999px;
+    color: var(--base);
+    font-size: 0.8em;
+    font-weight: 700;
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+
+  .problem-title-row h1 {
+    color: var(--text);
+    font-size: 1.8em;
+    margin: 0;
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .lc-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4ch;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 1px solid var(--surface1);
+    border-radius: 8px;
+    color: var(--subtext1);
+    text-decoration: none;
+    font-size: 0.85em;
+    transition: all var(--transition-fast);
+  }
+
+  .lc-link:hover {
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
+  }
+
+  .problem-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.5ch;
+    padding: 4px 14px;
+    background: var(--mantle);
+    border: 1px solid var(--surface0);
+    border-radius: 999px;
+    color: var(--text);
+    font-size: 0.85em;
+  }
+
+  .chip.repeater {
+    border-color: color-mix(in srgb, var(--accent-teal) 40%, transparent);
+    color: var(--accent-teal);
+  }
+
+  .chip-label {
+    color: var(--subtext0);
+    font-size: 0.72em;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .company-section h2,
+  .related-section h2 {
+    color: var(--text);
+    font-size: 1.1em;
+    display: flex;
+    align-items: center;
+    gap: 0.5ch;
+    margin-bottom: var(--spacing-md);
+  }
+
+  .company-section h2 .nf { color: var(--accent-blue); }
+
+  .company-table {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .company-row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-sm) 0;
+    border-bottom: 1px solid var(--surface0);
+    text-decoration: none;
+  }
+
+  .company-row:hover .company-name { color: var(--accent-blue); }
+
+  .company-name {
+    color: var(--text);
+    font-weight: 600;
+    font-size: 0.92em;
+    width: 10em;
+    flex-shrink: 0;
+    transition: color var(--transition-fast);
+  }
+
+  .company-bar {
+    flex: 1;
+    height: 8px;
+    background: var(--crust);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .company-fill {
+    display: block;
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-blue), var(--accent-teal));
+    border-radius: 4px;
+  }
+
+  .company-freq {
+    color: var(--subtext0);
+    font-size: 0.85em;
+    width: 4ch;
+    text-align: right;
+  }
+
+  .freq-tag {
+    font-size: 0.7em;
+    padding: 1px 8px;
+    border-radius: 999px;
+    background: var(--surface0);
+    color: var(--subtext0);
+    flex-shrink: 0;
+  }
+
+  .freq-tag.hot {
+    background: color-mix(in srgb, var(--accent-teal) 18%, transparent);
+    color: var(--accent-teal);
+  }
+
+  .empty {
+    color: var(--subtext0);
+    font-style: italic;
+  }
+
+  .related-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+  }
+
+  .related-link {
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 1px solid var(--surface0);
+    border-radius: 8px;
+    color: var(--subtext1);
+    text-decoration: none;
+    font-size: 0.88em;
+    transition: all var(--transition-fast);
+  }
+
+  .related-link:hover {
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
+  }
+</style>

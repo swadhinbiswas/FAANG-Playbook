@@ -59,6 +59,6 @@ Week 4
 - [01-DSA-and-Coding.md](01-DSA-and-Coding.md)
 - [02-Computer-Systems.md](02-Computer-Systems.md)
 - **[03-DSA-Topic-Breakdown.md](03-DSA-Topic-Breakdown.md) — NEW:** Patterns & intuition for arrays, trees, DP, heaps, hashing, bits
-- [04-Databases.md](04-Databases.md)
-- [05-Software-Engineering-Practices.md](05-Software-Engineering-Practices.md)
-- [06-Cloud-and-Reliability-Basics.md](06-Cloud-and-Reliability-Basics.md)
+- [03-Databases.md](03-Databases.md)
+- [04-Software-Engineering-Practices.md](04-Software-Engineering-Practices.md)
+- [05-Cloud-and-Reliability-Basics.md](05-Cloud-and-Reliability-Basics.md)

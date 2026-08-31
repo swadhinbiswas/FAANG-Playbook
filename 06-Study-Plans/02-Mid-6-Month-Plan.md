@@ -46,7 +46,7 @@
 | ------- | ----------------------------------------------------------------------------------------------------- | ------------------------------------------ |
 | Mon     | Study [capacity planning](../../04-System-Design-Library/01-Capacity-Planning-Cheatsheet.md) in depth | Numbers intuition: QPS, storage, bandwidth |
 | Tue     | Design 1 system untimed; include failure modes + monitoring                                           | Deep thinking                              |
-| Wed     | Debrief your design against [example](../../02-System-Design/example-designs/)                        | Identify gaps                              |
+| Wed     | Debrief your design against [System Design Template](../../04-SYSTEM-DESIGN-LIBRARY/00-System-Design-Template.md)                        | Identify gaps                              |
 | Thu     | 60-min timed design; challenge yourself on tradeoffs                                                  | Pressure + thinking                        |
 | Fri     | Mock system design interview (with peer, 90 min)                                                      | Realistic evaluation                       |
 | Sat–Sun | 2 more designs; focus on novelty (custom + weird constraints)                                         | Flexibility                                |
@@ -166,7 +166,7 @@
 | Day     | Activity                                                                                            | Output                           |
 | ------- | --------------------------------------------------------------------------------------------------- | -------------------------------- |
 | Mon–Tue | Build target list: 15–20 companies                                                                  | Spreadsheet with roles, contacts |
-| Wed–Thu | Tailor resume for each role; use [ATS guide](../../04-Resume-LinkedIn-GitHub/faang-resume-guide.md) | 3–5 resume variants              |
+| Wed–Thu | Tailor resume for each role; use [ATS guide](../../08-CAREER/01-Resume-LinkedIn-GitHub.md) | 3–5 resume variants              |
 | Fri     | Optimize LinkedIn/GitHub; highlight mid-level projects                                              | Updated profiles                 |
 | Sat–Sun | Apply to 5–8 companies                                                                              | First wave of applications       |
 
@@ -213,7 +213,7 @@
 | ---------------- | ---------------------------------------------------------------- |
 | Offers received  | 1–3                                                              |
 | Competing offers | Yes (if multiple onsites)                                        |
-| Negotiation      | [Use playbook](../../07-Offer-Negotiation/salary-negotiation.md) |
+| Negotiation      | [Use playbook](../../08-CAREER/04-Offer-Negotiation.md) |
 | Decision         | Final offer accepted                                             |
 
 **By Week 24:** Mid-level or strong senior offer; signed or about to sign.
@@ -260,7 +260,7 @@
 ## **Resources**
 
 - **Hard coding:** LeetCode Hard + company tags
-- **System design:** [Template](../../04-System-Design-Library/00-System-Design-Template.md) + [examples](../../02-System-Design/example-designs/) + company blogs
+- **System design:** [Template](../../04-System-Design-Library/00-System-Design-Template.md) + [System Design Template](../../04-SYSTEM-DESIGN-LIBRARY/00-System-Design-Template.md) + company blogs
 - **Behavioral:** [Playbook](../../03-INTERVIEWS/06-Behavioral-Interview-Playbook.md) + leadership stories
 - **Mock interviews:** Interviewing.io (paid) + peer mocks (free)
 

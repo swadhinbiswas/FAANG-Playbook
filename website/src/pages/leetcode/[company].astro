@@ -3,15 +3,27 @@ import Layout from '../../layouts/Layout.astro';
 import { readFileSync, existsSync, readdirSync } from 'fs';
 import { join } from 'path';
 import { parse } from 'csv-parse/sync';
+import { classifyPattern } from '../../lib/leetcode-patterns';
+
+// Alternate slugs that point at the same CSV dataset
+const COMPANY_ALIASES: Record<string, string> = {
+  meta: 'facebook',
+  fb: 'facebook',
+};
 
 // Get company name from URL
 const { company } = Astro.params;
+const canonicalCompany = COMPANY_ALIASES[company] ?? company;
 
 // Read CSV data directly (simpler approach for static site)
 const CSV_DIR = join(process.cwd(), '..', 'leetcode Question ');
 
 // Generate static paths for all companies
 export async function getStaticPaths() {
+  const ALIASES: Record<string, string> = {
+    meta: 'facebook',
+    fb: 'facebook',
+  };
   const csvDir = join(process.cwd(), '..', 'leetcode Question ');
 
   if (!existsSync(csvDir)) {
@@ -29,9 +41,14 @@ export async function getStaticPaths() {
     companies.add(companyName);
   }
 
-  return Array.from(companies).map(company => ({
-    params: { company },
-  }));
+  // Real company pages + any aliases that point at them
+  return Array.from(companies).flatMap(name => {
+    const pages = [{ params: { company: name } }];
+    for (const [alias, target] of Object.entries(ALIASES)) {
+      if (target === name) pages.push({ params: { company: alias } });
+    }
+    return pages;
+  });
 }
 
 // Company icon helper - NerdFonts icons
@@ -43,6 +60,7 @@ function getCompanyIcon(name: string): string {
     apple: '󰀵',       // nf-md-apple
     meta: '󰈌',        // nf-md-facebook
     facebook: '󰈌',    // nf-md-facebook
+    meta: '󰈌',        // nf-md-facebook
     microsoft: '󰍲',   // nf-md-microsoft
     netflix: '󰝆',     // nf-md-netflix
 
@@ -248,7 +266,7 @@ const timeframeConfig = [
 ];
 
 for (const tf of timeframeConfig) {
-  const filepath = join(CSV_DIR, `${company}_${tf.suffix}.csv`);
+  const filepath = join(CSV_DIR, `${canonicalCompany}_${tf.suffix}.csv`);
   const problems = parseCSV(filepath);
   if (problems.length > 0) {
     timeframes.push({
@@ -271,6 +289,81 @@ const stats = {
   medium: uniqueProblems.filter(p => p.difficulty === 'Medium').length,
   hard: uniqueProblems.filter(p => p.difficulty === 'Hard').length,
 };
+
+// ============ Analysis ============
+
+const diffPct = (n: number) => (stats.total ? Math.round((n / stats.total) * 100) : 0);
+
+const avgAcceptance = stats.total
+  ? Math.round(uniqueProblems.reduce((a, p) => a + (parseFloat(p.acceptance) || 0), 0) / stats.total)
+  : 0;
+
+const hotProblems = uniqueProblems.filter(p => p.frequency >= 2);
+const topProblems = [...uniqueProblems].sort((a, b) => b.frequency - a.frequency).slice(0, 5);
+
+const patternCounts: Record<string, number> = {};
+for (const p of uniqueProblems) {
+  const pattern = classifyPattern(p.title);
+  patternCounts[pattern] = (patternCounts[pattern] || 0) + 1;
+}
+const topPatterns = Object.entries(patternCounts)
+  .sort((a, b) => b[1] - a[1])
+  .slice(0, 5);
+
+// Verdict based on difficulty mix
+let verdict = '';
+const hardPct = diffPct(stats.hard);
+if (stats.total === 0) {
+  verdict = 'No problems recorded yet for this company.';
+} else if (hardPct >= 25) {
+  verdict = 'Bar-raising loop — a heavy share of hard problems. Prioritize Dynamic Programming, Graphs and System Design.';
+} else if (hardPct >= 15) {
+  verdict = 'Balanced loop — expect a fast medium then one hard. Drills on speed, edge cases and clean code will pay off.';
+} else {
+  verdict = 'Accessible loop — mostly easy/medium. Winning here is about speed, correctness and clearly explaining tradeoffs.';
+}
+
+const COMPANY_DOCS: Record<string, string> = {
+  google: '/docs/company-notes/01-Google-Detailed',
+  amazon: '/docs/company-notes/02-Amazon-Detailed',
+  meta: '/docs/company-notes/03-Meta-Detailed',
+  facebook: '/docs/company-notes/03-Meta-Detailed',
+  apple: '/docs/company-notes/04-Apple-Detailed',
+  netflix: '/docs/company-notes/05-Netflix-Detailed',
+};
+const companyDoc = COMPANY_DOCS[company] ?? COMPANY_DOCS[canonicalCompany] ?? '/docs/company-notes/00-Index';
+
+// ============ Trend analysis ============
+
+// How many timeframes each problem appears in (6mo / 1yr / 2yr / alltime)
+const timeframeCounts: Record<number, number> = {};
+for (const tf of timeframes) {
+  for (const p of tf.problems) {
+    timeframeCounts[p.id] = (timeframeCounts[p.id] || 0) + 1;
+  }
+}
+
+// Problems asked in every available timeframe = strongest signal
+const maxTimeframes = Math.max(1, timeframes.length);
+const repeatOffenders = uniqueProblems
+  .filter(p => timeframeCounts[p.id] === maxTimeframes)
+  .sort((a, b) => b.frequency - a.frequency);
+
+// Trend verdict from timeframes
+let trendNote = '';
+if (timeframes.length >= 2) {
+  const recent = timeframes[0].problems.length;
+  const older = timeframes[timeframes.length - 1].problems.length;
+  if (older === 0) {
+    trendNote = 'Not enough history to compare trends.';
+  } else if (recent < older * 0.6) {
+    trendNote = `The 6-month question pool is much smaller than all-time — the interview loop appears to be tightening. Focus on the repeat offenders below.`;
+  } else if (recent > older * 1.4) {
+    trendNote = `The recent pool is large — this company pulls from a wide question bank. Don't chase every problem; drill the repeat offenders.`;
+  } else {
+    trendNote = `The 6-month pool is a stable subset of all-time — most questions are recurring. The repeat offenders below are your best study targets.`;
+  }
+}
 
 // Check if company exists
 const companyExists = timeframes.length > 0;
@@ -330,6 +423,116 @@ const pageDescription = `${stats.total} LeetCode problems asked at ${displayName
           </div>
         </header>
 
+        <!-- Analysis -->
+        <section class="analysis-section">
+          <div class="analysis-head">
+            <h2><span class="nf">󰋼</span> Analysis</h2>
+            <p class="analysis-verdict">{verdict}</p>
+          </div>
+
+          <div class="analysis-grid">
+            <!-- Difficulty mix -->
+            <div class="analysis-card">
+              <h3>Difficulty mix</h3>
+              <div class="diff-bars">
+                <div class="diff-bar-row easy">
+                  <span class="diff-bar-label">Easy</span>
+                  <span class="diff-bar-track"><span class="diff-bar-fill" style={`width: ${diffPct(stats.easy)}%`}></span></span>
+                  <span class="diff-bar-value">{stats.easy} · {diffPct(stats.easy)}%</span>
+                </div>
+                <div class="diff-bar-row medium">
+                  <span class="diff-bar-label">Medium</span>
+                  <span class="diff-bar-track"><span class="diff-bar-fill" style={`width: ${diffPct(stats.medium)}%`}></span></span>
+                  <span class="diff-bar-value">{stats.medium} · {diffPct(stats.medium)}%</span>
+                </div>
+                <div class="diff-bar-row hard">
+                  <span class="diff-bar-label">Hard</span>
+                  <span class="diff-bar-track"><span class="diff-bar-fill" style={`width: ${diffPct(stats.hard)}%`}></span></span>
+                  <span class="diff-bar-value">{stats.hard} · {diffPct(stats.hard)}%</span>
+                </div>
+              </div>
+              <div class="analysis-mini-stats">
+                <span><strong>{avgAcceptance}%</strong> avg acceptance</span>
+                <span><strong>{hotProblems.length}</strong> hot problems (freq ≥ 2)</span>
+              </div>
+            </div>
+
+            <!-- Patterns -->
+            <div class="analysis-card">
+              <h3>Top patterns</h3>
+              {
+                topPatterns.length > 0 ? (
+                  <div class="pattern-list">
+                    {topPatterns.map(([pattern, count]) => (
+                      <div class="pattern-row">
+                        <span class="pattern-name">{pattern}</span>
+                        <span class="pattern-count">{count}</span>
+                        <span class="pattern-bar">
+                          <span class="pattern-fill" style={`width: ${Math.round((count / stats.total) * 100)}%`}></span>
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p class="analysis-empty">Not enough data to classify patterns.</p>
+                )
+              }
+            </div>
+
+            <!-- Must-do list -->
+            <div class="analysis-card">
+              <h3>Must-do problems</h3>
+              <ol class="mustdo-list">
+                {topProblems.map(p => (
+                  <li>
+                    <a href={`/leetcode/problem/${p.id}`} title="View problem analysis">
+                      <span class={`mustdo-diff ${p.difficulty.toLowerCase()}`}>{p.difficulty}</span>
+                      {p.title}
+                    </a>
+                    <span class="mustdo-freq">{p.frequency.toFixed(1)}</span>
+                  </li>
+                ))}
+              </ol>
+            </div>
+
+            <!-- Repeat offenders -->
+            {
+              repeatOffenders.length > 0 && (
+                <div class="analysis-card">
+                  <h3>Core problems <span class="card-badge">asked in all timeframes</span></h3>
+                  <ol class="mustdo-list">
+                    {repeatOffenders.slice(0, 8).map(p => (
+                      <li>
+                        <a href={`/leetcode/problem/${p.id}`} title="View problem analysis">
+                          <span class={`mustdo-diff ${p.difficulty.toLowerCase()}`}>{p.difficulty}</span>
+                          {p.title}
+                        </a>
+                        <span class="mustdo-freq">{p.frequency.toFixed(1)}</span>
+                      </li>
+                    ))}
+                  </ol>
+                  {timeframes.length >= 2 && (
+                    <p class="trend-note"><span class="nf">󰁫</span> {trendNote}</p>
+                  )}
+                </div>
+              )
+            }
+
+            <!-- Prep links -->
+            <div class="analysis-card">
+              <h3>Prep from the docs</h3>
+              <ul class="prep-links">
+                <li><a href="/docs/foundations/01-DSA-and-Coding"><span class="nf">󰂺</span> DSA & Coding foundations</a></li>
+                <li><a href="/docs/interviews/02-Coding-Interview-Playbook"><span class="nf">󰅨</span> Coding interview playbook</a></li>
+                <li><a href="/docs/interviews/03-System-Design-Interview-Playbook"><span class="nf">󰈙</span> System design playbook</a></li>
+                <li><a href="/docs/interviews/06-Behavioral-Interview-Playbook"><span class="nf">󰅨</span> Behavioral interview playbook</a></li>
+                <li><a href="/roadmap/swe-generalist"><span class="nf">󰘓</span> SWE Generalist roadmap</a></li>
+                <li><a href={companyDoc}><span class="nf">󰈙</span> {displayName} company notes</a></li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
         <!-- Timeframe Tabs -->
         <div class="timeframe-tabs">
           {timeframes.map((tf, index) => (
@@ -386,6 +589,7 @@ const pageDescription = `${stats.total} LeetCode problems asked at ${displayName
                   <th class="col-difficulty">Difficulty</th>
                   <th class="col-acceptance">Acceptance</th>
                   <th class="col-frequency">Frequency</th>
+                  <th class="col-repeat">Repeat</th>
                 </tr>
               </thead>
               <tbody>
@@ -407,8 +611,11 @@ const pageDescription = `${stats.total} LeetCode problems asked at ${displayName
                     </td>
                     <td class="col-id">{problem.id}</td>
                     <td class="col-title">
-                      <a href={problem.url} target="_blank" rel="noopener">
+                      <a href={`/leetcode/problem/${problem.id}`} class="problem-detail-link" title="View problem analysis">
                         {problem.title}
+                        <span class="detail-icon">󰅖</span>
+                      </a>
+                      <a href={problem.url} target="_blank" rel="noopener" class="problem-external-link">
                         <span class="external-icon">↗</span>
                       </a>
                     </td>
@@ -424,6 +631,17 @@ const pageDescription = `${stats.total} LeetCode problems asked at ${displayName
                         ></div>
                       </div>
                       <span class="frequency-value">{problem.frequency.toFixed(1)}</span>
+                    </td>
+                    <td class="col-repeat">
+                      {
+                        (timeframeCounts[problem.id] ?? 1) >= 2 ? (
+                          <span class="repeat-chip" title={`Asked in ${timeframeCounts[problem.id]} of ${timeframes.length} timeframes`}>
+                            ×{timeframeCounts[problem.id]}
+                          </span>
+                        ) : (
+                          <span class="repeat-chip dim" title="Asked in only one timeframe">×1</span>
+                        )
+                      }
                     </td>
                   </tr>
                 ))}
@@ -932,5 +1150,341 @@ const pageDescription = `${stats.total} LeetCode problems asked at ${displayName
     .col-frequency {
       display: none;
     }
+
+    .col-repeat {
+      display: none;
+    }
+  }
+
+  /* Analysis Section */
+  .analysis-section {
+    margin: var(--spacing-xl) 0;
+    padding: var(--spacing-lg);
+    background: var(--mantle);
+    border: 1px solid var(--surface0);
+    border-radius: 12px;
+  }
+
+  .analysis-head {
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .analysis-head h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.5ch;
+    color: var(--text);
+    font-size: 1.25em;
+    margin: 0 0 var(--spacing-xs);
+  }
+
+  .analysis-head h2 .nf {
+    color: var(--accent-blue);
+  }
+
+  .analysis-verdict {
+    margin: 0;
+    color: var(--subtext1);
+    font-size: 0.92em;
+    line-height: 1.6;
+    max-width: 75ch;
+  }
+
+  .analysis-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: var(--spacing-md);
+  }
+
+  .analysis-card {
+    background: var(--crust);
+    border: 1px solid var(--surface0);
+    border-radius: 10px;
+    padding: var(--spacing-md);
+  }
+
+  .analysis-card h3 {
+    color: var(--text);
+    font-size: 0.95em;
+    margin: 0 0 var(--spacing-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--subtext0);
+    font-weight: 600;
+  }
+
+  .diff-bar-row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-xs);
+    font-size: 0.85em;
+  }
+
+  .diff-bar-label {
+    color: var(--subtext1);
+    width: 52px;
+    flex-shrink: 0;
+  }
+
+  .diff-bar-track {
+    flex: 1;
+    height: 8px;
+    background: var(--mantle);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .diff-bar-fill {
+    display: block;
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.4s ease;
+  }
+
+  .diff-bar-row.easy .diff-bar-fill { background: var(--green); }
+  .diff-bar-row.medium .diff-bar-fill { background: var(--yellow); }
+  .diff-bar-row.hard .diff-bar-fill { background: var(--red); }
+
+  .diff-bar-value {
+    color: var(--subtext0);
+    font-size: 0.8em;
+    min-width: 7ch;
+    text-align: right;
+  }
+
+  .analysis-mini-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-sm);
+    font-size: 0.82em;
+    color: var(--subtext0);
+  }
+
+  .analysis-mini-stats strong {
+    color: var(--text);
+  }
+
+  .pattern-row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-xs);
+    font-size: 0.85em;
+  }
+
+  .pattern-name {
+    color: var(--text);
+    width: 9em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .pattern-count {
+    color: var(--subtext0);
+    font-size: 0.85em;
+    width: 2ch;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  .pattern-bar {
+    flex: 1;
+    height: 6px;
+    background: var(--mantle);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .pattern-fill {
+    display: block;
+    height: 100%;
+    border-radius: 3px;
+    background: linear-gradient(90deg, var(--accent-blue), var(--accent-teal));
+  }
+
+  .analysis-empty {
+    color: var(--subtext0);
+    font-size: 0.85em;
+    font-style: italic;
+  }
+
+  .mustdo-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    counter-reset: mustdo;
+  }
+
+  .mustdo-list li {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-xs) 0;
+    border-bottom: 1px solid var(--surface0);
+    font-size: 0.85em;
+  }
+
+  .mustdo-list li:last-child {
+    border-bottom: none;
+  }
+
+  .mustdo-list li::before {
+    counter-increment: mustdo;
+    content: counter(mustdo);
+    color: var(--subtext0);
+    font-size: 0.8em;
+    width: 1.5em;
+  }
+
+  .mustdo-list a {
+    color: var(--text);
+    text-decoration: none;
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+  }
+
+  .mustdo-list a:hover {
+    color: var(--accent-blue);
+  }
+
+  .mustdo-diff {
+    font-size: 0.68em;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+
+  .mustdo-diff.easy { background: color-mix(in srgb, var(--green) 18%, transparent); color: var(--green); }
+  .mustdo-diff.medium { background: color-mix(in srgb, var(--yellow) 18%, transparent); color: var(--yellow); }
+  .mustdo-diff.hard { background: color-mix(in srgb, var(--red) 18%, transparent); color: var(--red); }
+
+  .mustdo-freq {
+    color: var(--subtext0);
+    font-size: 0.8em;
+    flex-shrink: 0;
+  }
+
+  .prep-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  .prep-links a {
+    display: flex;
+    align-items: center;
+    gap: 0.5ch;
+    color: var(--subtext1);
+    text-decoration: none;
+    font-size: 0.88em;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: 6px;
+    transition: all var(--transition-fast);
+  }
+
+  .prep-links a:hover {
+    color: var(--accent-blue);
+    background: color-mix(in srgb, var(--accent-blue) 10%, transparent);
+  }
+
+  .prep-links .nf {
+    color: var(--accent-blue);
+  }
+
+  .card-badge {
+    font-size: 0.68em;
+    font-weight: 600;
+    color: var(--accent-green);
+    background: color-mix(in srgb, var(--green) 15%, transparent);
+    padding: 2px 8px;
+    border-radius: 999px;
+    text-transform: none;
+    letter-spacing: 0;
+    vertical-align: middle;
+    margin-left: var(--spacing-xs);
+  }
+
+  .trend-note {
+    margin: var(--spacing-sm) 0 0;
+    padding-top: var(--spacing-sm);
+    border-top: 1px solid var(--surface0);
+    color: var(--subtext0);
+    font-size: 0.82em;
+    line-height: 1.5;
+  }
+
+  .trend-note .nf {
+    color: var(--accent-teal);
+    margin-right: 0.4ch;
+  }
+
+  .col-repeat {
+    width: 3.5em;
+    text-align: center;
+  }
+
+  .repeat-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 30px;
+    padding: 1px 7px;
+    border-radius: 999px;
+    font-size: 0.72em;
+    font-weight: 700;
+    background: color-mix(in srgb, var(--accent-green) 16%, transparent);
+    color: var(--accent-green);
+  }
+
+  .repeat-chip.dim {
+    background: var(--surface0);
+    color: var(--subtext0);
+  }
+
+  .problem-detail-link {
+    color: var(--text);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4ch;
+  }
+
+  .problem-detail-link:hover {
+    color: var(--accent-blue);
+  }
+
+  .problem-detail-link .detail-icon {
+    font-size: 0.8em;
+    color: var(--subtext0);
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+  }
+
+  .problem-detail-link:hover .detail-icon {
+    opacity: 1;
+    color: var(--accent-blue);
+  }
+
+  .problem-external-link {
+    margin-left: 0.5ch;
+    color: var(--subtext0);
+    text-decoration: none;
+    font-size: 0.85em;
+  }
+
+  .problem-external-link:hover {
+    color: var(--accent-blue);
   }
 </style>

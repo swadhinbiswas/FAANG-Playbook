@@ -1,0 +1,511 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { readFileSync, existsSync, readdirSync } from 'fs';
+import { join } from 'path';
+import { parse } from 'csv-parse/sync';
+import { classifyPattern } from '../../lib/leetcode-patterns';
+
+const CSV_DIR = join(process.cwd(), '..', 'leetcode Question ');
+
+interface Problem {
+  id: number;
+  title: string;
+  acceptance: string;
+  difficulty: 'Easy' | 'Medium' | 'Hard';
+  frequency: number;
+  url: string;
+}
+
+const csvCache = new Map<string, Problem[]>();
+
+function parseCSV(filepath: string): Problem[] {
+  if (csvCache.has(filepath)) return csvCache.get(filepath)!;
+  if (!existsSync(filepath)) return [];
+  let problems: Problem[] = [];
+  try {
+    const content = readFileSync(filepath, 'utf-8');
+    const records = parse(content, {
+      skip_empty_lines: true,
+      relax_column_count: true,
+      trim: true,
+    });
+    problems = records
+      .filter((r: any[]) => r.length >= 5)
+      .map((r: any[]) => ({
+        id: parseInt(r[0], 10),
+        title: r[1]?.trim() || '',
+        acceptance: r[2]?.trim() || '0%',
+        difficulty: (['Easy', 'Medium', 'Hard'].includes(r[3]) ? r[3] : 'Medium') as 'Easy' | 'Medium' | 'Hard',
+        frequency: parseFloat(r[4]) || 0,
+        url: r[5]?.trim() || `https://leetcode.com/problems/${r[0]}`,
+      }))
+      .filter((p: Problem) => !isNaN(p.id));
+  } catch {
+    problems = [];
+  }
+  csvCache.set(filepath, problems);
+  return problems;
+}
+
+// All companies with data
+const companySlugs = existsSync(CSV_DIR)
+  ? readdirSync(CSV_DIR)
+      .filter((f) => f.endsWith('.csv'))
+      .map((f) => f.replace('.csv', '').split('_').slice(0, -1).join('_'))
+      .filter((v, i, a) => a.indexOf(v) === i)
+  : [];
+
+// Per-company: unique problems + pattern counts
+interface PatternAgg {
+  problems: Map<number, Problem>;
+  count: number;
+}
+const companyPatterns = new Map<string, Map<string, PatternAgg>>();
+const patternCompanyCount = new Map<string, number>();
+const patternProblemData = new Map<string, Map<number, { problem: Problem; companies: Map<string, number> }>>();
+
+for (const slug of companySlugs) {
+  const unique = new Map<number, Problem>();
+  for (const suffix of ['6months', '1year', '2year', 'alltime']) {
+    for (const p of parseCSV(join(CSV_DIR, `${slug}_${suffix}.csv`))) {
+      const existing = unique.get(p.id);
+      if (!existing || p.frequency > existing.frequency) unique.set(p.id, p);
+    }
+  }
+  if (unique.size === 0) continue;
+
+  const byPattern = new Map<string, PatternAgg>();
+  for (const p of unique.values()) {
+    const pattern = classifyPattern(p.title);
+    if (!byPattern.has(pattern)) byPattern.set(pattern, { problems: new Map(), count: 0 });
+    const agg = byPattern.get(pattern)!;
+    agg.problems.set(p.id, p);
+    agg.count++;
+
+    // Global aggregation
+    if (!patternProblemData.has(pattern)) patternProblemData.set(pattern, new Map());
+    const global = patternProblemData.get(pattern)!;
+    if (!global.has(p.id)) {
+      global.set(p.id, { problem: p, companies: new Map() });
+    }
+    const entry = global.get(p.id)!;
+    const prevFreq = entry.companies.get(slug) || 0;
+    if (p.frequency > prevFreq) entry.companies.set(slug, p.frequency);
+  }
+  for (const [pattern, agg] of byPattern) {
+    patternCompanyCount.set(pattern, (patternCompanyCount.get(pattern) || 0) + 1);
+  }
+  companyPatterns.set(slug, byPattern);
+}
+
+// Company count where each pattern is #1
+const patternTopCompany = new Map<string, number>();
+for (const byPattern of companyPatterns.values()) {
+  let top: string | null = null;
+  let topCount = 0;
+  for (const [pattern, agg] of byPattern) {
+    if (agg.count > topCount) {
+      topCount = agg.count;
+      top = pattern;
+    }
+  }
+  if (top) patternTopCompany.set(top, (patternTopCompany.get(top) || 0) + 1);
+}
+
+const companyCount = companyPatterns.size;
+
+// Ranked pattern list
+const rankedPatterns = Array.from(patternCompanyCount.entries())
+  .map(([pattern, companies]) => {
+    const problems = patternProblemData.get(pattern)!;
+    const totalProblems = problems.size;
+    const totalFreq = Array.from(problems.values()).reduce(
+      (a, e) => a + Array.from(e.companies.values()).reduce((x, f) => x + f, 0),
+      0,
+    );
+    const topProblems = Array.from(problems.values())
+      .map((e) => ({
+        id: e.problem.id,
+        title: e.problem.title,
+        difficulty: e.problem.difficulty,
+        totalFreq: Array.from(e.companies.values()).reduce((x, f) => x + f, 0),
+        companyCount: e.companies.size,
+        companies: e.companies,
+      }))
+      .sort((a, b) => b.totalFreq - a.totalFreq)
+      .slice(0, 10);
+    return {
+      pattern,
+      companies,
+      pctCompanies: Math.round((companies / companyCount) * 100),
+      top1Count: patternTopCompany.get(pattern) || 0,
+      totalProblems,
+      totalFreq: Math.round(totalFreq),
+      topProblems,
+    };
+  })
+  .sort((a, b) => b.top1Count - a.top1Count || b.totalProblems - a.totalProblems);
+
+const topOverall = rankedPatterns[0];
+const totalProblemsClassified = Array.from(patternProblemData.values()).reduce(
+  (a, m) => a + m.size,
+  0,
+);
+
+const difficultyColors: Record<string, string> = {
+  Easy: 'var(--green)',
+  Medium: 'var(--yellow)',
+  Hard: 'var(--red)',
+};
+
+function companyName(slug: string): string {
+  if (slug === 'facebook') return 'Meta';
+  return slug
+    .split(/[-_]/)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ');
+}
+
+const pageTitle = 'LeetCode Patterns Hub | FAANG Prep';
+const pageDescription = 'Aggregate DSA pattern analysis across every company: which patterns dominate, per-pattern ranked problems, and pattern-to-company heat.';
+---
+
+<Layout title={pageTitle} description={pageDescription} activeSection="leetcode">
+  <div class="patterns-page">
+    <header class="patterns-header">
+      <nav class="breadcrumb">
+        <a href="/leetcode"><span class="nf">󰅖</span> LeetCode Questions</a>
+        <span class="separator">/</span>
+        <span class="current">Patterns Hub</span>
+      </nav>
+      <h1><span class="nf">󰧑</span> LeetCode Patterns Hub</h1>
+      <p class="patterns-subtitle">
+        Every problem across {companyCount} companies classified by DSA pattern.
+        See what actually dominates interviews — and which problems to drill per pattern.
+      </p>
+
+      <div class="patterns-stats">
+        <div class="pstat">
+          <span class="pstat-value">{companyCount}</span>
+          <span class="pstat-label">Companies</span>
+        </div>
+        <div class="pstat">
+          <span class="pstat-value">{totalProblemsClassified}</span>
+          <span class="pstat-label">Problems classified</span>
+        </div>
+        <div class="pstat">
+          <span class="pstat-value">{rankedPatterns.length}</span>
+          <span class="pstat-label">Patterns</span>
+        </div>
+        {topOverall && (
+          <div class="pstat highlight">
+            <span class="pstat-value">{topOverall.pattern}</span>
+            <span class="pstat-label">#1 pattern · {topOverall.pctCompanies}% of companies</span>
+          </div>
+        )}
+      </div>
+    </header>
+
+    <!-- Pattern dominance -->
+    {
+      topOverall && (
+        <section class="dominance-card">
+          <span class="nf">󰆍</span>
+          <p>
+            <strong>{topOverall.pattern}</strong> is the #1 most-common pattern at{' '}
+            <strong>{topOverall.pctCompanies}% of companies</strong> ({topOverall.top1Count} of {companyCount}),
+            covering {topOverall.totalProblems} problems with a combined interview frequency of {topOverall.totalFreq}.
+            {rankedPatterns[1] && (
+              <> Runners-up: <strong>{rankedPatterns[1].pattern}</strong> ({rankedPatterns[1].pctCompanies}%) and <strong>{rankedPatterns[2].pattern}</strong> ({rankedPatterns[2].pctCompanies}%).</>
+            )}
+          </p>
+        </section>
+      )
+    }
+
+    <!-- Pattern cards -->
+    <section class="pattern-grid">
+      {rankedPatterns.map((p) => (
+        <article class="pattern-card" style={`--pattern-color: ${p.pattern === 'Dynamic Programming' ? 'var(--accent-pink)' : p.pattern === 'Arrays & Hashing' ? 'var(--accent-blue)' : 'var(--accent-teal)'}`}>
+          <header class="pattern-card-head">
+            <h2>{p.pattern}</h2>
+            <span class="pattern-rank">#{p.pattern === rankedPatterns[0].pattern ? '1' : rankedPatterns.indexOf(p) + 1}</span>
+          </header>
+
+          <div class="pattern-card-stats">
+            <div class="pstat-row">
+              <span>{p.totalProblems} problems</span>
+              <span>{p.totalFreq} total freq</span>
+            </div>
+            <div class="coverage">
+              <span class="coverage-bar"><span class="coverage-fill" style={`width: ${p.pctCompanies}%`}></span></span>
+              <span class="coverage-label">asked at {p.pctCompanies}% of companies</span>
+            </div>
+            <div class="top1-line">
+              #1 pattern at {p.top1Count} company{p.top1Count === 1 ? '' : 'ies'}
+            </div>
+          </div>
+
+          <ul class="pattern-problems">
+            {p.topProblems.map((prob) => (
+              <li>
+                <a href={`/leetcode/problem/${prob.id}`} class="pattern-problem-link">
+                  <span class="prob-diff" style={`color: ${difficultyColors[prob.difficulty]}`}>{prob.difficulty.slice(0, 1)}</span>
+                  <span class="prob-title">{prob.title}</span>
+                  <span class="prob-freq">{prob.totalFreq}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+
+          <div class="pattern-companies">
+            {Array.from(p.topProblems[0]?.companies.entries() || [])
+              .sort((a, b) => b[1] - a[1])
+              .slice(0, 5)
+              .map(([slug]) => (
+                <a href={`/leetcode/${slug}`} class="company-chip">{companyName(slug)}</a>
+              ))}
+          </div>
+        </article>
+      ))}
+    </section>
+  </div>
+</Layout>
+
+<style>
+  .patterns-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--spacing-lg);
+  }
+
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-lg);
+    font-size: 0.9rem;
+  }
+
+  .breadcrumb a {
+    color: var(--mauve);
+    text-decoration: none;
+  }
+
+  .breadcrumb a:hover { text-decoration: underline; }
+  .breadcrumb .separator { color: var(--surface2); }
+  .breadcrumb .current { color: var(--subtext0); }
+
+  .patterns-header h1 {
+    display: flex;
+    align-items: center;
+    gap: 0.6ch;
+    color: var(--text);
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .patterns-header h1 .nf { color: var(--accent-blue); }
+
+  .patterns-subtitle {
+    color: var(--subtext1);
+    font-size: 1.02em;
+    max-width: 80ch;
+    line-height: 1.6;
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .patterns-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .pstat {
+    background: var(--mantle);
+    border: 1px solid var(--surface0);
+    border-radius: 12px;
+    padding: var(--spacing-md);
+  }
+
+  .pstat.highlight {
+    border-color: var(--accent-blue);
+    background: color-mix(in srgb, var(--accent-blue) 10%, var(--mantle));
+  }
+
+  .pstat-value {
+    display: block;
+    font-size: 1.7em;
+    font-weight: 700;
+    color: var(--accent-blue);
+  }
+
+  .pstat.highlight .pstat-value { font-size: 1.2em; color: var(--text); }
+
+  .pstat-label {
+    color: var(--subtext0);
+    font-size: 0.78em;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .dominance-card {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+    background: color-mix(in srgb, var(--accent-teal) 8%, var(--mantle));
+    border: 1px solid var(--accent-teal);
+    border-radius: 12px;
+    padding: var(--spacing-md) var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .dominance-card .nf { color: var(--accent-teal); font-size: 1.3em; margin-top: 2px; }
+
+  .dominance-card p { color: var(--subtext1); margin: 0; font-size: 0.95em; line-height: 1.6; }
+  .dominance-card strong { color: var(--text); }
+
+  .pattern-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: var(--spacing-lg);
+  }
+
+  .pattern-card {
+    background: var(--mantle);
+    border: 1px solid var(--surface0);
+    border-top: 3px solid var(--pattern-color);
+    border-radius: 12px;
+    padding: var(--spacing-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+
+  .pattern-card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+
+  .pattern-card-head h2 {
+    color: var(--text);
+    font-size: 1.15em;
+    margin: 0;
+  }
+
+  .pattern-rank {
+    color: var(--subtext0);
+    font-size: 0.8em;
+    font-weight: 700;
+  }
+
+  .pstat-row {
+    display: flex;
+    justify-content: space-between;
+    color: var(--subtext0);
+    font-size: 0.85em;
+  }
+
+  .coverage {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+  }
+
+  .coverage-bar {
+    flex: 1;
+    height: 6px;
+    background: var(--crust);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .coverage-fill {
+    display: block;
+    height: 100%;
+    background: linear-gradient(90deg, var(--pattern-color), var(--accent-blue));
+    border-radius: 3px;
+  }
+
+  .coverage-label {
+    color: var(--subtext0);
+    font-size: 0.72em;
+    white-space: nowrap;
+  }
+
+  .top1-line {
+    color: var(--accent-green);
+    font-size: 0.8em;
+  }
+
+  .pattern-problems {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border-top: 1px solid var(--surface0);
+  }
+
+  .pattern-problems li {
+    border-bottom: 1px solid var(--surface0);
+  }
+
+  .pattern-problem-link {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-xs) 0;
+    text-decoration: none;
+  }
+
+  .pattern-problem-link:hover .prob-title { color: var(--accent-blue); }
+
+  .prob-diff {
+    width: 1.4em;
+    text-align: center;
+    font-weight: 700;
+    font-size: 0.85em;
+    flex-shrink: 0;
+  }
+
+  .prob-title {
+    flex: 1;
+    min-width: 0;
+    color: var(--subtext1);
+    font-size: 0.88em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transition: color var(--transition-fast);
+  }
+
+  .prob-freq {
+    color: var(--subtext0);
+    font-size: 0.78em;
+    flex-shrink: 0;
+  }
+
+  .pattern-companies {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+    margin-top: auto;
+    padding-top: var(--spacing-xs);
+  }
+
+  .company-chip {
+    padding: 2px 10px;
+    border-radius: 999px;
+    background: var(--crust);
+    border: 1px solid var(--surface0);
+    color: var(--subtext0);
+    font-size: 0.75em;
+    text-decoration: none;
+    transition: all var(--transition-fast);
+  }
+
+  .company-chip:hover {
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
+  }
+</style>

@@ -1,0 +1,185 @@
+---
+import Layout from "../../layouts/Layout.astro";
+---
+
+<Layout title="Application Tracker" activeSection="dashboard">
+  <div class="applications-page">
+    <header class="apps-header">
+      <h1><span class="nf"></span> Job Application Tracker</h1>
+      <p class="apps-subtitle">Track your job applications and interview progress</p>
+    </header>
+
+    <div class="apps-actions">
+      <button class="btn-primary" id="add-app-btn">
+        <span class="nf"></span> Add Application
+      </button>
+    </div>
+
+    <div class="apps-stats">
+      <div class="app-stat"><span class="num" id="stat-total">0</span><span class="label">Total</span></div>
+      <div class="app-stat"><span class="num" id="stat-applied">0</span><span class="label">Applied</span></div>
+      <div class="app-stat"><span class="num" id="stat-interview">0</span><span class="label">Interview</span></div>
+      <div class="app-stat"><span class="num" id="stat-offer">0</span><span class="label">Offers</span></div>
+    </div>
+
+    <div class="apps-board" id="apps-board">
+      <!-- Kanban board -->
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-overlay" id="modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Add Application</h2>
+        <button class="modal-close" id="close-modal">&times;</button>
+      </div>
+      <form id="app-form">
+        <div class="form-row">
+          <div class="form-group"><label>Company *</label><input type="text" name="company" required /></div>
+          <div class="form-group"><label>Role *</label><input type="text" name="role" required /></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Status *</label>
+            <select name="status" required>
+              <option value="researching">Researching</option>
+              <option value="applied">Applied</option>
+              <option value="screening">Screening</option>
+              <option value="interview">Interview</option>
+              <option value="offer">Offer</option>
+              <option value="rejected">Rejected</option>
+            </select>
+          </div>
+          <div class="form-group"><label>Date Applied *</label><input type="date" name="dateApplied" required /></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Location</label><input type="text" name="location" placeholder="Remote / City" /></div>
+          <div class="form-group"><label>Job URL</label><input type="url" name="jobUrl" /></div>
+        </div>
+        <div class="form-group"><label>Notes</label><textarea name="notes" rows="3"></textarea></div>
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" id="cancel-btn">Cancel</button>
+          <button type="submit" class="btn-submit">Add Application</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .applications-page { max-width: 1400px; margin: 0 auto; padding: var(--spacing-xl); }
+  .apps-header { margin-bottom: var(--spacing-2xl); }
+  .apps-header h1 { display: flex; align-items: center; gap: 0.75ch; font-size: 2em; color: var(--text); margin-bottom: var(--spacing-xs); }
+  .apps-subtitle { color: var(--subtext1); font-size: 1.1em; }
+  .apps-actions { margin-bottom: var(--spacing-xl); }
+  .btn-primary { display: inline-flex; align-items: center; gap: 0.75ch; padding: var(--spacing-md) var(--spacing-lg); background: var(--accent-green); color: var(--crust); border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+  .btn-primary:hover { background: var(--green); transform: translateY(-2px); }
+  .apps-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--spacing-md); margin-bottom: var(--spacing-xl); }
+  .app-stat { background: var(--mantle); border: 1px solid var(--surface0); border-radius: 12px; padding: var(--spacing-lg); text-align: center; }
+  .app-stat .num { font-size: 2.5em; font-weight: bold; color: var(--accent-green); display: block; }
+  .app-stat .label { color: var(--subtext1); font-size: 0.9em; }
+  .apps-board { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--spacing-lg); }
+  .app-card { background: var(--mantle); border: 1px solid var(--surface0); border-radius: 12px; padding: var(--spacing-lg); }
+  .app-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--spacing-md); }
+  .app-company { font-size: 1.2em; font-weight: bold; color: var(--text); }
+  .app-role { color: var(--subtext1); font-size: 0.9em; margin-bottom: var(--spacing-sm); }
+  .app-meta { font-size: 0.85em; color: var(--subtext0); margin-bottom: var(--spacing-xs); }
+  .status-badge { display: inline-block; padding: 0.2em 0.6em; border-radius: 4px; font-size: 0.8em; font-weight: bold; text-transform: capitalize; background: var(--surface0); color: var(--subtext1); }
+  .app-actions { display: flex; gap: var(--spacing-xs); margin-top: var(--spacing-md); }
+  .action-btn { flex: 1; padding: var(--spacing-xs); background: var(--surface0); border: none; border-radius: 4px; color: var(--subtext1); cursor: pointer; font-size: 0.85em; }
+  .action-btn:hover { background: var(--accent-green); color: var(--crust); }
+  .delete-btn:hover { background: var(--red); color: var(--crust); }
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 1000; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--mantle); border: 1px solid var(--surface0); border-radius: 12px; width: 90%; max-width: 600px; }
+  .modal-header { display: flex; justify-content: space-between; padding: var(--spacing-lg); border-bottom: 1px solid var(--surface0); }
+  .modal-close { background: transparent; border: none; color: var(--subtext0); font-size: 2em; cursor: pointer; }
+  #app-form { padding: var(--spacing-lg); }
+  .form-group { margin-bottom: var(--spacing-md); }
+  .form-group label { display: block; color: var(--subtext1); margin-bottom: var(--spacing-xs); }
+  .form-group input, .form-group select, .form-group textarea { width: 100%; background: var(--crust); border: 1px solid var(--surface0); color: var(--text); padding: var(--spacing-sm); border-radius: 6px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md); }
+  .modal-actions { display: flex; justify-content: flex-end; gap: var(--spacing-md); }
+  .btn-cancel { background: transparent; border: 1px solid var(--surface1); color: var(--subtext1); padding: var(--spacing-sm) var(--spacing-md); border-radius: 6px; cursor: pointer; }
+  .btn-submit { background: var(--accent-green); border: none; color: var(--crust); padding: var(--spacing-sm) var(--spacing-md); border-radius: 6px; font-weight: bold; cursor: pointer; }
+  .empty-state { text-align: center; padding: var(--spacing-2xl); color: var(--subtext0); }
+</style>
+
+<script>
+  import { loadFromStorage, saveToStorage, STORAGE_KEYS, generateId } from "../../lib/user-data";
+
+  interface Application { id: string; company: string; role: string; status: string; dateApplied: string; location: string; jobUrl: string; notes: string; createdAt: string; }
+
+  let applications: Application[] = [];
+
+  function loadApplications() {
+    applications = loadFromStorage<Application[]>(STORAGE_KEYS.APPLICATIONS) || [];
+    renderApplications();
+    updateStats();
+  }
+
+  function renderApplications() {
+    const board = document.getElementById('apps-board');
+    if (!board) return;
+    if (applications.length === 0) { board.innerHTML = '<div class="empty-state">No applications yet. Add your first one!</div>'; return; }
+    
+    let html = '';
+    for (const app of applications) {
+      html += `<div class="app-card">
+        <div class="app-card-header"><span class="app-company">${app.company}</span><span class="status-badge">${app.status}</span></div>
+        <div class="app-role">${app.role}</div>
+        <div class="app-meta"><span class="nf"></span> ${app.dateApplied}</div>
+        ${app.location ? `<div class="app-meta"><span class="nf"></span> ${app.location}</div>` : ''}
+        ${app.notes ? `<div class="app-meta"><span class="nf"></span> ${app.notes.substring(0, 100)}${app.notes.length > 100 ? '...' : ''}</div>` : ''}
+        <div class="app-actions">
+          <button class="action-btn" onclick="moveStatus('${app.id}', -1)"> Back</button>
+          <button class="action-btn" onclick="moveStatus('${app.id}', 1)">Forward </button>
+          <button class="action-btn delete-btn" onclick="deleteApp('${app.id}')"></button>
+        </div>
+      </div>`;
+    }
+    board.innerHTML = html;
+  }
+
+  function updateStats() {
+    document.getElementById('stat-total')!.textContent = applications.length.toString();
+    document.getElementById('stat-applied')!.textContent = applications.filter(a => a.status === 'applied').length.toString();
+    document.getElementById('stat-interview')!.textContent = applications.filter(a => a.status === 'interview').length.toString();
+    document.getElementById('stat-offer')!.textContent = applications.filter(a => a.status === 'offer').length.toString();
+  }
+
+  const statuses = ['researching', 'applied', 'screening', 'interview', 'offer', 'rejected'];
+  (window as any).moveStatus = function(id: string, dir: number) {
+    const app = applications.find(a => a.id === id);
+    if (!app) return;
+    const idx = statuses.indexOf(app.status);
+    const newIdx = Math.max(0, Math.min(statuses.length - 1, idx + dir));
+    app.status = statuses[newIdx];
+    saveToStorage(STORAGE_KEYS.APPLICATIONS, applications);
+    loadApplications();
+  };
+
+  (window as any).deleteApp = function(id: string) {
+    if (!confirm('Delete this application?')) return;
+    applications = applications.filter(a => a.id !== id);
+    saveToStorage(STORAGE_KEYS.APPLICATIONS, applications);
+    loadApplications();
+  };
+
+  const modal = document.getElementById('modal');
+  document.getElementById('add-app-btn')?.addEventListener('click', () => modal?.classList.add('open'));
+  document.getElementById('close-modal')?.addEventListener('click', () => modal?.classList.remove('open'));
+  document.getElementById('cancel-btn')?.addEventListener('click', () => modal?.classList.remove('open'));
+  
+  document.getElementById('app-form')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const fd = new FormData(e.target as HTMLFormElement);
+    applications.unshift({ id: generateId(), company: fd.get('company') as string, role: fd.get('role') as string, status: fd.get('status') as string, dateApplied: fd.get('dateApplied') as string, location: fd.get('location') as string, jobUrl: fd.get('jobUrl') as string, notes: fd.get('notes') as string, createdAt: new Date().toISOString() });
+    saveToStorage(STORAGE_KEYS.APPLICATIONS, applications);
+    (e.target as HTMLFormElement).reset();
+    modal?.classList.remove('open');
+    loadApplications();
+  });
+
+  loadApplications();
+</script>

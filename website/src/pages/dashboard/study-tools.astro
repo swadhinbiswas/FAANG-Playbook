@@ -1,0 +1,646 @@
+---
+import Layout from "../../layouts/Layout.astro";
+---
+
+<Layout title="Study Tools" activeSection="dashboard">
+  <div class="study-tools-page">
+    <header class="tools-header">
+      <h1>
+        <span class="nf"></span>
+        Study Tools
+      </h1>
+      <p class="tools-subtitle">Practical resources to deepen your understanding and retention</p>
+    </header>
+
+    <!-- Quick Reference Sheets -->
+    <div class="tools-section">
+      <div class="section-header">
+        <h2><span class="nf"></span> Quick Reference Sheets</h2>
+        <span class="badge">Essential formulas & patterns</span>
+      </div>
+      <div class="reference-grid">
+        <div class="reference-card" onclick="openReference('dsa-patterns')">
+          <div class="ref-icon"></div>
+          <h3>DSA Patterns Cheat Sheet</h3>
+          <p>Sliding window, two pointers, DFS/BFS templates, DP patterns</p>
+          <div class="ref-meta">
+            <span class="nf"></span> 15 patterns
+          </div>
+        </div>
+        <div class="reference-card" onclick="openReference('system-design')">
+          <div class="ref-icon"></div>
+          <h3>System Design Concepts</h3>
+          <p>Load balancing, caching, database sharding, CAP theorem</p>
+          <div class="ref-meta">
+            <span class="nf"></span> 25 concepts
+          </div>
+        </div>
+        <div class="reference-card" onclick="openReference('behavioral')">
+          <div class="ref-icon"></div>
+          <h3>Behavioral STAR Templates</h3>
+          <p>Leadership, conflict, failure, success story frameworks</p>
+          <div class="ref-meta">
+            <span class="nf"></span> 12 templates
+          </div>
+        </div>
+        <div class="reference-card" onclick="openReference('sql')">
+          <div class="ref-icon"></div>
+          <h3>SQL Query Patterns</h3>
+          <p>JOINs, window functions, CTEs, optimization tips</p>
+          <div class="ref-meta">
+            <span class="nf"></span> 20 patterns
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Recall Questions -->
+    <div class="tools-section">
+      <div class="section-header">
+        <h2><span class="nf"></span> Active Recall Questions</h2>
+        <span class="badge">Test your understanding</span>
+      </div>
+      <p class="section-intro">
+        Research shows active recall improves retention by 200%. Test yourself before looking at answers.
+      </p>
+      <div class="recall-container">
+        <div class="recall-filters">
+          <select id="recall-topic" class="filter-select">
+            <option value="">All Topics</option>
+            <option value="arrays">Arrays & Strings</option>
+            <option value="trees">Trees & Graphs</option>
+            <option value="dp">Dynamic Programming</option>
+            <option value="system-design">System Design</option>
+            <option value="os">Operating Systems</option>
+            <option value="networking">Networking</option>
+            <option value="databases">Databases</option>
+          </select>
+          <select id="recall-difficulty" class="filter-select">
+            <option value="">All Difficulties</option>
+            <option value="basic">Basic</option>
+            <option value="intermediate">Intermediate</option>
+            <option value="advanced">Advanced</option>
+          </select>
+        </div>
+        <div class="recall-card" id="recall-card">
+          <div class="recall-question">
+            <span class="recall-badge">Arrays</span>
+            <p id="recall-text">What is the time complexity of accessing an element in an array by index? Explain why.</p>
+          </div>
+          <button class="btn-reveal" id="reveal-answer">
+            <span class="nf"></span> Show Answer
+          </button>
+          <div class="recall-answer" id="recall-answer">
+            <h4>Answer:</h4>
+            <p><strong>O(1)</strong> - Constant time. Arrays store elements in contiguous memory locations, so accessing by index requires a simple pointer arithmetic calculation: <code>base_address + (index * element_size)</code>.</p>
+            <div class="recall-extras">
+              <span class="tag">Time: O(1)</span>
+              <span class="tag">Space: O(1)</span>
+              <span class="tag difficulty">Basic</span>
+            </div>
+          </div>
+          <div class="recall-actions">
+            <button class="btn-action" onclick="nextRecall('easy')">
+              <span class="nf"></span> Got it
+            </button>
+            <button class="btn-action" onclick="nextRecall('medium')">
+              <span class="nf"></span> Unsure
+            </button>
+            <button class="btn-action" onclick="nextRecall('hard')">
+              <span class="nf"></span> Need review
+            </button>
+          </div>
+        </div>
+        <div class="recall-stats">
+          <div class="recall-stat">
+            <span class="num" id="recall-total">0</span>
+            <span class="label">Questions Reviewed</span>
+          </div>
+          <div class="recall-stat">
+            <span class="num" id="recall-mastered">0</span>
+            <span class="label">Mastered</span>
+          </div>
+          <div class="recall-stat">
+            <span class="num" id="recall-review">0</span>
+            <span class="label">Need Review</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Interview Notes -->
+    <div class="tools-section">
+      <div class="section-header">
+        <h2><span class="nf"></span> Interview Notes</h2>
+        <button class="btn-primary" onclick="openNotesModal()">
+          <span class="nf"></span> New Note
+        </button>
+      </div>
+      <div class="notes-grid" id="notes-grid">
+        <!-- User's notes will appear here -->
+      </div>
+      <div class="notes-empty" id="notes-empty">
+        <span class="nf"></span>
+        <p>No notes yet</p>
+        <span>Document your learning and interview experiences</span>
+      </div>
+    </div>
+
+    <!-- Must-Know Concepts -->
+    <div class="tools-section">
+      <div class="section-header">
+        <h2><span class="nf"></span> Must-Know Concepts Checklist</h2>
+        <span class="badge">Interview essentials</span>
+      </div>
+      <p class="section-intro">
+        These concepts appear in 80%+ of FAANG interviews. Master them before moving to advanced topics.
+      </p>
+      <div class="concepts-container">
+        <div class="concept-category">
+          <h3><span class="nf"></span> Data Structures</h3>
+          <div class="concept-list">
+            <label class="concept-item">
+              <input type="checkbox" data-concept="arrays" />
+              <span class="concept-name">Arrays & Strings</span>
+              <span class="concept-desc">Manipulation, two pointers, sliding window</span>
+            </label>
+            <label class="concept-item">
+              <input type="checkbox" data-concept="hash-tables" />
+              <span class="concept-name">Hash Tables</span>
+              <span class="concept-desc">O(1) lookup, collision handling, load factor</span>
+            </label>
+            <label class="concept-item">
+              <input type="checkbox" data-concept="linked-lists" />
+              <span class="concept-name">Linked Lists</span>
+              <span class="concept-desc">Singly, doubly, cycle detection, reversal</span>
+            </label>
+            <label class="concept-item">
+              <input type="checkbox" data-concept="trees" />
+              <span class="concept-name">Trees & BST</span>
+              <span class="concept-desc">DFS, BFS, traversal, LCA</span>
+            </label>
+            <label class="concept-item">
+              <input type="checkbox" data-concept="graphs" />
+              <span class="concept-name">Graphs</span>
+              <span class="concept-desc">Representation, DFS/BFS, topological sort</span>
+            </label>
+            <label class="concept-item">
+              <input type="checkbox" data-concept="heaps" />
+              <span class="concept-name">Heaps/Priority Queues</span>
+              <span class="concept-desc">Min/max heap, heap operations</span>
+            </label>
+          </div>
+        </div>
+        <div class="concept-category">
+          <h3><span class="nf"></span> Algorithms</h3>
+          <div class="concept-list">
+            <label class="concept-item">
+              <input type="checkbox" data-concept="binary-search" />
+              <span class="concept-name">Binary Search</span>
+              <span class="concept-desc">Sorted arrays, search space reduction</span>
+            </label>
+            <label class="concept-item">
+              <input type="checkbox" data-concept="sorting" />
+              <span class="concept-name">Sorting Algorithms</span>
+              <span class="concept-desc">Quick, merge, heap sort - time/space complexity</span>
+            </label>
+            <label class="concept-item">
+              <input type="checkbox" data-concept="recursion" />
+              <span class="concept-name">Recursion & Backtracking</span>
+              <span class="concept-desc">Base cases, state space tree</span>
+            </label>
+            <label class="concept-item">
+              <input type="checkbox" data-concept="dp" />
+              <span class="concept-name">Dynamic Programming</span>
+              <span class="concept-desc">Memoization, tabulation, common patterns</span>
+            </label>
+            <label class="concept-item">
+              <input type="checkbox" data-concept="greedy" />
+              <span class="concept-name">Greedy Algorithms</span>
+              <span class="concept-desc">When greedy works, interval problems</span>
+            </label>
+          </div>
+        </div>
+        <div class="concept-category">
+          <h3><span class="nf"></span> System Design</h3>
+          <div class="concept-list">
+            <label class="concept-item">
+              <input type="checkbox" data-concept="load-balancing" />
+              <span class="concept-name">Load Balancing</span>
+              <span class="concept-desc">Round robin, least connections, consistent hashing</span>
+            </label>
+            <label class="concept-item">
+              <input type="checkbox" data-concept="caching" />
+              <span class="concept-name">Caching Strategies</span>
+              <span class="concept-desc">LRU, LFU, cache invalidation</span>
+            </label>
+            <label class="concept-item">
+              <input type="checkbox" data-concept="databases" />
+              <span class="concept-name">Database Sharding</span>
+              <span class="concept-desc">Horizontal vs vertical, partitioning</span>
+            </label>
+            <label class="concept-item">
+              <input type="checkbox" data-concept="cap" />
+              <span class="concept-name">CAP Theorem</span>
+              <span class="concept-desc">Consistency, availability, partition tolerance</span>
+            </label>
+            <label class="concept-item">
+              <input type="checkbox" data-concept="api-design" />
+              <span class="concept-name">REST API Design</span>
+              <span class="concept-desc">HTTP methods, status codes, versioning</span>
+            </label>
+          </div>
+        </div>
+        <div class="concept-category">
+          <h3><span class="nf"></span> CS Fundamentals</h3>
+          <div class="concept-list">
+            <label class="concept-item">
+              <input type="checkbox" data-concept="os-process" />
+              <span class="concept-name">Process vs Threads</span>
+              <span class="concept-desc">Memory, context switching, synchronization</span>
+            </label>
+            <label class="concept-item">
+              <input type="checkbox" data-concept="os-memory" />
+              <span class="concept-name">Memory Management</span>
+              <span class="concept-desc">Stack vs heap, virtual memory, paging</span>
+            </label>
+            <label class="concept-item">
+              <input type="checkbox" data-concept="networking" />
+              <span class="concept-name">HTTP/HTTPS</span>
+              <span class="concept-desc">TCP handshake, TLS, status codes</span>
+            </label>
+            <label class="concept-item">
+              <input type="checkbox" data-concept="dns" />
+              <span class="concept-name">DNS & Networking</span>
+              <span class="concept-desc">DNS lookup, CDN, latency</span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reference Modal -->
+  <div class="modal-overlay" id="reference-modal">
+    <div class="modal modal-large">
+      <div class="modal-header">
+        <h2 id="reference-title">Reference Sheet</h2>
+        <button class="modal-close" onclick="closeReference()">&times;</button>
+      </div>
+      <div class="modal-content" id="reference-content">
+        <!-- Dynamic content -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Notes Modal -->
+  <div class="modal-overlay" id="notes-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Add Interview Note</h2>
+        <button class="modal-close" onclick="closeNotesModal()">&times;</button>
+      </div>
+      <form id="notes-form">
+        <div class="form-group">
+          <label>Title *</label>
+          <input type="text" name="title" required placeholder="e.g., Google Coding Interview Experience" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Company</label>
+            <select name="company">
+              <option value="">Select Company</option>
+              <option value="google">Google</option>
+              <option value="meta">Meta</option>
+              <option value="amazon">Amazon</option>
+              <option value="apple">Apple</option>
+              <option value="microsoft">Microsoft</option>
+              <option value="netflix">Netflix</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Type *</label>
+            <select name="type" required>
+              <option value="">Select Type</option>
+              <option value="interview">Interview Experience</option>
+              <option value="learning">Learning Notes</option>
+              <option value="mistakes">Mistakes to Avoid</option>
+              <option value="tips">Tips & Tricks</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Content *</label>
+          <textarea name="content" rows="8" required placeholder="Document your experience, key learnings, questions asked, etc."></textarea>
+        </div>
+        <div class="form-group">
+          <label>Tags (comma-separated)</label>
+          <input type="text" name="tags" placeholder="coding, system-design, behavioral" />
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" onclick="closeNotesModal()">Cancel</button>
+          <button type="submit" class="btn-submit">Save Note</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .study-tools-page { max-width: 1400px; margin: 0 auto; padding: var(--spacing-xl); }
+  .tools-header { margin-bottom: var(--spacing-2xl); }
+  .tools-header h1 { display: flex; align-items: center; gap: 0.75ch; font-size: 2em; color: var(--text); margin-bottom: var(--spacing-xs); }
+  .tools-subtitle { color: var(--subtext1); font-size: 1.1em; }
+  .tools-section { background: var(--mantle); border: 1px solid var(--surface0); border-radius: 12px; padding: var(--spacing-xl); margin-bottom: var(--spacing-xl); }
+  .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-lg); }
+  .section-header h2 { display: flex; align-items: center; gap: 0.75ch; color: var(--text); font-size: 1.4em; }
+  .badge { padding: var(--spacing-xs) var(--spacing-sm); background: var(--surface0); border-radius: 6px; font-size: 0.85em; color: var(--subtext1); }
+  .section-intro { color: var(--subtext1); margin-bottom: var(--spacing-lg); line-height: 1.6; }
+  
+  /* Reference Grid */
+  .reference-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--spacing-md); }
+  .reference-card { background: var(--crust); border: 1px solid var(--surface0); border-radius: 10px; padding: var(--spacing-lg); cursor: pointer; transition: all 0.3s ease; }
+  .reference-card:hover { border-color: var(--accent-green); transform: translateY(-4px); box-shadow: 0 8px 24px rgba(166, 227, 161, 0.15); }
+  .ref-icon { font-size: 2em; color: var(--accent-green); margin-bottom: var(--spacing-sm); }
+  .reference-card h3 { color: var(--text); font-size: 1.1em; margin-bottom: var(--spacing-xs); }
+  .reference-card p { color: var(--subtext0); font-size: 0.9em; margin-bottom: var(--spacing-md); line-height: 1.5; }
+  .ref-meta { display: flex; align-items: center; gap: 0.5ch; color: var(--subtext1); font-size: 0.85em; }
+  
+  /* Active Recall */
+  .recall-filters { display: flex; gap: var(--spacing-sm); margin-bottom: var(--spacing-lg); flex-wrap: wrap; }
+  .filter-select { background: var(--crust); border: 1px solid var(--surface0); color: var(--subtext1); padding: var(--spacing-sm) var(--spacing-md); border-radius: 6px; }
+  .recall-container { background: var(--crust); border: 1px solid var(--surface0); border-radius: 12px; padding: var(--spacing-xl); }
+  .recall-card { min-height: 300px; display: flex; flex-direction: column; justify-content: space-between; }
+  .recall-question { margin-bottom: var(--spacing-lg); }
+  .recall-badge { display: inline-block; padding: var(--spacing-xs) var(--spacing-sm); background: rgba(137, 180, 250, 0.2); color: var(--accent-blue); border-radius: 6px; font-size: 0.85em; font-weight: 600; margin-bottom: var(--spacing-md); }
+  .recall-question p { font-size: 1.2em; color: var(--text); line-height: 1.6; margin: 0; }
+  .btn-reveal { background: var(--accent-blue); color: var(--crust); border: none; padding: var(--spacing-md) var(--spacing-lg); border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.5ch; margin-bottom: var(--spacing-lg); }
+  .btn-reveal:hover { background: var(--sky); }
+  .recall-answer { display: none; padding: var(--spacing-lg); background: var(--mantle); border-radius: 8px; border-left: 3px solid var(--accent-green); margin-bottom: var(--spacing-lg); }
+  .recall-answer.show { display: block; }
+  .recall-answer h4 { color: var(--accent-green); margin-bottom: var(--spacing-sm); }
+  .recall-answer p { color: var(--subtext1); line-height: 1.6; }
+  .recall-answer code { background: var(--surface0); padding: 0.2em 0.5ch; border-radius: 4px; color: var(--accent-green); }
+  .recall-extras { display: flex; gap: var(--spacing-sm); margin-top: var(--spacing-md); flex-wrap: wrap; }
+  .tag { padding: var(--spacing-xs) var(--spacing-sm); background: var(--surface0); border-radius: 4px; font-size: 0.85em; color: var(--subtext1); }
+  .tag.difficulty { background: rgba(166, 227, 161, 0.2); color: var(--accent-green); }
+  .recall-actions { display: flex; gap: var(--spacing-sm); }
+  .btn-action { flex: 1; padding: var(--spacing-md); border: 1px solid var(--surface0); background: var(--mantle); color: var(--subtext1); border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5ch; font-weight: 600; }
+  .btn-action:hover { border-color: var(--accent-green); color: var(--accent-green); }
+  .recall-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--spacing-md); margin-top: var(--spacing-lg); padding-top: var(--spacing-lg); border-top: 1px solid var(--surface0); }
+  .recall-stat { text-align: center; }
+  .recall-stat .num { font-size: 2em; font-weight: 800; color: var(--accent-green); display: block; }
+  .recall-stat .label { color: var(--subtext0); font-size: 0.85em; }
+  
+  /* Notes */
+  .notes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--spacing-md); }
+  .note-card { background: var(--crust); border: 1px solid var(--surface0); border-radius: 10px; padding: var(--spacing-lg); }
+  .note-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--spacing-sm); }
+  .note-title { color: var(--text); font-weight: 700; margin: 0; }
+  .note-type { padding: var(--spacing-xs) var(--spacing-sm); background: var(--surface0); border-radius: 4px; font-size: 0.8em; color: var(--subtext1); text-transform: capitalize; }
+  .note-content { color: var(--subtext1); font-size: 0.9em; line-height: 1.5; margin-bottom: var(--spacing-sm); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .note-meta { display: flex; gap: var(--spacing-sm); font-size: 0.85em; color: var(--subtext0); }
+  .notes-empty { text-align: center; padding: var(--spacing-2xl); color: var(--subtext0); }
+  .notes-empty .nf { font-size: 3em; margin-bottom: var(--spacing-md); display: block; }
+  
+  /* Concepts */
+  .concepts-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: var(--spacing-lg); }
+  .concept-category h3 { display: flex; align-items: center; gap: 0.75ch; color: var(--text); margin-bottom: var(--spacing-md); }
+  .concept-list { display: flex; flex-direction: column; gap: var(--spacing-sm); }
+  .concept-item { display: flex; align-items: flex-start; gap: var(--spacing-sm); padding: var(--spacing-sm); background: var(--crust); border-radius: 8px; cursor: pointer; transition: all 0.2s ease; }
+  .concept-item:hover { background: var(--surface0); }
+  .concept-item input[type="checkbox"] { width: 18px; height: 18px; margin-top: 2px; cursor: pointer; accent-color: var(--accent-green); }
+  .concept-name { color: var(--text); font-weight: 600; display: block; margin-bottom: 0.2rem; }
+  .concept-desc { color: var(--subtext0); font-size: 0.85em; }
+  
+  /* Modal */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 1000; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--mantle); border: 1px solid var(--surface0); border-radius: 12px; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; }
+  .modal-large { max-width: 900px; }
+  .modal-header { display: flex; justify-content: space-between; padding: var(--spacing-lg); border-bottom: 1px solid var(--surface0); }
+  .modal-close { background: transparent; border: none; color: var(--subtext0); font-size: 2em; cursor: pointer; }
+  .modal-content { padding: var(--spacing-lg); }
+  .form-group { margin-bottom: var(--spacing-md); }
+  .form-group label { display: block; color: var(--subtext1); margin-bottom: var(--spacing-xs); }
+  .form-group input, .form-group select, .form-group textarea { width: 100%; background: var(--crust); border: 1px solid var(--surface0); color: var(--text); padding: var(--spacing-sm); border-radius: 6px; font-family: var(--font-family); }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md); }
+  .modal-actions { display: flex; justify-content: flex-end; gap: var(--spacing-md); margin-top: var(--spacing-lg); }
+  .btn-cancel { background: transparent; border: 1px solid var(--surface1); color: var(--subtext1); padding: var(--spacing-sm) var(--spacing-md); border-radius: 6px; cursor: pointer; }
+  .btn-submit { background: var(--accent-green); border: none; color: var(--crust); padding: var(--spacing-sm) var(--spacing-md); border-radius: 6px; font-weight: 600; cursor: pointer; }
+  .btn-primary { background: var(--accent-green); color: var(--crust); border: none; padding: var(--spacing-sm) var(--spacing-md); border-radius: 6px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.5ch; }
+  
+  @media (max-width: 768px) {
+    .reference-grid, .concepts-container { grid-template-columns: 1fr; }
+    .recall-stats { grid-template-columns: 1fr; }
+    .recall-actions { flex-direction: column; }
+  }
+</style>
+
+<script>
+  import { loadFromStorage, saveToStorage, STORAGE_KEYS, generateId, formatDate } from "../../lib/user-data";
+
+  // Active Recall Questions Database
+  const recallQuestions = [
+    { id: 1, topic: 'arrays', difficulty: 'basic', question: 'What is the time complexity of accessing an element in an array by index? Explain why.', answer: '<strong>O(1)</strong> - Constant time. Arrays store elements in contiguous memory locations, so accessing by index requires a simple pointer arithmetic calculation: <code>base_address + (index * element_size)</code>.', tags: ['Time: O(1)', 'Space: O(1)'] },
+    { id: 2, topic: 'arrays', difficulty: 'intermediate', question: 'What is the sliding window technique? When should you use it?', answer: 'Sliding window is used for problems involving contiguous subarrays/substrings. Use when you need to find a subarray meeting certain criteria (sum, length, etc.). Reduces O(n²) to O(n) by avoiding recalculation.', tags: ['Pattern', 'Optimization'] },
+    { id: 3, topic: 'hash-tables', difficulty: 'basic', question: 'What is the average time complexity for lookup in a hash table? What causes worst case?', answer: '<strong>Average: O(1)</strong>, <strong>Worst: O(n)</strong>. Worst case occurs when all keys hash to the same bucket (collisions), turning it into a linked list.', tags: ['Time: O(1) avg', 'Collisions'] },
+    { id: 4, topic: 'trees', difficulty: 'intermediate', question: 'What is the difference between DFS and BFS? When would you use each?', answer: '<strong>DFS</strong>: Goes deep first, uses stack/recursion, better for finding any path. <strong>BFS</strong>: Explores level by level, uses queue, better for shortest path in unweighted graphs.', tags: ['Traversal', 'Graph'] },
+    { id: 5, topic: 'dp', difficulty: 'advanced', question: 'How do you identify a dynamic programming problem?', answer: 'Look for: 1) <strong>Overlapping subproblems</strong> - same subproblems solved repeatedly. 2) <strong>Optimal substructure</strong> - optimal solution built from optimal subproblem solutions. Common patterns: optimization, counting, existence.', tags: ['Pattern Recognition', 'Optimization'] },
+    { id: 6, topic: 'system-design', difficulty: 'intermediate', question: 'What is the CAP theorem? Explain the tradeoffs.', answer: 'CAP theorem: Distributed systems can only guarantee 2 of 3: <strong>Consistency</strong> (all nodes see same data), <strong>Availability</strong> (every request gets response), <strong>Partition tolerance</strong> (system works despite network failures). Most systems choose CP or AP.', tags: ['Distributed Systems', 'Tradeoffs'] },
+    { id: 7, topic: 'networking', difficulty: 'basic', question: 'What happens when you type a URL in your browser?', answer: '1) DNS lookup → 2) TCP handshake (SYN, SYN-ACK, ACK) → 3) TLS handshake (if HTTPS) → 4) HTTP request → 5) Server response → 6) Browser renders. Understanding this helps debug latency issues.', tags: ['HTTP', 'DNS', 'TCP'] },
+    { id: 8, topic: 'os', difficulty: 'intermediate', question: 'What is the difference between a process and a thread?', answer: '<strong>Process</strong>: Independent memory space, heavier, IPC required. <strong>Thread</strong>: Shares memory with other threads in same process, lighter, can directly access shared memory. Context switching threads is faster.', tags: ['Memory', 'Concurrency'] },
+  ];
+
+  let currentRecallIndex = 0;
+  let recallStats = { total: 0, mastered: 0, review: 0 };
+
+  // Load saved data
+  function loadStudyTools() {
+    const savedConcepts = loadFromStorage('faang-concepts') || {};
+    const savedNotes = loadFromStorage('faang-notes') || [];
+    const savedRecall = loadFromStorage('faang-recall-stats') || { total: 0, mastered: 0, review: 0 };
+    
+    // Load concepts
+    Object.entries(savedConcepts).forEach(([concept, mastered]) => {
+      const checkbox = document.querySelector(`input[data-concept="${concept}"]`);
+      if (checkbox) checkbox.checked = mastered;
+    });
+
+    // Load notes
+    renderNotes(savedNotes);
+
+    // Load recall stats
+    recallStats = savedRecall;
+    updateRecallStats();
+
+    // Add checkbox listeners
+    document.querySelectorAll('.concept-item input[type="checkbox"]').forEach(checkbox => {
+      checkbox.addEventListener('change', (e) => {
+        const concept = (e.target as HTMLInputElement).dataset.concept;
+        const saved = loadFromStorage('faang-concepts') || {};
+        saved[concept!] = (e.target as HTMLInputElement).checked;
+        saveToStorage('faang-concepts', saved);
+      });
+    });
+  }
+
+  // Active Recall Functions
+  function showRecallQuestion() {
+    const topic = (document.getElementById('recall-topic') as HTMLSelectElement).value;
+    const difficulty = (document.getElementById('recall-difficulty') as HTMLSelectElement).value;
+    
+    let filtered = recallQuestions;
+    if (topic) filtered = filtered.filter(q => q.topic === topic);
+    if (difficulty) filtered = filtered.filter(q => q.difficulty === difficulty);
+    
+    if (filtered.length === 0) {
+      document.getElementById('recall-text')!.textContent = 'No questions match your filters. Try different filters.';
+      return;
+    }
+    
+    currentRecallIndex = Math.floor(Math.random() * filtered.length);
+    const q = filtered[currentRecallIndex];
+    
+    document.getElementById('recall-text')!.textContent = q.question;
+    document.getElementById('recall-answer')!.innerHTML = `<h4>Answer:</h4><p>${q.answer}</p><div class="recall-extras">${q.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>`;
+    document.getElementById('recall-answer')!.classList.remove('show');
+    document.querySelector('.recall-badge')!.textContent = q.topic.charAt(0).toUpperCase() + q.topic.slice(1);
+  }
+
+  function updateRecallStats() {
+    document.getElementById('recall-total')!.textContent = recallStats.total.toString();
+    document.getElementById('recall-mastered')!.textContent = recallStats.mastered.toString();
+    document.getElementById('recall-review')!.textContent = recallStats.review.toString();
+    saveToStorage('faang-recall-stats', recallStats);
+  }
+
+  (window as any).nextRecall = function(difficulty: string) {
+    recallStats.total++;
+    if (difficulty === 'easy') recallStats.mastered++;
+    if (difficulty === 'hard') recallStats.review++;
+    updateRecallStats();
+    showRecallQuestion();
+  };
+
+  document.getElementById('reveal-answer')?.addEventListener('click', () => {
+    document.getElementById('recall-answer')!.classList.add('show');
+  });
+
+  document.getElementById('recall-topic')?.addEventListener('change', showRecallQuestion);
+  document.getElementById('recall-difficulty')?.addEventListener('change', showRecallQuestion);
+
+  // Notes Functions
+  function renderNotes(notes: any[]) {
+    const grid = document.getElementById('notes-grid');
+    const empty = document.getElementById('notes-empty');
+    
+    if (!grid || !empty) return;
+    
+    if (notes.length === 0) {
+      grid.innerHTML = '';
+      empty.style.display = 'block';
+      return;
+    }
+    
+    empty.style.display = 'none';
+    grid.innerHTML = notes.map((note: any) => `
+      <div class="note-card">
+        <div class="note-header">
+          <h3 class="note-title">${note.title}</h3>
+          <span class="note-type">${note.type}</span>
+        </div>
+        <div class="note-content">${note.content}</div>
+        <div class="note-meta">
+          ${note.company ? `<span>🏢 ${note.company}</span>` : ''}
+          <span>📅 ${note.date}</span>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  (window as any).openNotesModal = function() {
+    document.getElementById('notes-modal')!.classList.add('open');
+  };
+
+  (window as any).closeNotesModal = function() {
+    document.getElementById('notes-modal')!.classList.remove('open');
+  };
+
+  document.getElementById('notes-form')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const fd = new FormData(e.target as HTMLFormElement);
+    const notes = loadFromStorage('faang-notes') || [];
+    notes.unshift({
+      id: generateId(),
+      title: fd.get('title') as string,
+      company: fd.get('company') as string,
+      type: fd.get('type') as string,
+      content: fd.get('content') as string,
+      tags: (fd.get('tags') as string || '').split(',').map(t => t.trim()),
+      date: formatDate(new Date()),
+    });
+    saveToStorage('faang-notes', notes);
+    renderNotes(notes);
+    (e.target as HTMLFormElement).reset();
+    closeNotesModal();
+  });
+
+  // Reference Sheets
+  const referenceContent: Record<string, { title: string; content: string }> = {
+    'dsa-patterns': {
+      title: 'DSA Patterns Cheat Sheet',
+      content: `
+        <h3>1. Sliding Window</h3>
+        <p><strong>When:</strong> Contiguous subarray/substring problems</p>
+        <p><strong>Template:</strong> Expand right, contract left when condition met</p>
+        <p><strong>Examples:</strong> Max sum subarray of size K, Longest substring without repeating chars</p>
+        
+        <h3>2. Two Pointers</h3>
+        <p><strong>When:</strong> Sorted arrays, pair/triplet problems</p>
+        <p><strong>Template:</strong> One pointer at start, one at end, move based on comparison</p>
+        <p><strong>Examples:</strong> Two sum (sorted), 3Sum, Container with most water</p>
+        
+        <h3>3. Fast & Slow Pointers</h3>
+        <p><strong>When:</strong> Cycle detection, middle of linked list</p>
+        <p><strong>Template:</strong> Slow moves 1 step, fast moves 2 steps</p>
+        <p><strong>Examples:</strong> Linked list cycle, Happy number, Middle of list</p>
+        
+        <h3>4. DFS Template</h3>
+        <pre><code>function dfs(node, visited):
+  if node is null or visited: return
+  visited.add(node)
+  for neighbor in node.neighbors:
+    dfs(neighbor, visited)</code></pre>
+        
+        <h3>5. BFS Template</h3>
+        <pre><code>function bfs(start):
+  queue = [start]
+  visited = {start}
+  while queue:
+    node = queue.shift()
+    for neighbor in node.neighbors:
+      if neighbor not in visited:
+        visited.add(neighbor)
+        queue.push(neighbor)</code></pre>
+      `
+    },
+  };
+
+  (window as any).openReference = function(type: string) {
+    const ref = referenceContent[type];
+    if (!ref) return;
+    document.getElementById('reference-title')!.textContent = ref.title;
+    document.getElementById('reference-content')!.innerHTML = ref.content;
+    document.getElementById('reference-modal')!.classList.add('open');
+  };
+
+  (window as any).closeReference = function() {
+    document.getElementById('reference-modal')!.classList.remove('open');
+  };
+
+  // Initialize
+  loadStudyTools();
+  showRecallQuestion();
+</script>

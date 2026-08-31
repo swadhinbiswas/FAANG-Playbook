@@ -1,0 +1,2862 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { ROADMAPS } from "../../lib/roadmaps";
+
+const roadmapSummary = ROADMAPS.map((r) => ({
+  slug: r.slug,
+  name: r.name,
+  total: r.phases.reduce((a, p) => a + p.nodes.length, 0),
+  phases: r.phases.map((p) => ({
+    name: p.name,
+    nodes: p.nodes.map((n) => n.id),
+  })),
+}));
+---
+
+<Layout title="Progress Dashboard" activeSection="dashboard">
+  <div class="dashboard-page">
+    <!-- SVG Gradients -->
+    <svg width="0" height="0" style="position: absolute">
+      <defs>
+        <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" style="stop-color: var(--accent-green)"/>
+          <stop offset="100%" style="stop-color: var(--accent-teal)"/>
+        </linearGradient>
+      </defs>
+    </svg>
+  
+    <header class="dashboard-header">
+      <div class="header-content">
+        <div class="header-left">
+          <h1>
+            <span class="nf"></span>
+            Progress Dashboard
+          </h1>
+          <p class="dashboard-subtitle">Track your interview preparation journey</p>
+        </div>
+        <div class="header-right">
+          <div class="current-streak">
+            <span class="nf"></span>
+            <span id="header-streak">0</span> day streak
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Stats Overview -->
+    <div class="stats-overview">
+      <div class="stat-card primary">
+        <div class="stat-glow"></div>
+        <div class="stat-content">
+          <div class="stat-icon-wrapper">
+            <span class="stat-icon">󰓾</span>
+          </div>
+          <div class="stat-value" id="total-completed">0</div>
+          <div class="stat-label">Topics Completed</div>
+          <div class="stat-trend positive">
+            <span class="nf"></span> +12% this week
+          </div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-glow"></div>
+        <div class="stat-content">
+          <div class="stat-icon-wrapper fire">
+            <span class="stat-icon"></span>
+          </div>
+          <div class="stat-value" id="study-streak">0</div>
+          <div class="stat-label">Day Streak</div>
+          <div class="stat-trend positive">
+            <span class="nf"></span> Keep it up!
+          </div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-glow"></div>
+        <div class="stat-content">
+          <div class="stat-icon-wrapper time">
+            <span class="stat-icon"></span>
+          </div>
+          <div class="stat-value" id="total-time">0h</div>
+          <div class="stat-label">Study Time</div>
+          <div class="stat-trend positive">
+            <span class="nf"></span> +5h this week
+          </div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-glow"></div>
+        <div class="stat-content">
+          <div class="stat-icon-wrapper trophy">
+            <span class="stat-icon"></span>
+          </div>
+          <div class="stat-value" id="achievements-count">0</div>
+          <div class="stat-label">Achievements</div>
+          <div class="stat-trend">
+            <span class="nf"></span> 12 available
+          </div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-glow"></div>
+        <div class="stat-content">
+          <div class="stat-icon-wrapper problems">
+            <span class="stat-icon">󰅖</span>
+          </div>
+          <div class="stat-value" id="problems-solved">0</div>
+          <div class="stat-label">LeetCode Solved</div>
+          <div class="stat-trend positive">
+            <span class="nf">󰘓</span> practice track
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Next Actions (fed by roadmap audit) -->
+    <div class="dashboard-section large">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="nf">󰊯</span>
+          Next Actions
+        </div>
+        <span class="badge-unlocked">What to do now</span>
+      </div>
+      <div class="next-actions" id="next-actions">
+        <p class="empty-state">Analyzing your roadmaps…</p>
+      </div>
+    </div>
+
+    <!-- Weekly Digest -->
+    <div class="dashboard-section large">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="nf">󰁫</span>
+          Weekly Digest
+        </div>
+        <div class="goal-control">
+          <span class="goal-label">Goal</span>
+          <input type="number" id="weekly-goal" min="1" max="50" value="" placeholder="—" title="Topics per week" />
+          <span class="goal-unit">topics/week</span>
+        </div>
+      </div>
+      <div class="digest-grid">
+        <div class="digest-card">
+          <span class="digest-value" id="digest-topics-week">0</span>
+          <span class="digest-label">topics this week</span>
+          <span class="digest-delta" id="digest-topics-delta"></span>
+        </div>
+        <div class="digest-card">
+          <span class="digest-value" id="digest-days-week">0</span>
+          <span class="digest-label">study days this week</span>
+          <span class="digest-delta" id="digest-days-delta"></span>
+        </div>
+        <div class="digest-card">
+          <span class="digest-value" id="digest-topics-total">0</span>
+          <span class="digest-label">topics all time</span>
+          <span class="digest-sub">across all roadmaps</span>
+        </div>
+        <div class="digest-chart" id="digest-chart">
+          <p class="empty-state">No completions recorded yet.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="dashboard-grid">
+      <!-- Progress Chart -->
+      <div class="dashboard-section large">
+        <div class="section-header">
+          <div class="section-title">
+            <span class="nf"></span>
+            Section Progress
+          </div>
+          <div class="section-actions">
+            <button class="btn-reset" id="reset-progress" title="Reset all progress">
+              <span class="nf"></span> Reset
+            </button>
+            <div class="section-stats">
+              <span class="stat-badge">
+                <span class="nf"></span> 11 sections
+              </span>
+              <span class="stat-badge completed">
+                <span class="nf"></span> <span id="avg-progress">0</span>% avg
+              </span>
+              <span class="stat-badge total">
+                <span id="total-topics">0</span>/285 topics
+              </span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="progress-overview">
+          <div class="progress-donut">
+            <svg viewBox="0 0 120 120" class="donut-chart">
+              <circle class="donut-bg" cx="60" cy="60" r="52"></circle>
+              <circle class="donut-fill" cx="60" cy="60" r="52" id="overall-progress"></circle>
+              <text class="donut-text" x="60" y="55" id="overall-percent">0%</text>
+              <text class="donut-label" x="60" y="75">Complete</text>
+            </svg>
+          </div>
+          <div class="progress-details">
+            <div class="detail-item">
+              <span class="detail-icon" style="color: var(--accent-green)"></span>
+              <div class="detail-content">
+                <span class="detail-value" id="completed-topics">0</span>
+                <span class="detail-label">Completed</span>
+              </div>
+            </div>
+            <div class="detail-item">
+              <span class="detail-icon" style="color: var(--accent-blue)"></span>
+              <div class="detail-content">
+                <span class="detail-value" id="remaining-topics">285</span>
+                <span class="detail-label">Remaining</span>
+              </div>
+            </div>
+            <div class="detail-item">
+              <span class="detail-icon" style="color: var(--accent-purple)"></span>
+              <div class="detail-content">
+                <span class="detail-value" id="in-progress">0</span>
+                <span class="detail-label">In Progress</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="progress-chart" id="section-progress-chart">
+          <!-- Dynamically populated -->
+        </div>
+        
+        <div class="progress-insights" id="progress-insights">
+          <!-- AI-powered insights -->
+        </div>
+      </div>
+
+      <!-- Activity Calendar -->
+      <div class="dashboard-section">
+        <div class="section-header">
+          <div class="section-title">
+            <span class="nf"></span>
+            Activity
+          </div>
+          <div class="section-legend">
+            <span class="legend-item"><span class="legend-box level-0"></span>None</span>
+            <span class="legend-item"><span class="legend-box level-1"></span>Low</span>
+            <span class="legend-item"><span class="legend-box level-2"></span>Med</span>
+            <span class="legend-item"><span class="legend-box level-3"></span>High</span>
+          </div>
+        </div>
+        <div class="activity-calendar" id="activity-calendar">
+          <div class="calendar-grid">
+            <!-- 30 days calendar -->
+          </div>
+          <div class="calendar-labels">
+            <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Activity & Achievements -->
+    <div class="dashboard-grid">
+      <div class="dashboard-section">
+        <div class="section-header">
+          <div class="section-title">
+            <span class="nf"></span>
+            Recent Activity
+          </div>
+          <a href="#" class="view-all">View all </a>
+        </div>
+        <div class="activity-list" id="recent-activity">
+          <div class="activity-empty">
+            <span class="nf"></span>
+            <p>No recent activity yet</p>
+            <span>Start studying to see your progress!</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="dashboard-section">
+        <div class="section-header">
+          <div class="section-title">
+            <span class="nf"></span>
+            Achievements
+          </div>
+          <span class="badge-unlocked"><span id="unlocked-count">0</span>/8</span>
+        </div>
+        <div class="achievements-grid" id="achievements-grid">
+          <p class="empty-state">Keep studying to unlock achievements!</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Streak Chart -->
+    <div class="dashboard-section large">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="nf"></span>
+          Study Streak
+        </div>
+        <div class="section-stats">
+          <span class="stat-badge fire">
+            <span class="nf"></span> <span id="streak-current">0</span> day streak
+          </span>
+          <span class="stat-badge">
+            <span class="nf"></span> best <span id="streak-best">0</span>
+          </span>
+          <span class="stat-badge total">
+            <span id="streak-days">0</span> study days
+          </span>
+        </div>
+      </div>
+      <div class="streak-chart" id="streak-chart">
+        <p class="empty-state">No study days yet — mark topics done on a roadmap to light it up.</p>
+      </div>
+      <div class="calendar-labels">
+        <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+      </div>
+    </div>
+
+    <!-- Roadmap Progress -->
+    <div class="dashboard-section large">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="nf">󰘓</span>
+          Interactive Roadmap Progress
+        </div>
+        <div class="section-stats">
+          <span class="stat-badge">
+            <span class="nf">󰘓</span> {roadmapSummary.length} roles
+          </span>
+          <span class="stat-badge completed">
+            <span class="nf"></span> <span id="rm-dashboard-avg">0</span>% avg
+          </span>
+        </div>
+      </div>
+      <div class="rm-dashboard-grid" id="rm-dashboard-grid">
+        <!-- Populated from localStorage -->
+      </div>
+    </div>
+
+    <script type="application/json" set:html={JSON.stringify(roadmapSummary)} id="rm-dashboard-summary"></script>
+
+    <!-- LeetCode Progress -->
+    <div class="dashboard-section large">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="nf">󰅖</span>
+          LeetCode Progress
+        </div>
+        <div class="section-stats">
+          <span class="stat-badge completed">
+            <span class="nf">󰘓</span> <span id="lc-solved-total">0</span> solved
+          </span>
+        </div>
+      </div>
+      <div class="lc-grid" id="lc-grid">
+        <p class="empty-state">No solved problems yet — check off problems on any company page to track them here.</p>
+      </div>
+    </div>
+
+    <!-- Data & Backup -->
+    <div class="dashboard-section large">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="nf">󰇧</span>
+          Data & Backup
+        </div>
+        <span class="badge-unlocked" id="backup-status">Never backed up</span>
+      </div>
+      <div class="backup-row">
+        <button class="backup-btn" id="backup-export">
+          <span class="nf">󰉏</span> Export full backup
+        </button>
+        <button class="backup-btn" id="backup-import">
+          <span class="nf">󰉐</span> Restore from backup
+        </button>
+        <input type="file" id="backup-import-input" accept="application/json,.json" hidden />
+        <p class="backup-hint">
+          Exports everything: roadmap progress, notes, activity, streaks, study plans,
+          applications, questions, LeetCode checkmarks and sidebar progress — one JSON file.
+          Restore merges it back in.
+        </p>
+      </div>
+      <div class="unified-row">
+        <label class="unified-toggle">
+          <input type="checkbox" id="unified-toggle" />
+          <span class="unified-label">Unified progress sync</span>
+        </label>
+        <p class="backup-hint">
+          When on, marking a docs topic done also marks its interactive-roadmap nodes done —
+          and vice-versa. One completion counts everywhere.
+        </p>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="dashboard-section">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="nf"></span>
+          Quick Actions
+        </div>
+      </div>
+      <div class="quick-actions">
+        <a href="/docs/start-here/00-README" class="action-card">
+          <div class="action-icon-wrapper learn">
+            <span class="nf"></span>
+          </div>
+          <div class="action-content">
+            <h3>Continue Learning</h3>
+            <p>Pick up where you left off</p>
+          </div>
+          <span class="nf action-arrow"></span>
+        </a>
+        <a href="/dashboard/study-tools" class="action-card">
+          <div class="action-icon-wrapper questions">
+            <span class="nf"></span>
+          </div>
+          <div class="action-content">
+            <h3>Study Tools</h3>
+            <p>Reference sheets & quizzes</p>
+          </div>
+          <span class="nf action-arrow"></span>
+        </a>
+        <a href="/dashboard/questions" class="action-card">
+          <div class="action-icon-wrapper questions">
+            <span class="nf"></span>
+          </div>
+          <div class="action-content">
+            <h3>Practice Questions</h3>
+            <p>Solve interview problems</p>
+          </div>
+          <span class="nf action-arrow"></span>
+        </a>
+        <a href="/dashboard/applications" class="action-card">
+          <div class="action-icon-wrapper applications">
+            <span class="nf"></span>
+          </div>
+          <div class="action-content">
+            <h3>Track Applications</h3>
+            <p>Manage job applications</p>
+          </div>
+          <span class="nf action-arrow"></span>
+        </a>
+        <a href="/dashboard/study-plan" class="action-card">
+          <div class="action-icon-wrapper plan">
+            <span class="nf"></span>
+          </div>
+          <div class="action-content">
+            <h3>Study Plan</h3>
+            <p>View your study schedule</p>
+          </div>
+          <span class="nf action-arrow"></span>
+        </a>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .dashboard-page {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: var(--spacing-xl);
+  }
+
+  /* Enhanced Header */
+  .dashboard-header {
+    margin-bottom: var(--spacing-2xl);
+    background: linear-gradient(135deg, var(--surface0) 0%, var(--mantle) 100%);
+    border: 1px solid var(--surface1);
+    border-radius: 16px;
+    padding: var(--spacing-xl);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .dashboard-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent-green), var(--accent-blue), var(--accent-purple));
+  }
+
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  .header-left h1 {
+    display: flex;
+    align-items: center;
+    gap: 0.75ch;
+    font-size: 2.2em;
+    color: var(--text);
+    margin-bottom: var(--spacing-xs);
+    font-weight: 700;
+  }
+
+  .header-left h1 .nf {
+    color: var(--accent-green);
+    font-size: 1.2em;
+  }
+
+  .dashboard-subtitle {
+    color: var(--subtext0);
+    font-size: 1.1em;
+  }
+
+  .current-streak {
+    display: flex;
+    align-items: center;
+    gap: 0.75ch;
+    background: var(--crust);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: 8px;
+    border: 1px solid var(--surface0);
+    font-weight: 600;
+    color: var(--accent-orange);
+  }
+
+  .current-streak .nf {
+    font-size: 1.3em;
+  }
+
+  /* Enhanced Stats Overview */
+  .stats-overview {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .stat-card {
+    background: var(--mantle);
+    border: 1px solid var(--surface0);
+    border-radius: 16px;
+    padding: var(--spacing-lg);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--surface1);
+    transition: all 0.3s ease;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-8px);
+    border-color: var(--surface2);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  }
+
+  .stat-card.primary {
+    background: linear-gradient(135deg, rgba(166, 227, 161, 0.1) 0%, var(--mantle) 100%);
+    border-color: var(--accent-green);
+  }
+
+  .stat-card.primary::before {
+    background: linear-gradient(90deg, var(--accent-green), var(--accent-teal));
+  }
+
+  .stat-card:nth-child(2)::before {
+    background: linear-gradient(90deg, var(--accent-orange), var(--accent-yellow));
+  }
+
+  .stat-card:nth-child(3)::before {
+    background: linear-gradient(90deg, var(--accent-blue), var(--accent-sky));
+  }
+
+  .stat-card:nth-child(4)::before {
+    background: linear-gradient(90deg, var(--accent-purple), var(--accent-pink));
+  }
+
+  .stat-glow {
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(166, 227, 161, 0.1) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .stat-card:hover .stat-glow {
+    opacity: 1;
+  }
+
+  .stat-content {
+    position: relative;
+    z-index: 1;
+  }
+
+  .stat-icon-wrapper {
+    width: 56px;
+    height: 56px;
+    background: var(--surface0);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: var(--spacing-md);
+    transition: all 0.3s ease;
+  }
+
+  .stat-card:hover .stat-icon-wrapper {
+    transform: scale(1.1) rotate(5deg);
+  }
+
+  .stat-icon-wrapper.fire {
+    background: linear-gradient(135deg, rgba(250, 179, 135, 0.2), rgba(249, 226, 175, 0.1));
+  }
+
+  .stat-icon-wrapper.time {
+    background: linear-gradient(135deg, rgba(137, 180, 250, 0.2), rgba(137, 215, 250, 0.1));
+  }
+
+  .stat-icon-wrapper.trophy {
+    background: linear-gradient(135deg, rgba(203, 166, 247, 0.2), rgba(245, 194, 231, 0.1));
+  }
+
+  .stat-icon {
+    font-size: 1.8em;
+    color: var(--accent-green);
+  }
+
+  .stat-icon-wrapper.fire .stat-icon {
+    color: var(--accent-orange);
+  }
+
+  .stat-icon-wrapper.time .stat-icon {
+    color: var(--accent-blue);
+  }
+
+  .stat-icon-wrapper.trophy .stat-icon {
+    color: var(--accent-purple);
+  }
+
+  .stat-value {
+    font-size: 2.8em;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1;
+    margin-bottom: var(--spacing-xs);
+    letter-spacing: -0.02em;
+  }
+
+  .stat-label {
+    color: var(--subtext1);
+    font-size: 0.95em;
+    font-weight: 500;
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .stat-trend {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5ch;
+    font-size: 0.85em;
+    color: var(--subtext0);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background: var(--surface0);
+    border-radius: 6px;
+  }
+
+  .stat-trend.positive {
+    color: var(--accent-green);
+    background: rgba(166, 227, 161, 0.1);
+  }
+
+  .stat-trend .nf {
+    font-size: 0.8em;
+  }
+
+  /* Dashboard Grid */
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .dashboard-section {
+    background: var(--mantle);
+    border: 1px solid var(--surface0);
+    border-radius: 16px;
+    padding: var(--spacing-lg);
+    transition: all 0.3s ease;
+  }
+
+  .dashboard-section:hover {
+    border-color: var(--surface1);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  }
+
+  .dashboard-section.large {
+    grid-column: 1 / -1;
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 1px solid var(--surface0);
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+  }
+
+  .section-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+  }
+
+  .btn-reset {
+    display: flex;
+    align-items: center;
+    gap: 0.5ch;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background: transparent;
+    border: 1px solid var(--surface1);
+    color: var(--subtext0);
+    border-radius: 6px;
+    font-size: 0.85em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-reset:hover {
+    border-color: var(--accent-red);
+    color: var(--accent-red);
+    background: rgba(243, 139, 168, 0.1);
+  }
+
+  .section-stats {
+    display: flex;
+    gap: var(--spacing-sm);
+  }
+
+  .stat-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5ch;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background: var(--surface0);
+    border-radius: 6px;
+    font-size: 0.85em;
+    color: var(--subtext1);
+    font-weight: 600;
+  }
+
+  .stat-badge .nf {
+    font-size: 0.9em;
+  }
+
+  .stat-badge.completed {
+    background: rgba(166, 227, 161, 0.2);
+    color: var(--accent-green);
+  }
+
+  .stat-badge.total {
+    background: rgba(137, 180, 250, 0.2);
+    color: var(--accent-blue);
+  }
+
+  /* Enhanced Progress Overview */
+  .progress-overview {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xl);
+    padding: var(--spacing-lg);
+    background: var(--crust);
+    border-radius: 12px;
+    margin-bottom: var(--spacing-lg);
+    border: 1px solid var(--surface0);
+  }
+
+  .progress-donut {
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .donut-chart {
+    width: 120px;
+    height: 120px;
+    transform: rotate(-90deg);
+  }
+
+  .donut-bg {
+    fill: none;
+    stroke: var(--surface0);
+    stroke-width: 12;
+  }
+
+  .donut-fill {
+    fill: none;
+    stroke: url(#gradient);
+    stroke-width: 12;
+    stroke-linecap: round;
+    stroke-dasharray: 326.56;
+    stroke-dashoffset: 326.56;
+    transition: stroke-dashoffset 1s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .donut-text {
+    fill: var(--text);
+    font-size: 24px;
+    font-weight: 800;
+    text-anchor: middle;
+    transform: rotate(90deg);
+    transform-origin: center;
+  }
+
+  .donut-label {
+    fill: var(--subtext0);
+    font-size: 10px;
+    text-anchor: middle;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transform: rotate(90deg);
+    transform-origin: center;
+  }
+
+  .progress-details {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-lg);
+  }
+
+  .detail-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    background: var(--mantle);
+    border-radius: 10px;
+    border: 1px solid var(--surface0);
+    transition: all 0.3s ease;
+  }
+
+  .detail-item:hover {
+    border-color: var(--surface2);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  }
+
+  .detail-icon {
+    font-size: 2em;
+    flex-shrink: 0;
+  }
+
+  .detail-content {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .detail-value {
+    font-size: 1.8em;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1;
+    margin-bottom: var(--spacing-xs);
+  }
+
+  .detail-label {
+    font-size: 0.85em;
+    color: var(--subtext0);
+    font-weight: 500;
+  }
+
+  /* Enhanced Progress Chart */
+  .progress-chart {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+
+  .progress-bar-item {
+    display: grid;
+    grid-template-columns: 160px 1fr 60px;
+    gap: var(--spacing-md);
+    align-items: center;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .progress-bar-item:hover {
+    background: var(--surface0);
+    transform: translateX(4px);
+  }
+
+  .progress-bar-label {
+    color: var(--subtext1);
+    font-size: 0.9em;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.75ch;
+  }
+
+  .progress-bar-label .section-icon {
+    font-size: 1.2em;
+    color: var(--accent-green);
+  }
+
+  .progress-bar-container {
+    height: 32px;
+    background: var(--crust);
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    border-radius: 16px;
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: var(--spacing-sm);
+    color: var(--crust);
+    font-weight: 800;
+    font-size: 0.9em;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.3),
+      transparent
+    );
+    animation: shimmer 3s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+
+  .progress-bar-percent {
+    color: var(--text);
+    font-size: 0.9em;
+    font-weight: 700;
+    text-align: right;
+  }
+
+  /* Progress Insights */
+  .progress-insights {
+    margin-top: var(--spacing-lg);
+    padding: var(--spacing-lg);
+    background: linear-gradient(135deg, rgba(166, 227, 161, 0.05) 0%, rgba(137, 180, 250, 0.05) 100%);
+    border: 1px dashed var(--surface1);
+    border-radius: 12px;
+  }
+
+  .insight-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    background: var(--mantle);
+    border-radius: 8px;
+    border-left: 3px solid var(--accent-blue);
+  }
+
+  .insight-item:last-child {
+    margin-bottom: 0;
+  }
+
+  .insight-item.positive {
+    border-left-color: var(--accent-green);
+  }
+
+  .insight-item.warning {
+    border-left-color: var(--accent-yellow);
+  }
+
+  .insight-icon {
+    font-size: 1.3em;
+    flex-shrink: 0;
+  }
+
+  .insight-content {
+    flex: 1;
+  }
+
+  .insight-title {
+    color: var(--text);
+    font-weight: 700;
+    margin-bottom: var(--spacing-xs);
+    font-size: 0.95em;
+  }
+
+  .insight-description {
+    color: var(--subtext0);
+    font-size: 0.85em;
+    line-height: 1.5;
+  }
+
+  /* Tooltip */
+  .progress-bar-item {
+    position: relative;
+  }
+
+  .progress-bar-item:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-8px);
+    background: var(--base);
+    color: var(--text);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: 8px;
+    border: 1px solid var(--surface1);
+    font-size: 0.85em;
+    white-space: nowrap;
+    z-index: 100;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    pointer-events: none;
+  }
+
+  /* Enhanced Activity Calendar */
+  .activity-calendar {
+    overflow-x: auto;
+  }
+
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(30, 1fr);
+    gap: 4px;
+    min-width: 600px;
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .calendar-day {
+    aspect-ratio: 1;
+    background: var(--surface0);
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .calendar-day:hover {
+    transform: scale(1.3);
+    z-index: 10;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  .calendar-day.active-1 {
+    background: linear-gradient(135deg, var(--accent-green)44, var(--accent-teal)44);
+  }
+
+  .calendar-day.active-2 {
+    background: linear-gradient(135deg, var(--accent-green)66, var(--accent-teal)66);
+  }
+
+  .calendar-day.active-3 {
+    background: linear-gradient(135deg, var(--accent-green)88, var(--accent-teal)88);
+  }
+
+  .calendar-day.active-4 {
+    background: linear-gradient(135deg, var(--accent-green), var(--accent-teal));
+    box-shadow: 0 0 12px rgba(166, 227, 161, 0.4);
+  }
+
+  .calendar-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75em;
+    color: var(--subtext0);
+    padding-top: var(--spacing-xs);
+  }
+
+  /* Enhanced Activity List */
+  .activity-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
+  .activity-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    background: var(--crust);
+    border-radius: 10px;
+    border: 1px solid var(--surface0);
+    transition: all 0.2s ease;
+  }
+
+  .activity-item:hover {
+    border-color: var(--accent-blue);
+    transform: translateX(4px);
+    box-shadow: 0 4px 12px rgba(137, 180, 250, 0.15);
+  }
+
+  .activity-item .nf {
+    font-size: 1.3em;
+    color: var(--accent-blue);
+    flex-shrink: 0;
+  }
+
+  .activity-item-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .activity-item-title {
+    color: var(--text);
+    font-weight: 600;
+    margin-bottom: 0.2rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .activity-item-meta {
+    color: var(--subtext0);
+    font-size: 0.85em;
+  }
+
+  .activity-empty {
+    text-align: center;
+    padding: var(--spacing-2xl) var(--spacing-md);
+    color: var(--subtext0);
+  }
+
+  .activity-empty .nf {
+    font-size: 3em;
+    color: var(--surface2);
+    margin-bottom: var(--spacing-md);
+    display: block;
+  }
+
+  .activity-empty p {
+    font-size: 1.1em;
+    color: var(--subtext1);
+    margin-bottom: var(--spacing-xs);
+  }
+
+  /* Enhanced Achievements */
+  .achievements-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: var(--spacing-md);
+  }
+
+  .achievement-card {
+    background: var(--crust);
+    border: 1px solid var(--surface0);
+    border-radius: 12px;
+    padding: var(--spacing-md);
+    text-align: center;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .achievement-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--surface1);
+    transition: all 0.3s ease;
+  }
+
+  .achievement-card.unlocked {
+    opacity: 1;
+    border-color: var(--accent-yellow);
+    box-shadow: 0 8px 24px rgba(249, 226, 175, 0.2);
+  }
+
+  .achievement-card.unlocked::before {
+    background: linear-gradient(90deg, var(--accent-yellow), var(--accent-orange));
+  }
+
+  .achievement-card:hover {
+    transform: translateY(-4px);
+  }
+
+  .achievement-icon {
+    font-size: 2.5em;
+    margin-bottom: var(--spacing-sm);
+    filter: grayscale(100%);
+    opacity: 0.5;
+    transition: all 0.3s ease;
+  }
+
+  .achievement-card.unlocked .achievement-icon {
+    filter: grayscale(0%);
+    opacity: 1;
+    animation: bounce 0.5s ease;
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+  }
+
+  .achievement-name {
+    color: var(--text);
+    font-weight: 700;
+    margin-bottom: var(--spacing-xs);
+    font-size: 0.9em;
+  }
+
+  .achievement-description {
+    color: var(--subtext0);
+    font-size: 0.75em;
+    line-height: 1.4;
+  }
+
+  /* Enhanced Quick Actions */
+  .quick-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: var(--spacing-lg);
+  }
+
+  .action-card {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+    background: var(--crust);
+    border: 1px solid var(--surface0);
+    border-radius: 12px;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .action-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--surface1);
+    transition: all 0.3s ease;
+  }
+
+  .action-card:hover {
+    transform: translateY(-6px);
+    border-color: var(--surface2);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+  }
+
+  .action-card:hover::before {
+    height: 4px;
+  }
+
+  .action-card:nth-child(1):hover::before {
+    background: linear-gradient(90deg, var(--accent-green), var(--accent-teal));
+  }
+
+  .action-card:nth-child(2):hover::before {
+    background: linear-gradient(90deg, var(--accent-blue), var(--accent-sky));
+  }
+
+  .action-card:nth-child(3):hover::before {
+    background: linear-gradient(90deg, var(--accent-purple), var(--accent-pink));
+  }
+
+  .action-card:nth-child(4):hover::before {
+    background: linear-gradient(90deg, var(--accent-orange), var(--accent-yellow));
+  }
+
+  .action-icon-wrapper {
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+  }
+
+  .action-card:hover .action-icon-wrapper {
+    transform: scale(1.1) rotate(-5deg);
+  }
+
+  .action-icon-wrapper.learn {
+    background: linear-gradient(135deg, rgba(166, 227, 161, 0.2), rgba(148, 226, 213, 0.1));
+  }
+
+  .action-icon-wrapper.questions {
+    background: linear-gradient(135deg, rgba(137, 180, 250, 0.2), rgba(137, 215, 250, 0.1));
+  }
+
+  .action-icon-wrapper.application {
+    background: linear-gradient(135deg, rgba(203, 166, 247, 0.2), rgba(245, 194, 231, 0.1));
+  }
+
+  .action-icon-wrapper.plan {
+    background: linear-gradient(135deg, rgba(250, 179, 135, 0.2), rgba(249, 226, 175, 0.1));
+  }
+
+  .action-icon-wrapper .nf {
+    font-size: 1.5em;
+    color: var(--accent-green);
+  }
+
+  .action-icon-wrapper.questions .nf {
+    color: var(--accent-blue);
+  }
+
+  .action-icon-wrapper.applications .nf {
+    color: var(--accent-purple);
+  }
+
+  .action-icon-wrapper.plan .nf {
+    color: var(--accent-orange);
+  }
+
+  .action-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .action-content h3 {
+    color: var(--text);
+    font-size: 1em;
+    font-weight: 700;
+    margin-bottom: 0.2rem;
+  }
+
+  .action-content p {
+    color: var(--subtext0);
+    font-size: 0.85em;
+    margin: 0;
+  }
+
+  .action-arrow {
+    color: var(--surface2);
+    transition: all 0.3s ease;
+  }
+
+  .action-card:hover .action-arrow {
+    color: var(--accent-green);
+    transform: translateX(4px);
+  }
+
+  /* Roadmap Progress */
+  .rm-dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--spacing-md);
+  }
+
+  .rm-dashboard-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md);
+    background: var(--crust);
+    border: 1px solid var(--surface0);
+    border-radius: 10px;
+    text-decoration: none;
+    transition: all 0.25s ease;
+  }
+
+  .rm-dashboard-card:hover {
+    border-color: var(--surface2);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  }
+
+  .rm-dashboard-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-sm);
+  }
+
+  .rm-dashboard-name {
+    color: var(--text);
+    font-weight: 700;
+    font-size: 0.95em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .rm-dashboard-pct {
+    color: var(--accent-green);
+    font-weight: 800;
+    font-size: 1em;
+    flex-shrink: 0;
+  }
+
+  .rm-dashboard-bar {
+    height: 8px;
+    background: var(--surface0);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .rm-dashboard-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--accent-blue), var(--accent-green));
+    border-radius: 4px;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .rm-dashboard-meta {
+    display: flex;
+    justify-content: space-between;
+    color: var(--subtext0);
+    font-size: 0.75em;
+  }
+
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .dashboard-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .dashboard-section.large {
+      grid-column: 1;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .stats-overview {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .header-content {
+      flex-direction: column;
+      gap: var(--spacing-md);
+    }
+
+    .current-streak {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .quick-actions {
+      grid-template-columns: 1fr;
+    }
+
+    .calendar-grid {
+      grid-template-columns: repeat(15, 1fr);
+    }
+  }
+
+  /* Next Actions */
+  .next-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: var(--spacing-sm);
+  }
+
+  .next-action {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md);
+    border: 1px solid var(--surface0);
+    border-radius: 12px;
+    background: var(--crust);
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+
+  .next-action:hover {
+    transform: translateY(-2px);
+    border-color: var(--surface2);
+  }
+
+  .next-action-icon {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    font-size: 1.3em;
+    flex-shrink: 0;
+  }
+
+  .next-action.primary .next-action-icon { background: color-mix(in srgb, var(--accent-blue) 16%, transparent); color: var(--accent-blue); }
+  .next-action.primary:hover { border-color: var(--accent-blue); box-shadow: 0 6px 18px color-mix(in srgb, var(--accent-blue) 18%, transparent); }
+  .next-action.warning .next-action-icon { background: color-mix(in srgb, var(--accent-orange) 16%, transparent); color: var(--accent-orange); }
+  .next-action.warning:hover { border-color: var(--accent-orange); box-shadow: 0 6px 18px color-mix(in srgb, var(--accent-orange) 18%, transparent); }
+  .next-action.info .next-action-icon { background: color-mix(in srgb, var(--accent-purple) 16%, transparent); color: var(--accent-purple); }
+  .next-action.info:hover { border-color: var(--accent-purple); box-shadow: 0 6px 18px color-mix(in srgb, var(--accent-purple) 18%, transparent); }
+  .next-action.plan .next-action-icon { background: color-mix(in srgb, var(--accent-teal) 16%, transparent); color: var(--accent-teal); }
+  .next-action.plan:hover { border-color: var(--accent-teal); box-shadow: 0 6px 18px color-mix(in srgb, var(--accent-teal) 18%, transparent); }
+
+  .next-action-body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .next-action-title {
+    color: var(--text);
+    font-weight: 600;
+    font-size: 0.92em;
+  }
+
+  .next-action-desc {
+    color: var(--subtext0);
+    font-size: 0.8em;
+  }
+
+  .next-action-arrow {
+    color: var(--subtext0);
+    font-size: 0.95em;
+    transition: transform 0.15s ease, color 0.15s ease;
+  }
+
+  .next-action:hover .next-action-arrow {
+    transform: translateX(3px);
+    color: var(--text);
+  }
+
+  .stat-badge.fire {
+    border-color: color-mix(in srgb, var(--accent-orange) 40%, transparent);
+    color: var(--accent-orange);
+  }
+
+  .stat-badge.fire .nf {
+    color: var(--accent-orange);
+  }
+
+  /* Streak Chart */
+  .streak-chart {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(11px, 1fr));
+    gap: 3px;
+    padding: var(--spacing-sm) 0 var(--spacing-md);
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  .streak-week {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 11px;
+  }
+
+  .streak-day {
+    width: 11px;
+    height: 11px;
+    border-radius: 2px;
+    background: var(--surface0);
+  }
+
+  .streak-day.active {
+    background: var(--green);
+    box-shadow: 0 0 6px color-mix(in srgb, var(--green) 45%, transparent);
+  }
+
+  .streak-day.future {
+    opacity: 0.35;
+  }
+
+  /* Weekly Digest */
+  .digest-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-md);
+  }
+
+  .digest-card {
+    background: var(--crust);
+    border: 1px solid var(--surface0);
+    border-radius: 12px;
+    padding: var(--spacing-md) var(--spacing-lg);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .digest-value {
+    font-size: 1.9em;
+    font-weight: 700;
+    color: var(--accent-blue);
+  }
+
+  .digest-label {
+    color: var(--subtext1);
+    font-size: 0.85em;
+  }
+
+  .digest-sub {
+    color: var(--subtext0);
+    font-size: 0.78em;
+  }
+
+  .digest-delta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4ch;
+    font-size: 0.8em;
+    margin-top: var(--spacing-xs);
+    font-weight: 600;
+  }
+
+  .digest-delta.up { color: var(--accent-green); }
+  .digest-delta.down { color: var(--accent-red); }
+  .digest-delta.flat { color: var(--subtext0); }
+
+  .digest-chart {
+    background: var(--crust);
+    border: 1px solid var(--surface0);
+    border-radius: 12px;
+    padding: var(--spacing-md) var(--spacing-lg);
+    grid-column: span 2;
+  }
+
+  .digest-chart-bars {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--spacing-sm);
+    height: 150px;
+  }
+
+  .digest-bar-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    height: 100%;
+    min-width: 0;
+  }
+
+  .digest-bar-track {
+    flex: 1;
+    width: 100%;
+    max-width: 34px;
+    display: flex;
+    align-items: flex-end;
+    background: var(--mantle);
+    border-radius: 5px 5px 2px 2px;
+    overflow: hidden;
+  }
+
+  .digest-bar-fill {
+    width: 100%;
+    border-radius: 5px 5px 2px 2px;
+    background: linear-gradient(180deg, var(--accent-blue), var(--accent-teal));
+    transition: height 0.5s ease;
+    min-height: 4px;
+  }
+
+  .digest-bar-day {
+    color: var(--subtext0);
+    font-size: 0.68em;
+    white-space: nowrap;
+  }
+
+  /* Weekly goal */
+  .goal-control {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+  }
+
+  .goal-label {
+    color: var(--subtext0);
+    font-size: 0.8em;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  #weekly-goal {
+    width: 56px;
+    padding: 4px 8px;
+    background: var(--crust);
+    border: 1px solid var(--surface1);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: var(--font-family);
+    font-size: 0.9em;
+    text-align: center;
+  }
+
+  #weekly-goal:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+  }
+
+  .goal-unit {
+    color: var(--subtext0);
+    font-size: 0.75em;
+  }
+
+  .digest-goal {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background: var(--mantle);
+    border: 1px solid var(--surface0);
+    border-radius: 8px;
+  }
+
+  .digest-goal-label {
+    color: var(--text);
+    font-size: 0.82em;
+    white-space: nowrap;
+  }
+
+  .digest-goal-bar {
+    flex: 1;
+    height: 8px;
+    background: var(--crust);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .digest-goal-fill {
+    display: block;
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-blue), var(--accent-teal));
+    border-radius: 4px;
+    transition: width 0.5s ease;
+  }
+
+  .digest-goal-fill.done {
+    background: linear-gradient(90deg, var(--green), var(--teal));
+  }
+
+  .digest-goal-pct {
+    color: var(--subtext0);
+    font-size: 0.8em;
+    font-weight: 700;
+    width: 3.5ch;
+    text-align: right;
+  }
+
+  /* LeetCode progress */
+  .stat-icon-wrapper.problems {
+    background: color-mix(in srgb, var(--accent-teal) 18%, transparent);
+  }
+
+  .stat-icon-wrapper.problems .stat-icon {
+    color: var(--accent-teal);
+  }
+
+  .lc-grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  .lc-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: var(--spacing-sm);
+  }
+
+  .lc-row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--crust);
+    border: 1px solid var(--surface0);
+    border-radius: 10px;
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+
+  .lc-row:hover {
+    border-color: var(--accent-teal);
+  }
+
+  .lc-company {
+    color: var(--text);
+    font-weight: 600;
+    font-size: 0.9em;
+    width: 7em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .lc-bar {
+    flex: 1;
+    height: 6px;
+    background: var(--mantle);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .lc-fill {
+    display: block;
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-teal), var(--green));
+    border-radius: 3px;
+  }
+
+  .lc-count {
+    color: var(--subtext0);
+    font-size: 0.8em;
+    flex-shrink: 0;
+  }
+
+  /* Backup */
+  .backup-row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+  }
+
+  .backup-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5ch;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: transparent;
+    border: 1px solid var(--surface1);
+    border-radius: 8px;
+    color: var(--subtext1);
+    cursor: pointer;
+    font-family: var(--font-family);
+    font-size: 0.88em;
+    transition: all 0.15s ease;
+  }
+
+  .backup-btn:hover {
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
+    background: color-mix(in srgb, var(--accent-blue) 10%, transparent);
+  }
+
+  .backup-hint {
+    color: var(--subtext0);
+    font-size: 0.82em;
+    line-height: 1.5;
+    max-width: 55ch;
+    width: 100%;
+  }
+
+  .badge-unlocked.warn {
+    color: var(--accent-orange);
+  }
+
+  .unified-row {
+    margin-top: var(--spacing-md);
+    padding-top: var(--spacing-md);
+    border-top: 1px solid var(--surface0);
+  }
+
+  .unified-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    cursor: pointer;
+  }
+
+  .unified-toggle input[type="checkbox"] {
+    appearance: none;
+    width: 38px;
+    height: 20px;
+    border-radius: 999px;
+    background: var(--surface0);
+    border: 1px solid var(--surface1);
+    position: relative;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  .unified-toggle input[type="checkbox"]::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--subtext0);
+    transition: transform 0.2s ease, background 0.2s ease;
+  }
+
+  .unified-toggle input[type="checkbox"]:checked {
+    background: color-mix(in srgb, var(--accent-blue) 35%, transparent);
+    border-color: var(--accent-blue);
+  }
+
+  .unified-toggle input[type="checkbox"]:checked::after {
+    transform: translateX(18px);
+    background: var(--accent-blue);
+  }
+
+  .unified-label {
+    color: var(--text);
+    font-weight: 600;
+    font-size: 0.92em;
+  }
+</style>
+
+<script>
+  import { loadFromStorage, saveToStorage, STORAGE_KEYS } from "../../lib/user-data";
+
+  interface ProgressData {
+    totalTopicsCompleted: number;
+    studyStreak: number;
+    totalStudyTime: number;
+    achievements: any[];
+    topicsBySection: Record<string, number>;
+    sessionsLog: any[];
+    roleRoadmapDone?: number;
+    weeklyGoal?: number;
+  }
+
+  function loadDashboard() {
+    const progress = loadFromStorage<ProgressData>(STORAGE_KEYS.PROGRESS) || {
+      totalTopicsCompleted: 0,
+      studyStreak: 0,
+      totalStudyTime: 0,
+      achievements: [],
+      topicsBySection: {},
+      sessionsLog: [],
+    };
+
+    // Merge interactive-roadmap completions into the topic count
+    const roleRoadmapDone = progress.roleRoadmapDone || 0;
+    const mergedTopics = progress.totalTopicsCompleted - roleRoadmapDone + ROADMAP_DONE;
+    const mergedTime = progress.totalStudyTime;
+    const applications = loadFromStorage<any[]>(STORAGE_KEYS.APPLICATIONS) || [];
+
+    // Study days: merge interactive-roadmap activity with logged sessions
+    const studyDates = loadStudyDates(progress);
+    const computedStreak = computeStreak(studyDates);
+    const mergedStreak = computedStreak;
+    if (mergedStreak !== progress.studyStreak) {
+      progress.studyStreak = mergedStreak;
+      saveToStorage(STORAGE_KEYS.PROGRESS, progress);
+    }
+
+    // Update stat cards with animation
+    animateValue('total-completed', 0, mergedTopics, 1000);
+    animateValue('study-streak', 0, mergedStreak, 1000);
+    document.getElementById('header-streak')!.textContent = mergedStreak.toString();
+    document.getElementById('total-time')!.textContent = formatTime(mergedTime);
+    const leetcodeStats = loadLeetCodeProgress();
+    animateValue('problems-solved', 0, leetcodeStats.solved, 1000);
+    const unlocked = computeUnlocked(mergedTopics, mergedStreak, mergedTime, applications.length, leetcodeStats.solved);
+    document.getElementById('achievements-count')!.textContent = unlocked.length.toString();
+    document.getElementById('unlocked-count')!.textContent = unlocked.length.toString();
+
+    // Update section progress
+    updateSectionProgress(progress.topicsBySection);
+
+    // Update activity calendar + streak chart (fed by study dates)
+    updateActivityCalendar(studyDates);
+    renderStreakChart(studyDates);
+
+    // Update recent activity
+    updateRecentActivity(progress.sessionsLog);
+
+    // Update achievements (computed live from real data)
+    updateAchievements(unlocked);
+
+    // Next actions fed by the roadmap audit
+    renderNextActions();
+
+    // Weekly digest (topics/study days vs last week)
+    renderWeeklyDigest();
+
+    // LeetCode solved progress + backup status
+    renderLeetCodeProgress(leetcodeStats);
+    renderBackupStatus();
+  }
+
+  function loadLeetCodeProgress(): { solved: number; byCompany: Record<string, number> } {
+    const byCompany: Record<string, number> = {};
+    let solved = 0;
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (!key || !key.startsWith('leetcode-')) continue;
+        if (localStorage.getItem(key) !== 'true') continue;
+        solved++;
+        const parts = key.split('-');
+        parts.shift(); // 'leetcode'
+        const company = parts.join('-');
+        byCompany[company] = (byCompany[company] || 0) + 1;
+      }
+    } catch { /* ignore */ }
+    return { solved, byCompany };
+  }
+
+  function loadStudyDates(progress: ProgressData): string[] {
+    const dateSet = new Set<string>();
+    try {
+      const rmDays = JSON.parse(localStorage.getItem('rm-activity') || '[]');
+      rmDays.forEach((d: string) => d && dateSet.add(d));
+    } catch { /* ignore */ }
+    (progress.sessionsLog || []).forEach((s: any) => s?.date && dateSet.add(s.date));
+    if (progress.lastStudyDate) dateSet.add(progress.lastStudyDate);
+
+    // Seed a fair start for existing users who have roadmap progress but no
+    // recorded study days (e.g. they used the older checkbox system)
+    if (dateSet.size === 0 && hasAnyRoadmapProgress()) {
+      dateSet.add(new Date().toISOString().split('T')[0]);
+    }
+    return Array.from(dateSet).sort();
+  }
+
+  function hasAnyRoadmapProgress(): boolean {
+    try {
+      const all = JSON.parse(localStorage.getItem('rm-progress') || '{}');
+      for (const roleState of Object.values(all) as Record<string, string>[]) {
+        if (!roleState || typeof roleState !== 'object') continue;
+        for (const v of Object.values(roleState)) if (v === 'done' || v === 'doing') return true;
+      }
+    } catch { /* ignore */ }
+    return false;
+  }
+
+  function computeStreak(dates: string[]): number {
+    if (dates.length === 0) return 0;
+    const set = new Set(dates);
+    const dayMs = 86400000;
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+    let streak = 0;
+    let cursor = start;
+    if (!set.has(start.toISOString().split('T')[0])) {
+      cursor = new Date(start.getTime() - dayMs);
+    }
+    while (set.has(cursor.toISOString().split('T')[0])) {
+      streak++;
+      cursor = new Date(cursor.getTime() - dayMs);
+    }
+    return streak;
+  }
+
+  function computeUnlocked(topics: number, streak: number, time: number, apps: number, problems = 0): string[] {
+    const unlocked: string[] = [];
+    if (topics >= 1) unlocked.push('first-topic');
+    if (topics >= 10) unlocked.push('10-topics');
+    if (topics >= 25) unlocked.push('25-topics');
+    if (topics >= 50) unlocked.push('50-topics');
+    if (streak >= 7) unlocked.push('week-streak');
+    if (streak >= 30) unlocked.push('month-streak');
+    if (time >= 6000) unlocked.push('100-hours');
+    if (apps >= 1) unlocked.push('first-app');
+    if (problems >= 10) unlocked.push('10-problems');
+    if (problems >= 25) unlocked.push('25-problems');
+    if (problems >= 50) unlocked.push('50-problems');
+    if (problems >= 100) unlocked.push('100-problems');
+    return unlocked;
+  }
+
+  function formatTime(minutes: number): string {
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    if (hours === 0) return `${mins}h`;
+    if (mins === 0) return `${hours}h`;
+    return `${hours}h ${mins}m`;
+  }
+
+  function animateValue(id: string, start: number, end: number, duration: number) {
+    const element = document.getElementById(id);
+    if (!element) return;
+    
+    const range = end - start;
+    const startTime = performance.now();
+    
+    function update(currentTime: number) {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const value = Math.floor(start + (range * progress));
+      element.textContent = value.toString();
+      
+      if (progress < 1) {
+        requestAnimationFrame(update);
+      }
+    }
+    
+    requestAnimationFrame(update);
+  }
+
+  let ROADMAP_DONE = 0;
+  let ROADMAP_TOTAL = 0;
+
+  function updateSectionProgress(topicsBySection: Record<string, number>) {
+    const container = document.getElementById('section-progress-chart');
+    const insightsContainer = document.getElementById('progress-insights');
+    if (!container) return;
+
+    const sections: Record<string, { total: number; icon: string; color: string }> = {
+      'Hiring Pipeline': { total: 8, icon: '󰓾', color: 'var(--accent-green)' },
+      'Start Here': { total: 3, icon: '', color: 'var(--accent-orange)' },
+      'Foundations': { total: 6, icon: '', color: 'var(--accent-blue)' },
+      'Role Roadmaps': { total: Math.max(8, ROADMAP_TOTAL), icon: '', color: 'var(--accent-purple)' },
+      'Interviews': { total: 10, icon: '', color: 'var(--accent-red)' },
+      'System Design': { total: 4, icon: '', color: 'var(--accent-teal)' },
+      'ML & MLOps': { total: 6, icon: '', color: 'var(--accent-pink)' },
+      'Data': { total: 6, icon: '', color: 'var(--accent-sky)' },
+      'Infra & DevOps': { total: 6, icon: '', color: 'var(--accent-yellow)' },
+      'Career': { total: 6, icon: '', color: 'var(--accent-mauve)' },
+      'Company Notes': { total: 6, icon: '', color: 'var(--accent-flamingo)' },
+    };
+
+    let totalCompleted = 0;
+    let totalTopics = 0;
+    let percentages: number[] = [];
+
+    let html = '';
+    for (const [section, data] of Object.entries(sections)) {
+      let completed = topicsBySection[section] || 0;
+      if (section === 'Role Roadmaps') completed = ROADMAP_DONE;
+      const percentage = Math.round((completed / data.total) * 100);
+      
+      totalCompleted += completed;
+      totalTopics += data.total;
+      percentages.push(percentage);
+
+      html += `
+        <div class="progress-bar-item" data-section="${section}" data-tooltip="${completed}/${data.total} topics completed">
+          <div class="progress-bar-label">
+            <span class="section-icon">${data.icon}</span>
+            ${section}
+          </div>
+          <div class="progress-bar-container">
+            <div class="progress-bar-fill" style="width: ${percentage}%; background: linear-gradient(90deg, ${data.color}dd, ${data.color}88);">${percentage}%</div>
+          </div>
+          <div class="progress-bar-percent">${completed}/${data.total}</div>
+        </div>
+      `;
+    }
+    container.innerHTML = html;
+
+    // Update overview stats
+    const avgProgress = percentages.length > 0 ? Math.round(percentages.reduce((a, b) => a + b, 0) / percentages.length) : 0;
+    const remaining = totalTopics - totalCompleted;
+    
+    document.getElementById('avg-progress')!.textContent = avgProgress.toString();
+    document.getElementById('total-topics')!.textContent = totalCompleted.toString();
+    document.getElementById('completed-topics')!.textContent = totalCompleted.toString();
+    document.getElementById('remaining-topics')!.textContent = remaining.toString();
+    document.getElementById('overall-percent')!.textContent = `${avgProgress}%`;
+    
+    // Update donut chart
+    const circumference = 2 * Math.PI * 52;
+    const offset = circumference - (avgProgress / 100) * circumference;
+    const donutFill = document.getElementById('overall-progress') as SVGCircleElement;
+    if (donutFill) {
+      donutFill.style.strokeDashoffset = offset.toString();
+    }
+
+    // Generate insights
+    updateInsights(topicsBySection, sections, avgProgress, totalCompleted);
+  }
+
+  function updateInsights(topicsBySection: Record<string, number>, sections: any, avgProgress: number, totalCompleted: number) {
+    const container = document.getElementById('progress-insights');
+    if (!container) return;
+
+    const insights: { type: 'positive' | 'warning' | 'info'; icon: string; title: string; description: string }[] = [];
+
+    // Find strongest section
+    let strongestSection = '';
+    let strongestPercent = 0;
+    for (const [section, data] of Object.entries(sections)) {
+      const completed = topicsBySection[section] || 0;
+      const percent = (completed / data.total) * 100;
+      if (percent > strongestPercent) {
+        strongestPercent = percent;
+        strongestSection = section;
+      }
+    }
+
+    // Find weakest section
+    let weakestSection = '';
+    let weakestPercent = 100;
+    for (const [section, data] of Object.entries(sections)) {
+      const completed = topicsBySection[section] || 0;
+      const percent = (completed / data.total) * 100;
+      if (percent < weakestPercent && percent >= 0) {
+        weakestPercent = percent;
+        weakestSection = section;
+      }
+    }
+
+    // Generate insights
+    if (strongestSection && strongestPercent > 50) {
+      insights.push({
+        type: 'positive',
+        icon: '',
+        title: 'Strongest Section',
+        description: `You're doing great in <strong>${strongestSection}</strong> with ${Math.round(strongestPercent)}% completion!`,
+      });
+    }
+
+    if (weakestSection && weakestPercent < 20) {
+      insights.push({
+        type: 'warning',
+        icon: '',
+        title: 'Needs Attention',
+        description: `Consider spending more time on <strong>${weakestSection}</strong> to improve your overall progress.`,
+      });
+    }
+
+    if (avgProgress < 30 && totalCompleted > 0) {
+      insights.push({
+        type: 'info',
+        icon: '',
+        title: 'Keep Going!',
+        description: 'You\'ve made a start! Try to complete at least 1 topic per day to build momentum.',
+      });
+    }
+
+    if (totalCompleted === 0) {
+      insights.push({
+        type: 'info',
+        icon: '',
+        title: 'Getting Started',
+        description: 'Start with the <strong>Start Here</strong> section to get oriented with the roadmap.',
+      });
+    }
+
+    if (insights.length === 0) {
+      insights.push({
+        type: 'positive',
+        icon: '',
+        title: 'Excellent Progress!',
+        description: 'You\'re on track! Keep maintaining your study schedule to reach your goals.',
+      });
+    }
+
+    let html = '';
+    for (const insight of insights) {
+      html += `
+        <div class="insight-item ${insight.type}">
+          <span class="nf insight-icon">${insight.icon}</span>
+          <div class="insight-content">
+            <div class="insight-title">${insight.title}</div>
+            <div class="insight-description">${insight.description}</div>
+          </div>
+        </div>
+      `;
+    }
+    container.innerHTML = html;
+  }
+
+  function updateActivityCalendar(dates: string[]) {
+    const container = document.querySelector('.calendar-grid');
+    if (!container) return;
+
+    const dateSet = new Set(dates);
+    const today = new Date();
+    let html = '';
+    
+    for (let i = 29; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(date.getDate() - i);
+      const dateStr = date.toISOString().split('T')[0];
+      
+      const active = dateSet.has(dateStr);
+      const intensity = active ? 2 : 0;
+      
+      html += `<div class="calendar-day ${intensity > 0 ? `active-${intensity}` : ''}" title="${dateStr}: ${active ? 'study day' : 'no study'}"></div>`;
+    }
+    
+    container.innerHTML = html;
+  }
+
+  function renderStreakChart(dates: string[]) {
+    const container = document.getElementById('streak-chart');
+    if (!container) return;
+
+    document.getElementById('streak-current')!.textContent = computeStreak(dates).toString();
+
+    const dateSet = new Set(dates);
+    const dayMs = 86400000;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Best streak
+    let best = 0;
+    let run = 0;
+    let prev: Date | null = null;
+    for (const d of dateSet) {
+      const parsed = new Date(d + 'T00:00:00');
+      if (prev && parsed.getTime() - prev.getTime() === dayMs) run++;
+      else run = 1;
+      if (run > best) best = run;
+      prev = parsed;
+    }
+    document.getElementById('streak-best')!.textContent = best.toString();
+    document.getElementById('streak-days')!.textContent = dates.length.toString();
+
+    // 12-week grid: columns = weeks, rows = Mon..Sun
+    const end = new Date(today);
+    const start = new Date(end);
+    start.setDate(start.getDate() - (84 - 1));
+
+    // Shift so columns start on Monday
+    const mondayOffset = (start.getDay() + 6) % 7;
+    start.setDate(start.getDate() - mondayOffset);
+
+    let html = '';
+    const rows = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const weekCount = Math.ceil((end.getTime() - start.getTime()) / dayMs / 7);
+
+    for (let w = 0; w < weekCount; w++) {
+      html += '<div class="streak-week">';
+      for (let d = 0; d < 7; d++) {
+        const cell = new Date(start.getTime() + (w * 7 + d) * dayMs);
+        const dateStr = cell.toISOString().split('T')[0];
+        const active = dateSet.has(dateStr);
+        const isFuture = cell.getTime() > today.getTime();
+        const label = isFuture
+          ? dateStr + ' (future)'
+          : `${dateStr}: ${active ? 'study day' : 'no study'}`;
+        html += `<div class="streak-day ${active ? 'active' : ''} ${isFuture ? 'future' : ''}" title="${label}"></div>`;
+      }
+      html += '</div>';
+    }
+
+    container.innerHTML = html;
+  }
+
+  function updateRecentActivity(sessions: any[]) {
+    const container = document.getElementById('recent-activity');
+    if (!container) return;
+
+    if (sessions.length === 0) {
+      container.innerHTML = `
+        <div class="activity-empty">
+          <span class="nf"></span>
+          <p>No recent activity yet</p>
+          <span>Start studying to see your progress!</span>
+        </div>
+      `;
+      return;
+    }
+
+    const recent = sessions.slice(-10).reverse();
+    let html = '';
+    
+    for (const session of recent) {
+      html += `
+        <div class="activity-item">
+          <span class="nf"></span>
+          <div class="activity-item-content">
+            <div class="activity-item-title">${session.topic}</div>
+            <div class="activity-item-meta">${session.section} • ${session.duration} min • ${session.date}</div>
+          </div>
+        </div>
+      `;
+    }
+    
+    container.innerHTML = html;
+  }
+
+  function updateAchievements(unlockedIds: string[]) {
+    const container = document.getElementById('achievements-grid');
+    if (!container) return;
+
+    const allAchievements = [
+      { id: 'first-topic', name: 'First Step', description: 'Complete your first topic', icon: '' },
+      { id: 'week-streak', name: 'Week Warrior', description: '7 day study streak', icon: '' },
+      { id: 'month-streak', name: 'Month Master', description: '30 day study streak', icon: '' },
+      { id: '10-topics', name: 'Dedicated Learner', description: 'Complete 10 topics', icon: '' },
+      { id: '25-topics', name: 'Knowledge Seeker', description: 'Complete 25 topics', icon: '' },
+      { id: '50-topics', name: 'Interview Ready', description: 'Complete 50 topics', icon: '' },
+      { id: '100-hours', name: 'Century Club', description: '100 hours of study', icon: '' },
+      { id: 'first-app', name: 'Job Seeker', description: 'Track your first application', icon: '' },
+      { id: '10-problems', name: 'Problem Solver', description: 'Solve 10 LeetCode problems', icon: '󰅖' },
+      { id: '25-problems', name: 'Grinder', description: 'Solve 25 LeetCode problems', icon: '󰅖' },
+      { id: '50-problems', name: 'Pattern Master', description: 'Solve 50 LeetCode problems', icon: '󰆮' },
+      { id: '100-problems', name: 'Century Problem', description: 'Solve 100 LeetCode problems', icon: '󰆮' },
+    ];
+    
+    let html = '';
+    for (const achievement of allAchievements) {
+      const unlocked = unlockedIds.includes(achievement.id);
+      html += `
+        <div class="achievement-card ${unlocked ? 'unlocked' : ''}">
+          <div class="achievement-icon">${achievement.icon}</div>
+          <div class="achievement-name">${achievement.name}</div>
+          <div class="achievement-description">${achievement.description}</div>
+        </div>
+      `;
+    }
+    
+    container.innerHTML = html;
+  }
+
+  function renderRoadmapProgress() {
+    const container = document.getElementById('rm-dashboard-grid');
+    if (!container) return;
+
+    const summaryEl = document.getElementById('rm-dashboard-summary');
+    const summary = summaryEl
+      ? JSON.parse(summaryEl.textContent || '[]')
+      : [];
+
+    let saved: Record<string, Record<string, string>> = {};
+    try {
+      saved = JSON.parse(localStorage.getItem('rm-progress') || '{}');
+    } catch {
+      saved = {};
+    }
+
+    let totalPct = 0;
+    ROADMAP_DONE = 0;
+    ROADMAP_TOTAL = 0;
+    let html = '';
+    for (const rm of summary) {
+      const state = saved[rm.slug] || {};
+      let done = 0;
+      let doing = 0;
+      for (const v of Object.values(state)) {
+        if (v === 'done') done++;
+        else if (v === 'doing') doing++;
+      }
+      const pct = rm.total ? Math.round(((done + doing * 0.5) / rm.total) * 100) : 0;
+      totalPct += pct;
+      ROADMAP_DONE += done;
+      ROADMAP_TOTAL += rm.total;
+
+      html += `
+        <a class="rm-dashboard-card" href="/roadmap/${rm.slug}">
+          <div class="rm-dashboard-card-top">
+            <span class="rm-dashboard-name">${rm.name}</span>
+            <span class="rm-dashboard-pct">${pct}%</span>
+          </div>
+          <div class="rm-dashboard-bar">
+            <div class="rm-dashboard-fill" style="width: ${pct}%"></div>
+          </div>
+          <div class="rm-dashboard-meta">
+            <span>${done} done</span>
+            <span>${doing} in progress</span>
+            <span>${rm.total} topics</span>
+          </div>
+        </a>
+      `;
+    }
+
+    container.innerHTML = html;
+    if (summary.length > 0) {
+      document.getElementById('rm-dashboard-avg')!.textContent =
+        Math.round(totalPct / summary.length).toString();
+    }
+  }
+
+  function renderNextActions() {
+    const container = document.getElementById('next-actions');
+    if (!container) return;
+
+    const summaryEl = document.getElementById('rm-dashboard-summary');
+    const summary = summaryEl
+      ? JSON.parse(summaryEl.textContent || '[]')
+      : [];
+
+    let saved: Record<string, Record<string, string>> = {};
+    try {
+      saved = JSON.parse(localStorage.getItem('rm-progress') || '{}');
+    } catch {
+      saved = {};
+    }
+
+    const roleStats = summary.map((rm: any) => {
+      const state = saved[rm.slug] || {};
+      let done = 0;
+      let doing = 0;
+      const phaseStats = rm.phases.map((p: any) => {
+        let pdone = 0;
+        for (const id of p.nodes) {
+          const s = state[id];
+          if (s === 'done') {
+            pdone++;
+            done++;
+          } else if (s === 'doing') doing++;
+        }
+        return { name: p.name, done: pdone, total: p.nodes.length };
+      });
+      const pct = rm.total ? Math.round(((done + doing * 0.5) / rm.total) * 100) : 0;
+      return { slug: rm.slug, name: rm.name, done, doing, total: rm.total, pct, phaseStats };
+    });
+
+    const started = roleStats.filter((r: any) => r.pct > 0);
+    const unstarted = roleStats.filter((r: any) => r.pct === 0);
+    const actions: {
+      icon: string;
+      cls: string;
+      title: string;
+      desc: string;
+      href: string;
+    }[] = [];
+
+    if (roleStats.length === 0 || started.length === 0) {
+      actions.push({
+        icon: '󰘓',
+        cls: 'primary',
+        title: 'Pick your first roadmap',
+        desc: 'Take the 30-second role quiz or start a track',
+        href: '/roadmap',
+      });
+    } else {
+      const doingRoles = [...started].sort((a: any, b: any) => b.doing - a.doing);
+      const r = doingRoles[0];
+      if (r && r.doing > 0) {
+        actions.push({
+          icon: '󰫑',
+          cls: 'primary',
+          title: `Finish ${r.doing} in-progress topics`,
+          desc: `${r.name}: pick up where you left off`,
+          href: `/roadmap/${r.slug}`,
+        });
+      }
+
+      const weakest = started
+        .flatMap((s: any) =>
+          s.phaseStats.map((p: any) => ({
+            role: s,
+            phase: p,
+            ratio: p.total ? p.done / p.total : 0,
+          })),
+        )
+        .sort((a: any, b: any) => a.ratio - b.ratio)[0];
+      if (weakest && weakest.phase.done < weakest.phase.total) {
+        const remaining = weakest.phase.total - weakest.phase.done;
+        actions.push({
+          icon: '󰦨',
+          cls: 'warning',
+          title: `Attack your weakest phase: ${weakest.phase.name}`,
+          desc: `${weakest.role.name} · ${remaining} topics left in this phase`,
+          href: `/roadmap/${weakest.role.slug}`,
+        });
+      }
+
+      if (unstarted.length > 0) {
+        actions.push({
+          icon: '󰒓',
+          cls: 'info',
+          title: `Start a new roadmap (${unstarted.length} untouched)`,
+          desc: `Try ${unstarted[0].name} next`,
+          href: '/roadmap',
+        });
+      }
+
+      const firstStarted = started[0];
+      actions.push({
+        icon: '',
+        cls: 'plan',
+        title: 'Plan your week',
+        desc: `Generate a study plan from your ${firstStarted.name} gaps`,
+        href: `/roadmap/${firstStarted.slug}`,
+      });
+    }
+
+    container.innerHTML = actions
+      .slice(0, 4)
+      .map(
+        (a) => `
+        <a class="next-action ${a.cls}" href="${a.href}">
+          <span class="next-action-icon"><span class="nf">${a.icon}</span></span>
+          <span class="next-action-body">
+            <span class="next-action-title">${a.title}</span>
+            <span class="next-action-desc">${a.desc}</span>
+          </span>
+          <span class="nf next-action-arrow"></span>
+        </a>`,
+      )
+      .join('');
+  }
+
+  function renderWeeklyDigest() {
+    const chartEl = document.getElementById('digest-chart');
+    if (!chartEl) return;
+
+    let log: { date: string; id: string; title: string; role: string }[] = [];
+    try {
+      log = JSON.parse(localStorage.getItem('rm-log') || '[]');
+    } catch { /* ignore */ }
+
+    const dayMs = 86400000;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const thisWeek = new Array(7).fill(0); // index 0 = 6 days ago .. 6 = today
+    let topicsThisWeek = 0;
+    let daysThisWeek = 0;
+    const daysThisWeekSet = new Set<string>();
+
+    const weekAgo = new Date(today.getTime() - 6 * dayMs);
+    const twoWeeksAgo = new Date(today.getTime() - 13 * dayMs);
+
+    let topicsLastWeek = 0;
+    const daysLastWeekSet = new Set<string>();
+
+    for (const entry of log) {
+      const t = new Date(entry.date + 'T00:00:00').getTime();
+      if (t >= weekAgo.getTime() && t <= today.getTime()) {
+        topicsThisWeek++;
+        daysThisWeekSet.add(entry.date);
+        const idx = Math.round((today.getTime() - t) / dayMs);
+        thisWeek[6 - idx]++;
+      } else if (t >= twoWeeksAgo.getTime() && t < weekAgo.getTime()) {
+        topicsLastWeek++;
+        daysLastWeekSet.add(entry.date);
+      }
+    }
+    daysThisWeek = daysThisWeekSet.size;
+
+    // Total topics ever completed (dedupe by id)
+    const seen = new Set<string>();
+    let topicsTotal = 0;
+    for (const entry of log) {
+      if (!seen.has(entry.id)) {
+        seen.add(entry.id);
+        topicsTotal++;
+      }
+    }
+
+    document.getElementById('digest-topics-week')!.textContent = topicsThisWeek.toString();
+    document.getElementById('digest-days-week')!.textContent = daysThisWeek.toString();
+    document.getElementById('digest-topics-total')!.textContent = topicsTotal.toString();
+
+    const setDelta = (id: string, now: number, before: number, invert = false) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const diff = now - before;
+      const good = invert ? diff < 0 : diff > 0;
+      const arrow = diff > 0 ? '' : diff < 0 ? '' : '';
+      const cls = diff === 0 ? 'flat' : good ? 'up' : 'down';
+      const label = diff === 0 ? 'same as last week' : `${Math.abs(diff)} ${diff > 0 ? 'more' : 'fewer'} than last week`;
+      el.innerHTML = `<span class="nf">${arrow}</span> <span class="digest-delta-text">${label}</span>`;
+      el.className = `digest-delta ${cls}`;
+    };
+    setDelta('digest-topics-delta', topicsThisWeek, topicsLastWeek);
+    setDelta('digest-days-delta', daysThisWeekSet.size, daysLastWeekSet.size);
+
+    const maxBar = Math.max(1, ...thisWeek);
+    const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+    const goal = (loadFromStorage<ProgressData>(STORAGE_KEYS.PROGRESS) || {}).weeklyGoal || 0;
+    const goalPct = goal ? Math.min(100, Math.round((topicsThisWeek / goal) * 100)) : 0;
+    const goalHtml = goal
+      ? `<div class="digest-goal">
+          <span class="digest-goal-label">Goal: ${topicsThisWeek}/${goal} topics this week</span>
+          <span class="digest-goal-bar"><span class="digest-goal-fill ${goalPct >= 100 ? 'done' : ''}" style="width:${goalPct}%"></span></span>
+          <span class="digest-goal-pct">${goalPct}%</span>
+        </div>`
+      : '';
+
+    chartEl.innerHTML = `${goalHtml}
+      <div class="digest-chart-bars">
+        ${thisWeek
+          .map((count, i) => {
+            const date = new Date(today.getTime() - (6 - i) * dayMs);
+            const isToday = i === 6;
+            const pct = Math.round((count / maxBar) * 100);
+            return `<div class="digest-bar-col" title="${date.toISOString().split('T')[0]}: ${count} topic${count === 1 ? '' : 's'}">
+              <div class="digest-bar-track"><div class="digest-bar-fill" style="height:${Math.max(4, pct)}%"></div></div>
+              <div class="digest-bar-day">${dayNames[date.getDay()]}${isToday ? '·today' : ''}</div>
+            </div>`;
+          })
+          .join('')}
+      </div>`;
+  }
+
+  function renderLeetCodeProgress(stats: { solved: number; byCompany: Record<string, number> }) {
+    const container = document.getElementById('lc-grid');
+    if (!container) return;
+
+    document.getElementById('lc-solved-total')!.textContent = stats.solved.toString();
+
+    if (stats.solved === 0) {
+      container.innerHTML = '<p class="empty-state">No solved problems yet — check off problems on any company page to track them here.</p>';
+      return;
+    }
+
+    // LeetCode companies with solved problems (from storage keys)
+    const rows = Object.entries(stats.byCompany)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 12)
+      .map(([company, count]) => {
+        const name = company === 'facebook' ? 'Meta' : company.charAt(0).toUpperCase() + company.slice(1);
+        return `<a class="lc-row" href="/leetcode/${company}">
+          <span class="lc-company">${name}</span>
+          <span class="lc-bar"><span class="lc-fill" style="width:${Math.min(100, count * 10)}%"></span></span>
+          <span class="lc-count">${count} solved</span>
+        </a>`;
+      })
+      .join('');
+
+    container.innerHTML = `<div class="lc-list">${rows}</div>`;
+  }
+
+  function renderBackupStatus() {
+    const el = document.getElementById('backup-status');
+    if (!el) return;
+    try {
+      const last = localStorage.getItem('faang-last-backup');
+      if (!last) {
+        el.textContent = 'Never backed up';
+        el.classList.add('warn');
+        return;
+      }
+      const days = Math.floor((Date.now() - new Date(last).getTime()) / 86400000);
+      el.textContent = days <= 0 ? 'Backed up today' : `Backed up ${days}d ago`;
+      el.classList.toggle('warn', days >= 7);
+    } catch { /* ignore */ }
+  }
+
+  function backupKeys(): string[] {
+    const known = ['rm-progress', 'rm-notes', 'rm-activity', 'rm-log', 'faang-progress', 'faang-study-plans', 'faang-applications', 'faang-questions', 'faang-roadmap-progress', 'faang-last-backup'];
+    const keys = [...known];
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && (key.startsWith('topic-') || key.startsWith('leetcode-'))) keys.push(key);
+      }
+    } catch { /* ignore */ }
+    return keys;
+  }
+
+  document.getElementById('backup-export')?.addEventListener('click', () => {
+    const payload: Record<string, any> = { exportedAt: new Date().toISOString(), data: {} };
+    for (const key of backupKeys()) {
+      try {
+        const raw = localStorage.getItem(key);
+        if (raw !== null) payload.data[key] = JSON.parse(raw);
+      } catch { /* ignore */ }
+    }
+    localStorage.setItem('faang-last-backup', new Date().toISOString());
+    renderBackupStatus();
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `faang-backup-${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    alert('Backup exported. Restore anytime with "Restore from backup".');
+  });
+
+  const backupInput = document.getElementById('backup-import-input') as HTMLInputElement | null;
+  document.getElementById('backup-import')?.addEventListener('click', () => backupInput?.click());
+
+  backupInput?.addEventListener('change', () => {
+    const file = backupInput.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const parsed = JSON.parse(String(reader.result));
+        const data = parsed?.data && typeof parsed.data === 'object' ? parsed.data : parsed;
+        let count = 0;
+        for (const [key, value] of Object.entries(data)) {
+          localStorage.setItem(key, JSON.stringify(value));
+          count++;
+        }
+        alert(`Restored ${count} keys. Reloading…`);
+        location.reload();
+      } catch {
+        alert('Invalid backup file.');
+      }
+    };
+    reader.readAsText(file);
+    backupInput.value = '';
+  });
+
+  // Weekly goal
+  const goalInput = document.getElementById('weekly-goal') as HTMLInputElement | null;
+  if (goalInput) {
+    const progress = loadFromStorage<ProgressData>(STORAGE_KEYS.PROGRESS) || {};
+    if (progress.weeklyGoal) goalInput.value = progress.weeklyGoal.toString();
+    goalInput.addEventListener('change', () => {
+      const value = parseInt(goalInput.value, 10);
+      if (!value || value < 1 || value > 50) { goalInput.value = ''; return; }
+      const p = loadFromStorage<ProgressData>(STORAGE_KEYS.PROGRESS) || {};
+      p.weeklyGoal = value;
+      saveToStorage(STORAGE_KEYS.PROGRESS, p);
+      renderWeeklyDigest();
+    });
+  }
+
+  // Unified progress sync toggle
+  const unifiedToggle = document.getElementById('unified-toggle') as HTMLInputElement | null;
+  if (unifiedToggle) {
+    try {
+      const progress = JSON.parse(localStorage.getItem('faang-progress') || '{}');
+      unifiedToggle.checked = progress.unifiedProgress === true;
+    } catch { /* ignore */ }
+    unifiedToggle.addEventListener('change', () => {
+      try {
+        const progress = JSON.parse(localStorage.getItem('faang-progress') || '{}');
+        progress.unifiedProgress = unifiedToggle.checked;
+        localStorage.setItem('faang-progress', JSON.stringify(progress));
+      } catch { /* ignore */ }
+    });
+  }
+
+  renderRoadmapProgress();
+
+  loadDashboard();
+
+  // Reset progress button
+  document.getElementById('reset-progress')?.addEventListener('click', () => {
+    if (confirm('Are you sure you want to reset all progress? This cannot be undone!')) {
+      localStorage.removeItem(STORAGE_KEYS.PROGRESS);
+      location.reload();
+    }
+  });
+</script>

@@ -40,5 +40,5 @@ The goal is not to stereotype companies; it’s to anticipate differences in:
 Add these when preparing for a specific target list:
 
 - Hiring pipeline (what to optimize at each stage): [00-Hiring-Pipeline/00-Index.md](../00-Hiring-Pipeline/00-Index.md)
-- Interview playbooks (how to perform): [03-Interviews/00-Index.md](../03-Interviews/00-Index.md)
-- Role roadmaps (what to study): [02-Role-Roadmaps/00-Index.md](../02-Role-Roadmaps/00-Index.md)
+- Interview playbooks (how to perform): [03-Interviews/00-Interview-Index.md](../03-Interviews/00-Interview-Index.md)
+- Role roadmaps (what to study): [02-Role-Roadmaps/00-Role-Chooser.md](../02-Role-Roadmaps/00-Role-Chooser.md)

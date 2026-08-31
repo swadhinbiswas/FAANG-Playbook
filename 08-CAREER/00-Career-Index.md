@@ -12,7 +12,7 @@ This folder covers the non-technical pieces that routinely gate strong engineers
 ## Where to start
 
 - If you have no interviews: [08-CAREER/01-Resume-LinkedIn-GitHub.md](01-Resume-LinkedIn-GitHub.md)
-- If you’re getting screens but failing: [03-INTERVIEWS](../03-INTERVIEWS)
+- If you’re getting screens but failing: [03-INTERVIEWS/00-Interview-Index.md](../03-INTERVIEWS/00-Interview-Index.md)
 - If you have offers: [08-CAREER/04-Offer-Negotiation.md](04-Offer-Negotiation.md)
 
 ## Industry differences

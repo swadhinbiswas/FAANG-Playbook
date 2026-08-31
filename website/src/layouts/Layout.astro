@@ -1,5 +1,18 @@
 ---
 import "../styles/global.css";
+import { ROADMAPS } from "../lib/roadmaps";
+
+// docs page -> roadmap nodes that link to it (for unified progress sync)
+const docNodeMap: Record<string, { role: string; nodeId: string }[]> = {};
+for (const r of ROADMAPS) {
+  for (const p of r.phases) {
+    for (const n of p.nodes) {
+      if (n.resource && n.resource.startsWith("/docs/")) {
+        (docNodeMap[n.resource] ??= []).push({ role: r.slug, nodeId: n.id });
+      }
+    }
+  }
+}
 
 interface Props {
   title: string;
@@ -56,7 +69,7 @@ const icons = {
   chevron: "",
   palette: "󱥚",
   cat: "󰄛",
-  leetcode: "\uf0c0d",
+  leetcode: "\uf0c0",
 };
 
 const navigation = [
@@ -133,6 +146,7 @@ const navigation = [
     icon: icons.target,
     section: "role-roadmaps",
     items: [
+      { name: "Interactive Roadmaps", href: "/roadmap" },
       { name: "Role Chooser", href: "/docs/role-roadmaps/00-Role-Chooser" },
       { name: "SWE Generalist", href: "/docs/role-roadmaps/01-SWE-Generalist" },
       {
@@ -147,6 +161,11 @@ const navigation = [
       { name: "Data Scientist", href: "/docs/role-roadmaps/05-Data-Scientist" },
       { name: "DevOps / SRE", href: "/docs/role-roadmaps/06-DevOps-SRE" },
       { name: "MLOps Engineer", href: "/docs/role-roadmaps/07-MLOps-Engineer" },
+      { name: "Frontend Engineer", href: "/roadmap/frontend-engineer" },
+      { name: "Fullstack Engineer", href: "/roadmap/fullstack-engineer" },
+      { name: "Mobile Engineer", href: "/roadmap/mobile-engineer" },
+      { name: "Security Engineer", href: "/roadmap/security-engineer" },
+      { name: "ML Research Scientist", href: "/roadmap/ml-research-scientist" },
     ],
   },
   {
@@ -369,6 +388,7 @@ const navigation = [
     section: "leetcode",
     items: [
       { name: "All Companies", href: "/leetcode" },
+      { name: "Patterns Hub", href: "/leetcode/patterns" },
       { name: "Google", href: "/leetcode/google" },
       { name: "Amazon", href: "/leetcode/amazon" },
       { name: "Meta", href: "/leetcode/meta" },
@@ -573,6 +593,14 @@ const themes = [
         </div>
 
         <div class="nav-right">
+          <a href="/dashboard" class="nav-link">
+            <span class="nf"></span>
+            <span>Dashboard</span>
+          </a>
+          <a href="/roadmap" class="nav-link">
+            <span class="nf">󰘓</span>
+            <span>Roadmaps</span>
+          </a>
           <a href="/docs/start-here/00-README" class="nav-link">
             <span class="nf">{icons.docs}</span>
             <span>Docs</span>
@@ -588,8 +616,13 @@ const themes = [
           </a>
           <a href="/leetcode" class="nav-link">
             <span class="nf">{icons.leetcode}</span>
-            <span>LeetCode</span>
+            <span>Problems</span>
           </a>
+
+          <button class="pwa-install-btn" id="pwa-install-btn" hidden>
+            <span class="nf">󰇚</span>
+            <span>Install</span>
+          </button>
 
           <button class="search-btn" id="search-btn">
             <span class="nf">{icons.search}</span>
@@ -620,6 +653,13 @@ const themes = [
           </div>
         </div>
       </nav>
+
+      <script type="application/json" id="rm-doc-map" set:html={JSON.stringify(docNodeMap)}></script>
+
+    <!-- Reading Progress Bar -->
+      <div class="reading-progress" id="reading-progress">
+        <div class="reading-progress-bar" id="reading-progress-bar"></div>
+      </div>
 
       <!-- Main Layout -->
       <div class="main-layout">
@@ -735,6 +775,42 @@ const themes = [
       (function () {
         const savedTheme = localStorage.getItem("catppuccin-theme") || "mocha";
         document.documentElement.setAttribute("data-theme", savedTheme);
+      })();
+    </script>
+
+    <script is:inline>
+      // PWA: service worker registration + install prompt
+      (function () {
+        var deferredInstall = null;
+        var installBtn = document.getElementById("pwa-install-btn");
+
+        if ("serviceWorker" in navigator) {
+          window.addEventListener("load", function () {
+            navigator.serviceWorker.register("/sw.js").catch(function (err) {
+              console.warn("SW registration failed:", err);
+            });
+          });
+        }
+
+        window.addEventListener("beforeinstallprompt", function (e) {
+          e.preventDefault();
+          deferredInstall = e;
+          if (installBtn) installBtn.hidden = false;
+        });
+
+        if (installBtn) {
+          installBtn.addEventListener("click", function () {
+            if (!deferredInstall) {
+              installBtn.hidden = true;
+              return;
+            }
+            deferredInstall.prompt();
+            deferredInstall.userChoice.then(function () {
+              deferredInstall = null;
+              installBtn.hidden = true;
+            });
+          });
+        }
       })();
     </script>
 
@@ -963,6 +1039,116 @@ const themes = [
         });
       });
 
+      // Reading Progress Bar
+      function updateReadingProgress() {
+        const progressBar = document.getElementById("reading-progress-bar");
+        const progressContainer = document.getElementById("reading-progress");
+        
+        if (!progressBar || !progressContainer) return;
+
+        // Get the main article element
+        const article = document.querySelector("article.markdown-content");
+        if (!article) {
+          progressContainer.style.display = "none";
+          return;
+        }
+
+        const articleTop = article.offsetTop;
+        const articleHeight = article.offsetHeight;
+        const windowHeight = window.innerHeight;
+        const scrollPosition = window.scrollY;
+
+        // Calculate progress (start when article is at top of viewport)
+        const start = articleTop - windowHeight;
+        const end = articleTop + articleHeight - windowHeight;
+        const progress = ((scrollPosition - start) / (end - start)) * 100;
+
+        // Clamp progress between 0 and 100
+        const clampedProgress = Math.min(100, Math.max(0, progress));
+        progressBar.style.width = `${clampedProgress}%`;
+      }
+
+      // Update progress on scroll
+      window.addEventListener("scroll", updateReadingProgress, { passive: true });
+      window.addEventListener("load", updateReadingProgress);
+
+      // Topic checkbox tracking
+      const topicCheckboxes = document.querySelectorAll(".topic-checkbox");
+      topicCheckboxes.forEach((checkbox) => {
+        const topic = (checkbox as HTMLInputElement).dataset.topic;
+        if (topic) {
+          // Load saved state
+          const saved = localStorage.getItem(`topic-${topic}`);
+          if (saved === "true") {
+            (checkbox as HTMLInputElement).checked = true;
+          }
+
+          // Save state on change
+          checkbox.addEventListener("change", () => {
+            const checked = (checkbox as HTMLInputElement).checked;
+            localStorage.setItem(`topic-${topic}`, checked.toString());
+            updateSectionProgress();
+            syncUnifiedFromDocs(topic, checked);
+          });
+        }
+      });
+
+      // Unified progress sync: docs checkbox <-> interactive roadmap nodes
+      function syncUnifiedFromDocs(topic: string, checked: boolean) {
+        try {
+          const progress = JSON.parse(
+            localStorage.getItem("faang-progress") || "{}",
+          );
+          if (!progress.unifiedProgress) return;
+          const mapEl = document.getElementById("rm-doc-map");
+          if (!mapEl) return;
+          const map = JSON.parse(mapEl.textContent || "{}");
+          const refs = map[topic];
+          if (!refs || refs.length === 0) return;
+          const all = JSON.parse(localStorage.getItem("rm-progress") || "{}");
+          let changed = false;
+          for (const ref of refs) {
+            if (!all[ref.role]) all[ref.role] = {};
+            const state = all[ref.role][ref.nodeId];
+            if (checked && state !== "done") {
+              all[ref.role][ref.nodeId] = "done";
+              changed = true;
+            } else if (!checked && (state === "done" || state === "doing")) {
+              delete all[ref.role][ref.nodeId];
+              changed = true;
+            }
+          }
+          if (changed) {
+            localStorage.setItem("rm-progress", JSON.stringify(all));
+          }
+        } catch {
+          /* ignore */
+        }
+      }
+
+      // Update section progress bars
+      function updateSectionProgress() {
+        const sections = document.querySelectorAll(".sidebar-section");
+        sections.forEach((section) => {
+          const checkboxes = section.querySelectorAll(".topic-checkbox");
+          const progressBar = section.querySelector(".progress-fill");
+          const progressText = section.querySelector(".progress-text");
+
+          if (checkboxes.length === 0 || !progressBar || !progressText) return;
+
+          const checkedCount = Array.from(checkboxes).filter(
+            (cb) => (cb as HTMLInputElement).checked,
+          ).length;
+          const percentage = Math.round((checkedCount / checkboxes.length) * 100);
+
+          progressBar.style.width = `${percentage}%`;
+          progressText.textContent = `${checkedCount}/${checkboxes.length}`;
+        });
+      }
+
+      // Initialize section progress on load
+      window.addEventListener("load", updateSectionProgress);
+
       // ============================================
       // Progress Tracking System
       // ============================================
@@ -1187,6 +1373,32 @@ const themes = [
         color: var(--subtext0);
         margin-top: 2px;
         text-align: right;
+      }
+
+      /* PWA install button */
+      .pwa-install-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5ch;
+        padding: 6px 12px;
+        border: 1px solid var(--surface1);
+        border-radius: 8px;
+        background: transparent;
+        color: var(--subtext1);
+        cursor: pointer;
+        font-family: var(--font-family);
+        font-size: 0.8em;
+        transition: all 0.15s ease;
+      }
+
+      .pwa-install-btn:hover {
+        border-color: var(--accent-green);
+        color: var(--accent-green);
+        background: color-mix(in srgb, var(--green) 10%, transparent);
+      }
+
+      .pwa-install-btn[hidden] {
+        display: none;
       }
 
       /* Checkbox Styling for Progress Tracking */

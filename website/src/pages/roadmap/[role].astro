@@ -1,0 +1,2072 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { ROADMAPS } from "../../lib/roadmaps";
+
+export function getStaticPaths() {
+  return ROADMAPS.map((roadmap) => ({
+    params: { role: roadmap.slug },
+    props: { roadmap },
+  }));
+}
+
+const { roadmap } = Astro.props;
+
+const icons = {
+  flag: "󰘓",
+  clock: "",
+  level: "󰓾",
+  loop: "",
+  check: "",
+  reset: "󰾩",
+  doneAll: "󰦎",
+  book: "󰂺",
+  chev: "",
+  circle: "",
+  clipboard: "󰆏",
+  download: "󰉏",
+  upload: "󰉐",
+  note: "󰅨",
+  print: "󰐫",
+  cal: "",
+  share: "󰄼",
+  obsidian: "󰈠",
+};
+
+const roadmapIndex = ROADMAPS.findIndex((r) => r.slug === roadmap.slug);
+const prevRoadmap = ROADMAPS[roadmapIndex - 1];
+const nextRoadmap = ROADMAPS[roadmapIndex + 1];
+
+const totalNodes = roadmap.phases.reduce((a, p) => a + p.nodes.length, 0);
+
+const roleDocHrefs: Record<string, string> = {
+  "swe-generalist": "/docs/role-roadmaps/01-SWE-Generalist",
+  "backend-engineer": "/docs/role-roadmaps/02-Backend-Engineer",
+  "ml-engineer": "/docs/role-roadmaps/03-Machine-Learning-Engineer",
+  "data-engineer": "/docs/role-roadmaps/04-Data-Engineer",
+  "data-scientist": "/docs/role-roadmaps/05-Data-Scientist",
+  "devops-sre": "/docs/role-roadmaps/06-DevOps-SRE",
+  mlops: "/docs/role-roadmaps/07-MLOps-Engineer",
+  "frontend-engineer": "/docs/role-roadmaps/00-Role-Chooser",
+  "fullstack-engineer": "/docs/role-roadmaps/00-Role-Chooser",
+  "mobile-engineer": "/docs/role-roadmaps/00-Role-Chooser",
+  "security-engineer": "/docs/role-roadmaps/00-Role-Chooser",
+  "ml-research-scientist": "/docs/role-roadmaps/00-Role-Chooser",
+};
+const roleDocHref = roleDocHrefs[roadmap.slug];
+---
+
+<Layout
+  title={`${roadmap.name} Roadmap`}
+  description={`Interactive ${roadmap.name} interview roadmap: ${roadmap.tagline}`}
+  activeSection="roadmap"
+>
+  <div class="rm-page" data-role={roadmap.slug} data-role-name={roadmap.name} style={`--rm-color: ${roadmap.color}`}>
+    <!-- Header -->
+    <header class="rm-header">
+      <div class="rm-header-top">
+        <div class="rm-title-block">
+          <h1><span class="nf">{icons.flag}</span> {roadmap.name} Roadmap</h1>
+          <p class="rm-tagline">{roadmap.tagline}</p>
+          <p class="rm-desc">{roadmap.description}</p>
+        </div>
+        <div class="rm-header-actions">
+          <a class="rm-doc-link" href={roleDocHref}>
+            <span class="nf">{icons.book}</span> Full role guide
+          </a>
+          <button class="rm-done-all" id="rm-done-all">
+            <span class="nf">{icons.doneAll}</span> Mark all done
+          </button>
+          <button class="rm-plan-btn" id="rm-plan-btn">
+            <span class="nf">{icons.cal}</span> Plan my week
+          </button>
+          <button class="rm-plan-btn rm-plan-create" id="rm-plan-create">
+            <span class="nf">{icons.cal}</span> Create study plan
+          </button>
+          <div class="rm-export-group">
+            <button class="rm-export" id="rm-copy-checklist" title="Copy a markdown checklist of your progress">
+              <span class="nf">{icons.clipboard}</span> Copy
+            </button>
+            <button class="rm-export" id="rm-export-json" title="Download your progress as JSON">
+              <span class="nf">{icons.download}</span> Export
+            </button>
+            <button class="rm-export" id="rm-import-json" title="Import progress from a JSON backup">
+              <span class="nf">{icons.upload}</span> Import
+            </button>
+            <button class="rm-export" id="rm-print" title="Print this roadmap or save as PDF">
+              <span class="nf">{icons.print}</span> Print
+            </button>
+            <button class="rm-export" id="rm-share" title="Copy a link to this roadmap including your progress">
+              <span class="nf">{icons.share}</span> Share
+            </button>
+            <button class="rm-export" id="rm-export-obsidian" title="Download this roadmap as an Obsidian-ready markdown file">
+              <span class="nf">{icons.obsidian}</span> Obsidian
+            </button>
+            <button class="rm-export" id="rm-copy-obsidian" title="Copy this roadmap as Obsidian-ready markdown">
+              <span class="nf">{icons.obsidian}</span> Copy MD
+            </button>
+            <input type="file" id="rm-import-input" accept="application/json,.json" hidden />
+          </div>
+          <button class="rm-reset" id="rm-reset">
+            <span class="nf">{icons.reset}</span> Reset
+          </button>
+        </div>
+      </div>
+
+      <div class="rm-meta-row">
+        <span class="rm-meta-chip"><span class="nf">{icons.level}</span> {roadmap.levels}</span>
+        <span class="rm-meta-chip"><span class="nf">{icons.loop}</span> {roadmap.loop}</span>
+        <span class="rm-meta-chip"><span class="nf">{icons.clock}</span> {roadmap.weeklyHours}</span>
+      </div>
+
+      <!-- Weekly planner -->
+      <div class="rm-planner" id="rm-planner" hidden>
+        <div class="rm-planner-head">
+          <div>
+            <h2><span class="nf">{icons.cal}</span> Your suggested week</h2>
+            <p class="rm-planner-sub" id="rm-planner-sub"></p>
+          </div>
+          <button class="rm-planner-close" id="rm-planner-close">Close</button>
+        </div>
+        <div class="rm-planner-days" id="rm-planner-days"></div>
+      </div>
+
+      <!-- Overall progress -->
+      <div class="rm-overall">
+        <div class="rm-overall-bar">
+          <div class="rm-overall-fill" id="rm-overall-fill"></div>
+        </div>
+        <div class="rm-overall-text">
+          <span id="rm-overall-label">0%</span>
+          <span class="rm-overall-count" id="rm-overall-count">0/{totalNodes}</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Role switcher -->
+    <nav class="rm-switcher">
+      {
+        ROADMAPS.map((r) => (
+          <a
+            href={`/roadmap/${r.slug}`}
+            class={`rm-switch ${r.slug === roadmap.slug ? "active" : ""}`}
+            style={`--rm-color: ${r.color}`}
+          >
+            {r.name}
+          </a>
+        ))
+      }
+    </nav>
+
+    <!-- Phases -->
+    <main class="rm-phases">
+      {
+        roadmap.phases.map((phase, phaseIndex) => (
+          <section class="rm-phase" data-phase-index={phaseIndex}>
+            <header class="rm-phase-header">
+              <div class="rm-phase-num">{phaseIndex + 1}</div>
+              <div class="rm-phase-heading">
+                <h2>{phase.name}</h2>
+                <p class="rm-phase-goal">{phase.goal}</p>
+              </div>
+              <div class="rm-phase-progress">
+                <span class="rm-phase-bar">
+                  <span class="rm-phase-fill" data-phase-fill={phaseIndex}></span>
+                </span>
+                <span class="rm-phase-count" data-phase-count={phaseIndex}>0/{phase.nodes.length}</span>
+              </div>
+              <div class="rm-phase-actions">
+                <span class="rm-phase-badge" data-phase-badge={phaseIndex} hidden>
+                  <span class="nf">{icons.check}</span> Complete
+                </span>
+                <button
+                  class="rm-phase-done"
+                  data-phase-done={phaseIndex}
+                  onclick="event.stopPropagation()"
+                  title="Mark every topic in this phase as done"
+                >
+                  <span class="nf">{icons.doneAll}</span>
+                </button>
+              </div>
+            </header>
+
+            <p class="rm-phase-question">
+              <span class="nf">{icons.circle}</span> De-risks: <em>{phase.question}</em>
+            </p>
+
+            <div class="rm-nodes">
+              {
+                phase.nodes.map((node) => (
+                  <div
+                    class="rm-node"
+                    data-node-id={node.id}
+                    data-node-title={node.title}
+                    data-node-phase={phaseIndex}
+                    data-state="pending"
+                    role="button"
+                    tabindex="0"
+                    aria-label={`${node.title}, pending`}
+                  >
+                    <span class="rm-state" aria-hidden="true"></span>
+                    <div class="rm-node-body">
+                      <span class="rm-node-title">{node.title}</span>
+                      <span class="rm-node-hint">{node.hint}</span>
+                      {
+                        node.resource && (
+                          <a
+                            class="rm-node-link"
+                            href={node.resource}
+                            onclick="event.stopPropagation()"
+                          >
+                            <span class="nf">{icons.book}</span> docs
+                          </a>
+                        )
+                      }
+                      {
+                        node.resources && node.resources.length > 0 && (
+                          <div class="rm-node-resources">
+                            {node.resources.map((r) => (
+                              <a
+                                class="rm-node-link"
+                                href={r.href}
+                                onclick="event.stopPropagation()"
+                              >
+                                <span class="nf">{icons.book}</span> {r.label}
+                              </a>
+                            ))}
+                          </div>
+                        )
+                      }
+                      <div class="rm-node-note-wrap">
+                        <button
+                          class="rm-note-toggle"
+                          data-note-toggle={node.id}
+                          onclick="event.stopPropagation()"
+                          title="Add a personal note"
+                        >
+                          <span class="nf">{icons.note}</span>
+                        </button>
+                        <textarea
+                          class="rm-note-input"
+                          data-note-input={node.id}
+                          rows="2"
+                          placeholder="Personal note…"
+                          hidden
+                        ></textarea>
+                        <div class="rm-node-notes" data-notes-for={node.id}></div>
+                      </div>
+                    </div>
+                    <span class="rm-node-check" aria-hidden="true"></span>
+                  </div>
+                ))
+              }
+            </div>
+          </section>
+        ))
+      }
+    </main>
+
+    <!-- Prev / Next -->
+    <nav class="rm-prevnext">
+      {
+        prevRoadmap && (
+          <a href={`/roadmap/${prevRoadmap.slug}`} class="rm-pn prev">
+            <span class="rm-pn-label">← Previous</span>
+            <span class="rm-pn-name">{prevRoadmap.name}</span>
+          </a>
+        )
+      }
+      {
+        nextRoadmap && (
+          <a href={`/roadmap/${nextRoadmap.slug}`} class="rm-pn next">
+            <span class="rm-pn-label">Next →</span>
+            <span class="rm-pn-name">{nextRoadmap.name}</span>
+          </a>
+        )
+      }
+    </nav>
+
+    <div class="rm-toast" id="rm-toast"></div>
+  </div>
+</Layout>
+
+<style>
+  .rm-page {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: var(--spacing-xl);
+  }
+
+  .rm-header {
+    margin-bottom: var(--spacing-2xl);
+    padding-left: var(--spacing-md);
+    border-left: 3px solid var(--rm-color);
+  }
+
+  .rm-header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--spacing-lg);
+    flex-wrap: wrap;
+  }
+
+  .rm-title-block h1 {
+    display: flex;
+    align-items: center;
+    gap: 0.75ch;
+    font-size: 2em;
+    color: var(--text);
+    margin-bottom: var(--spacing-xs);
+  }
+
+  .rm-title-block h1 .nf {
+    color: var(--rm-color);
+  }
+
+  .rm-tagline {
+    color: var(--subtext1);
+    font-size: 1.05em;
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .rm-desc {
+    color: var(--subtext0);
+    line-height: 1.6;
+    max-width: 68ch;
+  }
+
+  .rm-header-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .rm-doc-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5ch;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 1px solid var(--surface1);
+    border-radius: 8px;
+    color: var(--subtext1);
+    text-decoration: none;
+    font-size: 0.85em;
+    transition: all var(--transition-fast);
+  }
+
+  .rm-doc-link:hover {
+    color: var(--rm-color);
+    border-color: var(--rm-color);
+  }
+
+  .rm-reset {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5ch;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: transparent;
+    border: 1px solid var(--surface1);
+    border-radius: 8px;
+    color: var(--red);
+    cursor: pointer;
+    font-family: var(--font-family);
+    font-size: 0.85em;
+    transition: all var(--transition-fast);
+  }
+
+  .rm-reset:hover {
+    border-color: var(--red);
+    background: color-mix(in srgb, var(--red) 12%, transparent);
+  }
+
+  .rm-done-all {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5ch;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: transparent;
+    border: 1px solid var(--surface1);
+    border-radius: 8px;
+    color: var(--accent-green);
+    cursor: pointer;
+    font-family: var(--font-family);
+    font-size: 0.85em;
+    transition: all var(--transition-fast);
+  }
+
+  .rm-done-all:hover {
+    border-color: var(--green);
+    background: color-mix(in srgb, var(--green) 12%, transparent);
+  }
+
+  .rm-plan-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5ch;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: transparent;
+    border: 1px solid var(--surface1);
+    border-radius: 8px;
+    color: var(--accent-yellow);
+    cursor: pointer;
+    font-family: var(--font-family);
+    font-size: 0.85em;
+    transition: all var(--transition-fast);
+  }
+
+  .rm-plan-btn:hover {
+    border-color: var(--yellow);
+    background: color-mix(in srgb, var(--yellow) 12%, transparent);
+  }
+
+  .rm-plan-btn.rm-plan-create {
+    color: var(--accent-green);
+  }
+
+  .rm-plan-btn.rm-plan-create:hover {
+    border-color: var(--green);
+    background: color-mix(in srgb, var(--green) 12%, transparent);
+  }
+
+  .rm-planner {
+    margin-top: var(--spacing-lg);
+    background: var(--mantle);
+    border: 1px solid var(--yellow);
+    border-radius: 12px;
+    padding: var(--spacing-lg);
+  }
+
+  .rm-planner[hidden] {
+    display: none;
+  }
+
+  .rm-planner-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .rm-planner-head h2 {
+    color: var(--text);
+    font-size: 1.15em;
+    margin: 0 0 var(--spacing-xs);
+    display: flex;
+    align-items: center;
+    gap: 0.6ch;
+  }
+
+  .rm-planner-head h2 .nf {
+    color: var(--yellow);
+  }
+
+  .rm-planner-sub {
+    color: var(--subtext0);
+    font-size: 0.85em;
+    margin: 0;
+  }
+
+  .rm-planner-close {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background: transparent;
+    border: 1px solid var(--surface1);
+    border-radius: 6px;
+    color: var(--subtext0);
+    cursor: pointer;
+    font-family: var(--font-family);
+    font-size: 0.82em;
+    flex-shrink: 0;
+  }
+
+  .rm-planner-close:hover {
+    border-color: var(--red);
+    color: var(--red);
+  }
+
+  .rm-planner-days {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: var(--spacing-md);
+  }
+
+  .rm-planner-day {
+    background: var(--crust);
+    border: 1px solid var(--surface0);
+    border-radius: 10px;
+    padding: var(--spacing-md);
+  }
+
+  .rm-planner-day-name {
+    color: var(--text);
+    font-weight: 700;
+    font-size: 0.9em;
+    margin-bottom: var(--spacing-sm);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .rm-planner-day-count {
+    color: var(--subtext0);
+    font-size: 0.75em;
+    font-weight: 400;
+  }
+
+  .rm-planner-task {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: 6px;
+    font-size: 0.85em;
+    margin-bottom: var(--spacing-xs);
+    display: flex;
+    gap: 0.6ch;
+    align-items: baseline;
+  }
+
+  .rm-planner-task:last-child {
+    margin-bottom: 0;
+  }
+
+  .rm-planner-task .rm-planner-tag {
+    flex-shrink: 0;
+    font-size: 0.7em;
+    padding: 1px 6px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .rm-planner-task.finish {
+    background: color-mix(in srgb, var(--yellow) 10%, transparent);
+    border-left: 2px solid var(--yellow);
+  }
+
+  .rm-planner-task.finish .rm-planner-tag {
+    background: color-mix(in srgb, var(--yellow) 20%, transparent);
+    color: var(--yellow);
+  }
+
+  .rm-planner-task.learn {
+    background: color-mix(in srgb, var(--blue) 8%, transparent);
+    border-left: 2px solid var(--blue);
+  }
+
+  .rm-planner-task.learn .rm-planner-tag {
+    background: color-mix(in srgb, var(--blue) 18%, transparent);
+    color: var(--accent-blue);
+  }
+
+  .rm-planner-task .rm-planner-phase {
+    color: var(--subtext0);
+    font-size: 0.75em;
+  }
+
+  .rm-export-group {
+    display: flex;
+    gap: var(--spacing-xs);
+  }
+
+  .rm-export {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4ch;
+    padding: var(--spacing-sm) var(--spacing-sm);
+    background: transparent;
+    border: 1px solid var(--surface1);
+    border-radius: 8px;
+    color: var(--subtext1);
+    cursor: pointer;
+    font-family: var(--font-family);
+    font-size: 0.82em;
+    transition: all var(--transition-fast);
+  }
+
+  .rm-export:hover {
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
+    background: color-mix(in srgb, var(--blue) 10%, transparent);
+  }
+
+  .rm-toast {
+    position: fixed;
+    bottom: var(--spacing-xl);
+    right: var(--spacing-xl);
+    z-index: 1000;
+    background: var(--mantle);
+    border: 1px solid var(--green);
+    color: var(--text);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: 8px;
+    font-size: 0.85em;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    transform: translateY(8px);
+    transition: all 0.2s ease;
+    pointer-events: none;
+  }
+
+  .rm-toast.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .rm-toast.achievement {
+    border-color: var(--accent-pink);
+    background: color-mix(in srgb, var(--accent-pink) 14%, var(--mantle));
+    box-shadow: 0 8px 24px color-mix(in srgb, var(--accent-pink) 30%, rgba(0, 0, 0, 0.4));
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    max-width: 340px;
+    pointer-events: none;
+  }
+
+  .rm-toast-ach-icon {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--accent-pink) 22%, transparent);
+    color: var(--accent-pink);
+    font-size: 1.4em;
+    flex-shrink: 0;
+  }
+
+  .rm-toast-ach-text strong {
+    color: var(--text);
+    font-size: 1em;
+  }
+
+  .rm-toast-ach-text em {
+    color: var(--subtext1);
+    font-style: normal;
+    font-size: 0.85em;
+  }
+
+  @keyframes rm-toast-pop {
+    0% { transform: translateY(8px) scale(0.92); opacity: 0; }
+    100% { transform: translateY(0) scale(1); opacity: 1; }
+  }
+
+  .rm-toast.achievement.show {
+    animation: rm-toast-pop 0.25s ease;
+  }
+
+  @media print {
+    .rm-page {
+      max-width: 100%;
+      padding: 0;
+    }
+
+    .rm-header-actions,
+    .rm-switcher,
+    .rm-prevnext,
+    .rm-export-group,
+    .rm-done-all,
+    .rm-plan-btn,
+    .rm-planner,
+    .rm-reset,
+    .rm-toast,
+    .rm-node-check,
+    .rm-note-toggle,
+    .rm-note-input,
+    .rm-node-link {
+      display: none !important;
+    }
+
+    .rm-phase {
+      break-inside: avoid-page;
+      border-color: var(--surface1);
+    }
+
+    .rm-node {
+      break-inside: avoid;
+    }
+
+    .rm-overall-fill,
+    .rm-phase-fill {
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+
+    .rm-node[data-state="done"] .rm-state,
+    .rm-node[data-state="doing"] .rm-state {
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+  }
+
+  .rm-meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+    margin: var(--spacing-lg) 0;
+  }
+
+  .rm-meta-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5ch;
+    padding: 4px 12px;
+    background: var(--mantle);
+    border: 1px solid var(--surface0);
+    border-radius: 999px;
+    color: var(--subtext1);
+    font-size: 0.82em;
+  }
+
+  .rm-meta-chip .nf {
+    color: var(--rm-color);
+  }
+
+  .rm-overall {
+    margin-top: var(--spacing-lg);
+  }
+
+  .rm-overall-bar {
+    height: 10px;
+    background: var(--surface0);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .rm-overall-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--rm-color), var(--accent-green));
+    border-radius: 6px;
+    transition: width 0.4s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .rm-overall-fill::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.16), transparent);
+    transform: translateX(-100%);
+    animation: rm-shine 3.5s ease infinite;
+  }
+
+  @keyframes rm-shine {
+    55%, 100% { transform: translateX(100%); }
+  }
+
+  .rm-overall-text {
+    display: flex;
+    justify-content: space-between;
+    margin-top: var(--spacing-xs);
+    font-size: 0.85em;
+    color: var(--subtext0);
+  }
+
+  .rm-overall-text #rm-overall-label {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .rm-switcher {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .rm-switch {
+    padding: 6px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--surface0);
+    color: var(--subtext1);
+    text-decoration: none;
+    font-size: 0.82em;
+    transition: all var(--transition-fast);
+  }
+
+  .rm-switch:hover {
+    border-color: var(--rm-color);
+    color: var(--text);
+  }
+
+  .rm-switch.active {
+    background: color-mix(in srgb, var(--rm-color) 18%, transparent);
+    border-color: var(--rm-color);
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  /* Phases */
+  .rm-phase {
+    margin-bottom: var(--spacing-xl);
+    border: 1px solid var(--surface0);
+    border-radius: 12px;
+    background: var(--mantle);
+    overflow: hidden;
+    box-shadow: inset 3px 0 0 var(--rm-color);
+  }
+
+  .rm-phase-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+    background: linear-gradient(90deg, color-mix(in srgb, var(--rm-color) 8%, transparent), transparent);
+  }
+
+  .rm-phase-num {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--rm-color) 20%, transparent);
+    color: var(--rm-color);
+    font-weight: 700;
+    font-size: 1.05em;
+    flex-shrink: 0;
+  }
+
+  .rm-phase-heading {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .rm-phase-heading h2 {
+    color: var(--text);
+    font-size: 1.25em;
+    margin: 0;
+  }
+
+  .rm-phase-goal {
+    color: var(--subtext0);
+    font-size: 0.88em;
+    margin: var(--spacing-xs) 0 0;
+  }
+
+  .rm-phase-progress {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    min-width: 110px;
+  }
+
+  .rm-phase-bar {
+    height: 6px;
+    width: 100%;
+    background: var(--surface0);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .rm-phase-fill {
+    display: block;
+    height: 100%;
+    width: 0%;
+    background: var(--rm-color);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+  }
+
+  .rm-phase-count {
+    color: var(--subtext0);
+    font-size: 0.75em;
+  }
+
+  .rm-phase-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    margin-left: var(--spacing-sm);
+  }
+
+  .rm-phase-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4ch;
+    padding: 2px 10px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--rm-color) 18%, transparent);
+    color: var(--rm-color);
+    font-size: 0.72em;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .rm-phase-badge[hidden] {
+    display: none;
+  }
+
+  .rm-phase-done {
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    border: 1px solid var(--surface1);
+    background: transparent;
+    color: var(--subtext0);
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: all var(--transition-fast);
+  }
+
+  .rm-phase-done:hover {
+    border-color: var(--rm-color);
+    color: var(--rm-color);
+  }
+
+  .rm-phase-question {
+    margin: 0;
+    padding: var(--spacing-sm) var(--spacing-lg);
+    background: var(--crust);
+    color: var(--subtext0);
+    font-size: 0.85em;
+    border-top: 1px solid var(--surface0);
+    border-bottom: 1px solid var(--surface0);
+  }
+
+  .rm-phase-question .nf {
+    color: var(--yellow);
+    margin-right: 0.4ch;
+  }
+
+  .rm-phase-question em {
+    color: var(--subtext1);
+    font-style: italic;
+  }
+
+  /* Nodes */
+  .rm-nodes {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .rm-node {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md) var(--spacing-lg);
+    cursor: pointer;
+    border-left: 3px solid transparent;
+    transition: background var(--transition-fast), border-color var(--transition-fast);
+    user-select: none;
+  }
+
+  .rm-node:hover {
+    background: var(--crust);
+    border-left-color: color-mix(in srgb, var(--rm-color) 55%, transparent);
+  }
+
+  .rm-node[data-state="done"] {
+    border-left-color: color-mix(in srgb, var(--rm-color) 38%, transparent);
+  }
+
+  .rm-node:focus-visible {
+    outline: 2px solid var(--rm-color);
+    outline-offset: -2px;
+  }
+
+  .rm-node + .rm-node {
+    border-top: 1px solid var(--surface0);
+  }
+
+  .rm-state {
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--surface2);
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 3px;
+    position: relative;
+    transition: all var(--transition-fast);
+  }
+
+  /* doing */
+  .rm-node[data-state="doing"] .rm-state {
+    border-color: var(--yellow);
+    border-top-color: transparent;
+    animation: rm-spin 1s linear infinite;
+  }
+
+  /* done */
+  .rm-node[data-state="done"] .rm-state {
+    background: var(--rm-color);
+    border-color: var(--rm-color);
+    animation: none;
+  }
+
+  .rm-node[data-state="done"] .rm-state::after {
+    content: "";
+    position: absolute;
+    left: 4px;
+    top: 1px;
+    width: 5px;
+    height: 9px;
+    border: solid var(--base);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+
+  @keyframes rm-spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .rm-node-body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .rm-node-title {
+    color: var(--text);
+    font-weight: 600;
+    font-size: 0.98em;
+  }
+
+  .rm-node-hint {
+    color: var(--subtext0);
+    font-size: 0.86em;
+    line-height: 1.5;
+  }
+
+  .rm-node[data-state="done"] .rm-node-title {
+    color: var(--subtext1);
+    text-decoration: line-through;
+    text-decoration-color: var(--rm-color);
+  }
+
+  .rm-node[data-state="done"] .rm-node-hint {
+    opacity: 0.6;
+  }
+
+  .rm-node-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4ch;
+    color: var(--blue);
+    text-decoration: none;
+    font-size: 0.78em;
+    margin-top: var(--spacing-xs);
+    width: fit-content;
+    padding: 2px 8px;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    transition: all var(--transition-fast);
+  }
+
+  .rm-node-link:hover {
+    background: color-mix(in srgb, var(--blue) 10%, transparent);
+    border-color: var(--surface1);
+  }
+
+  .rm-node-resources {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+  }
+
+  .rm-node-note-wrap {
+    margin-top: var(--spacing-xs);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+  }
+
+  .rm-note-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4ch;
+    padding: 2px 8px;
+    background: transparent;
+    border: 1px solid var(--surface0);
+    border-radius: 4px;
+    color: var(--subtext0);
+    cursor: pointer;
+    font-size: 0.78em;
+    font-family: var(--font-family);
+    transition: all var(--transition-fast);
+  }
+
+  .rm-note-toggle:hover {
+    border-color: var(--yellow);
+    color: var(--yellow);
+  }
+
+  .rm-note-input {
+    width: 100%;
+    max-width: 520px;
+    background: var(--crust);
+    border: 1px solid var(--yellow);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: var(--font-family);
+    font-size: 0.85em;
+    padding: var(--spacing-sm);
+    resize: vertical;
+  }
+
+  .rm-note-input:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--yellow) 30%, transparent);
+  }
+
+  .rm-node-notes:empty {
+    display: none;
+  }
+
+  .rm-node-notes {
+    max-width: 520px;
+    background: color-mix(in srgb, var(--yellow) 8%, transparent);
+    border-left: 3px solid var(--yellow);
+    color: var(--subtext1);
+    font-size: 0.82em;
+    line-height: 1.5;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: 0 6px 6px 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .rm-node-check {
+    align-self: center;
+    color: var(--subtext0);
+    font-size: 0.9em;
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+  }
+
+  .rm-node:hover .rm-node-check {
+    opacity: 1;
+  }
+
+  .rm-node-check::before {
+    content: "click to mark done";
+    font-size: 0.72em;
+    color: var(--surface2);
+  }
+
+  /* Prev / Next */
+  .rm-prevnext {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-2xl);
+  }
+
+  .rm-pn {
+    flex: 1;
+    max-width: 48%;
+    padding: var(--spacing-md) var(--spacing-lg);
+    border: 1px solid var(--surface0);
+    border-radius: 10px;
+    text-decoration: none;
+    transition: all var(--transition-fast);
+    background: var(--mantle);
+  }
+
+  .rm-pn:hover {
+    border-color: var(--rm-color);
+  }
+
+  .rm-pn.next {
+    text-align: right;
+    margin-left: auto;
+  }
+
+  .rm-pn-label {
+    display: block;
+    color: var(--subtext0);
+    font-size: 0.8em;
+    margin-bottom: 4px;
+  }
+
+  .rm-pn-name {
+    color: var(--text);
+    font-weight: 600;
+  }
+</style>
+
+<script>
+  const ROLE = document.querySelector(".rm-page")?.getAttribute("data-role") ?? "";
+  const STORAGE_KEY = "rm-progress";
+
+  const stateOrder = ["pending", "doing", "done"] as const;
+
+  function loadState(): Record<string, string> {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return {};
+      const parsed = JSON.parse(raw);
+      return parsed[ROLE] ?? {};
+    } catch {
+      return {};
+    }
+  }
+
+  function saveState(state: Record<string, string>) {
+    try {
+      const all = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+      all[ROLE] = state;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+    } catch {
+      /* ignore quota/parse errors */
+    }
+  }
+
+  const nodes = Array.from(document.querySelectorAll<HTMLElement>(".rm-node"));
+  const total = nodes.length;
+
+  function applyNodeState(node: HTMLElement, state: string) {
+    node.setAttribute("data-state", state);
+    node.setAttribute(
+      "aria-label",
+      `${node.getAttribute("aria-label")?.split(",")[0]}, ${state}`,
+    );
+  }
+
+  function computeCounts() {
+    let done = 0;
+    let doing = 0;
+    nodes.forEach((n) => {
+      const s = n.getAttribute("data-state");
+      if (s === "done") done++;
+      else if (s === "doing") doing++;
+    });
+    return { done, doing };
+  }
+
+  function updateOverall(counts: { done: number; doing: number }) {
+    const fill = document.getElementById("rm-overall-fill");
+    const label = document.getElementById("rm-overall-label");
+    const count = document.getElementById("rm-overall-count");
+    const pct = total ? Math.round(((counts.done + counts.doing * 0.5) / total) * 100) : 0;
+    if (fill) fill.style.width = `${pct}%`;
+    if (label) label.textContent = `${pct}%`;
+    if (count) count.textContent = `${counts.done}/${total}`;
+  }
+
+  function updatePhase(phaseIndex: number) {
+    const phase = document.querySelector(
+      `.rm-phase[data-phase-index="${phaseIndex}"]`,
+    );
+    if (!phase) return;
+    const phaseNodes = Array.from(
+      phase.querySelectorAll<HTMLElement>(".rm-node"),
+    );
+    const done = phaseNodes.filter(
+      (n) => n.getAttribute("data-state") === "done",
+    ).length;
+    const doing = phaseNodes.filter(
+      (n) => n.getAttribute("data-state") === "doing",
+    ).length;
+    const pct = phaseNodes.length
+      ? Math.round(((done + doing * 0.5) / phaseNodes.length) * 100)
+      : 0;
+    const fill = phase.querySelector<HTMLElement>(`[data-phase-fill="${phaseIndex}"]`);
+    const countEl = phase.querySelector<HTMLElement>(`[data-phase-count="${phaseIndex}"]`);
+    const badge = phase.querySelector<HTMLElement>(`[data-phase-badge="${phaseIndex}"]`);
+    if (fill) fill.style.width = `${pct}%`;
+    if (countEl) countEl.textContent = `${done}/${phaseNodes.length}`;
+    if (badge) badge.hidden = done !== phaseNodes.length;
+  }
+
+  function refresh() {
+    const counts = computeCounts();
+    updateOverall(counts);
+    document
+      .querySelectorAll<HTMLElement>(".rm-phase")
+      .forEach((_, i) => updatePhase(i));
+  }
+
+  // ============ Unified progress sync (roadmap node <-> docs checkbox) ============
+
+  function unifiedEnabled(): boolean {
+    try {
+      const progress = JSON.parse(
+        localStorage.getItem(GLOBAL_PROGRESS_KEY) || "{}",
+      );
+      return progress.unifiedProgress === true;
+    } catch {
+      return false;
+    }
+  }
+
+  function syncDocTopic(node: HTMLElement, state: string) {
+    if (!unifiedEnabled()) return;
+    const docLink = Array.from(
+      node.querySelectorAll<HTMLAnchorElement>(".rm-node-link"),
+    ).find((a) => (a.getAttribute("href") || "").startsWith("/docs/"));
+    if (!docLink) return;
+    const href = docLink.getAttribute("href") || "";
+    try {
+      localStorage.setItem(`topic-${href}`, (state === "done").toString());
+      const checkbox = document.getElementById(
+        `cb-${href.replace(/\//g, "-")}`,
+      ) as HTMLInputElement | null;
+      if (checkbox) checkbox.checked = state === "done";
+    } catch {
+      /* ignore */
+    }
+  }
+
+  function toggle(node: HTMLElement) {
+    const id = node.getAttribute("data-node-id") ?? "";
+    const title = node.getAttribute("data-node-title") ?? "";
+    const current = node.getAttribute("data-state") ?? "pending";
+    const next = stateOrder[(stateOrder.indexOf(current as never) + 1) % stateOrder.length];
+    const before = unlockedSet();
+    applyNodeState(node, next);
+
+    const state = loadState();
+    state[id] = next;
+    saveState(state);
+    if (next === "done") logDoneEvents([{ id, title }]);
+    syncDocTopic(node, next);
+    refresh();
+    syncGlobalProgress();
+    recordStudyDay();
+    const after = unlockedSet();
+    after.forEach((a) => {
+      if (!before.has(a)) showAchievementToast(a);
+    });
+  }
+
+  // Notes
+  const NOTES_KEY = "rm-notes";
+
+  function loadNotes(): Record<string, string> {
+    try {
+      const all = JSON.parse(localStorage.getItem(NOTES_KEY) || "{}");
+      return all[ROLE] || {};
+    } catch {
+      return {};
+    }
+  }
+
+  function persistNote(id: string, text: string) {
+    try {
+      const all = JSON.parse(localStorage.getItem(NOTES_KEY) || "{}");
+      if (!all[ROLE]) all[ROLE] = {};
+      if (text) all[ROLE][id] = text;
+      else delete all[ROLE][id];
+      localStorage.setItem(NOTES_KEY, JSON.stringify(all));
+    } catch {
+      /* ignore */
+    }
+  }
+
+  // Init from storage
+  const saved = loadState();
+  const savedNotes = loadNotes();
+  nodes.forEach((node) => {
+    const id = node.getAttribute("data-node-id");
+    const state = saved[id] ?? "pending";
+    applyNodeState(node, state);
+
+    const noteText = savedNotes[id ?? ""];
+    if (!id || !noteText) return;
+    const noteBox = node.querySelector<HTMLElement>(`[data-notes-for="${id}"]`);
+    if (noteBox) noteBox.textContent = noteText;
+  });
+  refresh();
+
+  // ============ Share / import progress via URL ============
+
+  function stateString(): string {
+    const map: Record<string, string> = { pending: "0", doing: "1", done: "2" };
+    return nodes
+      .map((n) => map[n.getAttribute("data-state") ?? "pending"] ?? "0")
+      .join("");
+  }
+
+  function applyStateString(s: string) {
+    const map: Record<string, string> = { "0": "pending", "1": "doing", "2": "done" };
+    const state = loadState();
+    s.split("").forEach((ch, i) => {
+      if (i >= nodes.length) return;
+      const next = map[ch];
+      if (!next) return;
+      const id = nodes[i].getAttribute("data-node-id") ?? "";
+      state[id] = next;
+      applyNodeState(nodes[i], next);
+    });
+    saveState(state);
+    refresh();
+    syncGlobalProgress();
+  }
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const sharedState = urlParams.get("s");
+  if (sharedState && sharedState.length >= nodes.length) {
+    applyStateString(sharedState);
+    showToast("Shared progress imported from link");
+    history.replaceState({}, "", window.location.pathname);
+  }
+
+  // Wire interactions
+  nodes.forEach((node) => {
+    node.addEventListener("click", () => toggle(node));
+    node.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        toggle(node);
+      }
+    });
+  });
+
+  function setNodes(nodesToSet: HTMLElement[], state: string) {
+    const before = unlockedSet();
+    const persisted = loadState();
+    nodesToSet.forEach((n) => {
+      applyNodeState(n, state);
+      persisted[n.getAttribute("data-node-id") ?? ""] = state;
+      syncDocTopic(n, state);
+    });
+    if (state === "done") {
+      logDoneEvents(
+        nodesToSet.map((n) => ({
+          id: n.getAttribute("data-node-id") ?? "",
+          title: n.getAttribute("data-node-title") ?? "",
+        })),
+      );
+    }
+    saveState(persisted);
+    refresh();
+    syncGlobalProgress();
+    recordStudyDay();
+    const after = unlockedSet();
+    after.forEach((a) => {
+      if (!before.has(a)) showAchievementToast(a);
+    });
+  }
+
+  // ============ Unified progress (drives dashboard + achievements) ============
+
+  const GLOBAL_PROGRESS_KEY = "faang-progress";
+
+  function computeGlobalDone(): number {
+    let total = 0;
+    try {
+      const all = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+      for (const roleState of Object.values(all) as Record<string, string>[]) {
+        if (!roleState || typeof roleState !== "object") continue;
+        for (const v of Object.values(roleState)) if (v === "done") total++;
+      }
+    } catch {
+      /* ignore */
+    }
+    return total;
+  }
+
+  function syncGlobalProgress() {
+    const done = computeGlobalDone();
+    try {
+      const progress = JSON.parse(
+        localStorage.getItem(GLOBAL_PROGRESS_KEY) || "{}",
+      );
+      const previouslyTracked = progress.roleRoadmapDone || 0;
+      const priorTotal = progress.totalTopicsCompleted || 0;
+      progress.totalTopicsCompleted = priorTotal - previouslyTracked + done;
+      progress.roleRoadmapDone = done;
+      if (done > 0) {
+        progress.lastStudyDate = new Date().toISOString().split("T")[0];
+      }
+      localStorage.setItem(GLOBAL_PROGRESS_KEY, JSON.stringify(progress));
+    } catch {
+      /* ignore */
+    }
+  }
+
+  // Record today as a study day (feeds dashboard streak + activity calendar)
+  function recordStudyDay() {
+    const today = new Date().toISOString().split("T")[0];
+    try {
+      const days: string[] = JSON.parse(
+        localStorage.getItem("rm-activity") || "[]",
+      );
+      if (!days.includes(today)) {
+        days.push(today);
+        localStorage.setItem("rm-activity", JSON.stringify(days));
+      }
+    } catch {
+      /* ignore */
+    }
+    try {
+      const progress = JSON.parse(
+        localStorage.getItem(GLOBAL_PROGRESS_KEY) || "{}",
+      );
+      progress.lastStudyDate = today;
+      const log = progress.sessionsLog || [];
+      if (!log.some((s: any) => s.date === today)) {
+        log.push({
+          date: today,
+          topic: "Interactive roadmap",
+          section: "Role Roadmaps",
+          duration: 10,
+        });
+      }
+      progress.sessionsLog = log;
+      localStorage.setItem(GLOBAL_PROGRESS_KEY, JSON.stringify(progress));
+    } catch {
+      /* ignore */
+    }
+  }
+
+  // ============ Completion log + achievement toasts ============
+
+  const RM_LOG_KEY = "rm-log";
+
+  function logDoneEvents(events: { id: string; title: string }[]) {
+    const today = new Date().toISOString().split("T")[0];
+    try {
+      const log: { date: string; id: string; title: string; role: string }[] =
+        JSON.parse(localStorage.getItem(RM_LOG_KEY) || "[]");
+      let changed = false;
+      events.forEach((e) => {
+        if (!e.id) return;
+        if (log.some((l) => l.date === today && l.id === e.id)) return;
+        log.push({ date: today, id: e.id, title: e.title, role: ROLE });
+        changed = true;
+      });
+      if (changed) localStorage.setItem(RM_LOG_KEY, JSON.stringify(log));
+    } catch {
+      /* ignore */
+    }
+  }
+
+  const ACHIEVEMENTS = [
+    { id: "first-topic", name: "First Step", icon: "󰫑", desc: "Complete your first topic" },
+    { id: "10-topics", name: "Dedicated Learner", icon: "󰂺", desc: "Complete 10 topics" },
+    { id: "25-topics", name: "Knowledge Seeker", icon: "󰓾", desc: "Complete 25 topics" },
+    { id: "50-topics", name: "Interview Ready", icon: "󰆮", desc: "Complete 50 topics" },
+    { id: "week-streak", name: "Week Warrior", icon: "", desc: "7 day study streak" },
+    { id: "month-streak", name: "Month Master", icon: "󰂡", desc: "30 day study streak" },
+  ];
+
+  function computeStreakFromDates(): number {
+    try {
+      const days: string[] = JSON.parse(
+        localStorage.getItem("rm-activity") || "[]",
+      );
+      if (days.length === 0) return 0;
+      const set = new Set(days);
+      const dayMs = 86400000;
+      const start = new Date();
+      start.setHours(0, 0, 0, 0);
+      let cursor = start;
+      if (!set.has(start.toISOString().split("T")[0])) {
+        cursor = new Date(start.getTime() - dayMs);
+      }
+      let streak = 0;
+      while (set.has(cursor.toISOString().split("T")[0])) {
+        streak++;
+        cursor = new Date(cursor.getTime() - dayMs);
+      }
+      return streak;
+    } catch {
+      return 0;
+    }
+  }
+
+  function unlockedSet(): Set<string> {
+    const done = computeGlobalDone();
+    const streak = computeStreakFromDates();
+    const set = new Set<string>();
+    if (done >= 1) set.add("first-topic");
+    if (done >= 10) set.add("10-topics");
+    if (done >= 25) set.add("25-topics");
+    if (done >= 50) set.add("50-topics");
+    if (streak >= 7) set.add("week-streak");
+    if (streak >= 30) set.add("month-streak");
+    return set;
+  }
+
+  function showAchievementToast(id: string) {
+    const meta = ACHIEVEMENTS.find((a) => a.id === id);
+    if (!meta) return;
+    const toast = document.getElementById("rm-toast");
+    if (!toast) return;
+    toast.innerHTML = `<span class="rm-toast-ach-icon"><span class="nf">${meta.icon}</span></span>
+      <span class="rm-toast-ach-text"><strong>${meta.name}</strong> unlocked<br/><em>${meta.desc}</em></span>`;
+    toast.classList.add("show", "achievement");
+    window.clearTimeout((toast as any)._achTimer);
+    (toast as any)._achTimer = window.setTimeout(() => {
+      toast.classList.remove("show", "achievement");
+    }, 4200);
+  }
+
+  document.querySelectorAll<HTMLElement>("[data-phase-done]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const idx = btn.getAttribute("data-phase-done") ?? "";
+      const phase = document.querySelector<HTMLElement>(
+        `.rm-phase[data-phase-index="${idx}"]`,
+      );
+      if (!phase) return;
+      const phaseNodes = Array.from(
+        phase.querySelectorAll<HTMLElement>(".rm-node"),
+      );
+      const allDone = phaseNodes.every(
+        (n) => n.getAttribute("data-state") === "done",
+      );
+      setNodes(phaseNodes, allDone ? "pending" : "done");
+    });
+  });
+
+  document.getElementById("rm-done-all")?.addEventListener("click", () => {
+    const allDone = nodes.every((n) => n.getAttribute("data-state") === "done");
+    setNodes(nodes, allDone ? "pending" : "done");
+  });
+
+  document.getElementById("rm-reset")?.addEventListener("click", () => {
+    if (!confirm("Reset all progress for this roadmap?")) return;
+    const state = loadState();
+    nodes.forEach((n) => {
+      delete state[n.getAttribute("data-node-id") ?? ""];
+      applyNodeState(n, "pending");
+    });
+    saveState(state);
+    refresh();
+  });
+
+  document.querySelectorAll<HTMLElement>("[data-note-toggle]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const id = btn.getAttribute("data-note-toggle");
+      if (!id) return;
+      const input = document.querySelector<HTMLTextAreaElement>(
+        `[data-note-input="${id}"]`,
+      );
+      if (!input) return;
+      input.hidden = !input.hidden;
+      if (!input.hidden) input.focus();
+    });
+  });
+
+  document
+    .querySelectorAll<HTMLTextAreaElement>("[data-note-input]")
+    .forEach((input) => {
+      input.addEventListener("input", () => {
+        const id = input.getAttribute("data-note-input") ?? "";
+        const noteBox = document.querySelector<HTMLElement>(
+          `[data-notes-for="${id}"]`,
+        );
+        const text = input.value.trim();
+        if (noteBox) noteBox.textContent = text;
+        persistNote(id, text);
+      });
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          input.hidden = true;
+          input.blur();
+        }
+      });
+      input.addEventListener("blur", () => {
+        input.hidden = true;
+      });
+    });
+
+  // ============ Export / Import / Share ============
+
+  function showToast(message: string) {
+    const toast = document.getElementById("rm-toast");
+    if (!toast) return;
+    toast.textContent = message;
+    toast.classList.add("show");
+    toast.classList.remove("achievement");
+    setTimeout(() => toast.classList.remove("show"), 2500);
+  }
+
+  function currentChecklist(): string {
+    const roleName =
+      document.querySelector(".rm-page")?.getAttribute("data-role-name") ?? ROLE;
+    const lines = [`# ${roleName} — interview prep checklist`, ""];
+    let phaseIndex = -1;
+    nodes.forEach((n) => {
+      const phase = parseInt(n.getAttribute("data-node-phase") ?? "0", 10);
+      if (phase !== phaseIndex) {
+        phaseIndex = phase;
+        lines.push("", `## Phase ${phaseIndex + 1}`);
+      }
+      const state = n.getAttribute("data-state");
+      const title = n.getAttribute("data-node-title") ?? n.textContent ?? "";
+      const mark = state === "done" ? "[x]" : state === "doing" ? "[/]" : "[ ]";
+      lines.push(`- ${mark} ${title}`);
+    });
+    lines.push("", `Completed: ${computeCounts().done}/${total}`);
+    return lines.join("\n");
+  }
+
+  document.getElementById("rm-copy-checklist")?.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(currentChecklist());
+      showToast("Checklist copied to clipboard");
+    } catch {
+      showToast("Could not copy — check browser permissions");
+    }
+  });
+
+  document.getElementById("rm-export-json")?.addEventListener("click", () => {
+    const payload = { exportedAt: new Date().toISOString(), [ROLE]: loadState() };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], {
+      type: "application/json",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `roadmap-${ROLE}-progress.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast("Progress exported as JSON");
+  });
+
+  const importInput = document.getElementById(
+    "rm-import-input",
+  ) as HTMLInputElement | null;
+  document.getElementById("rm-import-json")?.addEventListener("click", () => {
+    importInput?.click();
+  });
+
+  // ============ Obsidian export ============
+
+  function buildObsidianMarkdown(): string {
+    const roleName =
+      document.querySelector(".rm-page")?.getAttribute("data-role-name") ?? ROLE;
+    const tagline =
+      document.querySelector(".rm-tagline")?.textContent?.trim() ?? "";
+    const counts = computeCounts();
+    const pct = total
+      ? Math.round(((counts.done + counts.doing * 0.5) / total) * 100)
+      : 0;
+    const today = new Date().toISOString().split("T")[0];
+    const notes = loadNotes();
+    const phaseCount = document.querySelectorAll(".rm-phase").length;
+
+    const lines: string[] = [];
+    lines.push("---");
+    lines.push(`title: ${roleName} Roadmap`);
+    lines.push(`role: ${ROLE}`);
+    lines.push(`phases: ${phaseCount}`);
+    lines.push(`topics: ${total}`);
+    lines.push(`completed: ${counts.done}`);
+    lines.push(`in_progress: ${counts.doing}`);
+    lines.push(`progress: ${pct}`);
+    lines.push(`updated: ${today}`);
+    lines.push("tags:");
+    lines.push("  - roadmap");
+    lines.push("  - interview-prep");
+    lines.push(`  - ${ROLE}`);
+    lines.push("---");
+    lines.push("");
+    lines.push(`# ${roleName} Roadmap`);
+    lines.push("");
+    lines.push("> [!info] Prep status");
+    lines.push(
+      `> - **Progress:** ${pct}% — ${counts.done} done, ${counts.doing} in progress`,
+    );
+    lines.push(`> - **Topics:** ${counts.done}/${total} completed`);
+    lines.push("");
+    if (tagline) lines.push(tagline);
+    lines.push("");
+
+    document.querySelectorAll<HTMLElement>(".rm-phase").forEach((phase, idx) => {
+      const name =
+        phase.querySelector<HTMLElement>(".rm-phase-heading h2")?.textContent ??
+        `Phase ${idx + 1}`;
+      const goal =
+        phase.querySelector<HTMLElement>(".rm-phase-goal")?.textContent?.trim() ??
+        "";
+      const question =
+        phase
+          .querySelector<HTMLElement>(".rm-phase-question em")
+          ?.textContent?.trim() ?? "";
+
+      lines.push(`## Phase ${idx + 1} — ${name}`);
+      lines.push("");
+      if (goal) {
+        lines.push("> [!goal] Goal");
+        goal.split("\n").forEach((g) => lines.push(`> ${g}`));
+        lines.push("");
+      }
+      if (question) {
+        lines.push("> [!question] De-risks");
+        lines.push(`> ${question}`);
+        lines.push("");
+      }
+
+      phase.querySelectorAll<HTMLElement>(".rm-node").forEach((node) => {
+        const title = node.getAttribute("data-node-title") ?? "";
+        const hint = node.getAttribute("data-node-hint") ?? "";
+        const state = node.getAttribute("data-state") ?? "pending";
+        const mark =
+          state === "done" ? "[x]" : state === "doing" ? "[/]" : "[ ]";
+        lines.push(`- ${mark} **${title}**`);
+        if (hint) lines.push(`  - ${hint}`);
+
+        const links = Array.from(
+          node.querySelectorAll<HTMLAnchorElement>(".rm-node-link"),
+        );
+        if (links.length > 0) {
+          const linkTexts = links.map((a) => {
+            const href = a.getAttribute("href") ?? "";
+            const label = a.textContent?.trim() ?? "resource";
+            if (href.startsWith("http")) return `[${label}](${href})`;
+            const name = href.split("/").pop() ?? href;
+            return `[[${name}]]`;
+          });
+          lines.push(`  - ${linkTexts.join(" · ")}`);
+        }
+
+        const id = node.getAttribute("data-node-id") ?? "";
+        const noteText = notes[id ?? ""];
+        if (noteText) {
+          lines.push("");
+          lines.push("  > [!note] Note");
+          noteText.split("\n").forEach((l) => lines.push(`  > ${l}`));
+        }
+      });
+      lines.push("");
+    });
+
+    lines.push("## Resources");
+    lines.push("");
+    const docHref = document
+      .querySelector(".rm-doc-link")
+      ?.getAttribute("href");
+    if (docHref) {
+      const docName = docHref.split("/").pop() ?? docHref;
+      lines.push(`- [[${docName}]] — full role guide`);
+    }
+    lines.push("- [[00-Role-Chooser]] — compare all 12 role roadmaps");
+    lines.push("");
+
+    return lines.join("\n");
+  }
+
+  document
+    .getElementById("rm-export-obsidian")
+    ?.addEventListener("click", () => {
+      try {
+        const blob = new Blob([buildObsidianMarkdown()], {
+          type: "text/markdown",
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${ROLE}-roadmap.md`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast("Obsidian note downloaded");
+      } catch {
+        showToast("Could not build the Obsidian export");
+      }
+    });
+
+  document.getElementById("rm-copy-obsidian")?.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(buildObsidianMarkdown());
+      showToast("Obsidian markdown copied to clipboard");
+    } catch {
+      showToast("Could not copy — check browser permissions");
+    }
+  });
+
+  document.getElementById("rm-print")?.addEventListener("click", () => {
+    window.print();
+  });
+
+  document.getElementById("rm-share")?.addEventListener("click", async () => {
+    const url = new URL(window.location.href);
+    url.searchParams.set("s", stateString());
+    try {
+      await navigator.clipboard.writeText(url.toString());
+      showToast("Share link copied — includes your progress");
+    } catch {
+      showToast("Could not copy — check browser permissions");
+    }
+  });
+
+  // ============ Weekly study planner ============
+
+  function buildWeeklyPlan() {
+    const doing: { title: string; phase: number }[] = [];
+    const pending: { title: string; phase: number }[] = [];
+    nodes.forEach((n) => {
+      const state = n.getAttribute("data-state");
+      const title = n.getAttribute("data-node-title") ?? "";
+      const phase = parseInt(n.getAttribute("data-node-phase") ?? "0", 10);
+      if (state === "doing") doing.push({ title, phase });
+      else if (state === "pending") pending.push({ title, phase });
+    });
+
+    const tasks = [
+      ...doing.map((t) => ({ ...t, tag: "finish" as const })),
+      ...pending.map((t) => ({ ...t, tag: "learn" as const })),
+    ];
+
+    const phaseNames = document.querySelectorAll<HTMLElement>(
+      ".rm-phase-heading h2",
+    );
+
+    const days = [
+      "Monday", "Tuesday", "Wednesday", "Thursday",
+      "Friday", "Saturday", "Sunday",
+    ];
+
+    if (tasks.length === 0) return null;
+
+    const perDay = Math.max(2, Math.min(4, Math.ceil(tasks.length / 7)));
+    const plan: { title: string; tag: "finish" | "learn"; phase: number }[][] =
+      days.map(() => []);
+    let day = 0;
+    for (const task of tasks) {
+      plan[day].push(task);
+      if (plan[day].length >= perDay) day++;
+      if (day > 6) day = 6;
+    }
+
+    return { tasks, plan, days };
+  }
+
+  document.getElementById("rm-plan-btn")?.addEventListener("click", () => {
+    const panel = document.getElementById("rm-planner");
+    const daysEl = document.getElementById("rm-planner-days");
+    const subEl = document.getElementById("rm-planner-sub");
+    if (!panel || !daysEl || !subEl) return;
+
+    const plan = buildWeeklyPlan();
+    if (!plan) {
+      subEl.textContent = "Nothing left to plan — mark some topics or reset to see a schedule.";
+      daysEl.innerHTML = "";
+      panel.hidden = false;
+      return;
+    }
+
+    const remaining = plan.tasks.length;
+    const doingCount = plan.tasks.filter((t) => t.tag === "finish").length;
+    const weeksEstimate = Math.max(1, Math.ceil(remaining / 7));
+    subEl.textContent =
+      `${doingCount} in-progress to finish + ${remaining - doingCount} to learn · ` +
+      `≈ ${weeksEstimate} week${weeksEstimate > 1 ? "s" : ""} at this pace`;
+
+    let html = "";
+    plan.days.forEach((dayTasks, i) => {
+      if (dayTasks.length === 0) return;
+      html += `<div class="rm-planner-day">
+        <div class="rm-planner-day-name">${plan.days[i]} <span class="rm-planner-day-count">${dayTasks.length} session${dayTasks.length > 1 ? "s" : ""}</span></div>
+        ${dayTasks
+          .map(
+            (t) => `<div class="rm-planner-task ${t.tag}">
+              <span class="rm-planner-tag">${t.tag === "finish" ? "finish" : "learn"}</span>
+              <span>${t.title}</span>
+              <span class="rm-planner-phase">${phaseNames[t.phase]?.textContent ?? ""}</span>
+            </div>`,
+          )
+          .join("")}
+      </div>`;
+    });
+    daysEl.innerHTML = html;
+    panel.hidden = false;
+    panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  });
+
+  document.getElementById("rm-planner-close")?.addEventListener("click", () => {
+    const panel = document.getElementById("rm-planner");
+    if (panel) panel.hidden = true;
+  });
+
+  // ============ Create study plan from roadmap gaps ============
+
+  const roleNameEl = document.querySelector<HTMLElement>(".rm-hero h1");
+  const roleName = roleNameEl?.textContent?.replace(/^[^\w]*/, "").trim() || "Roadmap";
+
+  document.getElementById("rm-plan-create")?.addEventListener("click", () => {
+    const nodes = Array.from(
+      document.querySelectorAll<HTMLElement>(".rm-node"),
+    );
+    const topics = nodes.map((n) => ({
+      id: Date.now().toString(36) + Math.random().toString(36).substr(2),
+      name: n.getAttribute("data-node-title") ?? "Topic",
+      completed: n.getAttribute("data-state") === "done",
+    }));
+    const done = topics.filter((t) => t.completed).length;
+    const remaining = topics.length - done;
+    const weeks = Math.max(1, Math.ceil(remaining / 7));
+
+    const startDate = new Date();
+    const endDate = new Date(startDate);
+    endDate.setDate(endDate.getDate() + weeks * 7);
+
+    const plan = {
+      id: Date.now().toString(36) + Math.random().toString(36).substr(2),
+      name: `${roleName} Study Plan`,
+      role: roleName,
+      weeks,
+      hoursPerWeek: 15,
+      startDate: startDate.toISOString().split("T")[0],
+      endDate: endDate.toISOString().split("T")[0],
+      companies: [],
+      topics,
+      progress: topics.length ? Math.round((done / topics.length) * 100) : 0,
+      createdAt: new Date().toISOString(),
+    };
+
+    let plans: any[] = [];
+    try {
+      plans = JSON.parse(localStorage.getItem("faang-study-plans") || "[]");
+    } catch {
+      plans = [];
+    }
+    plans.unshift(plan);
+    try {
+      localStorage.setItem("faang-study-plans", JSON.stringify(plans));
+    } catch {
+      showToast("Could not save study plan — storage is full", true);
+      return;
+    }
+
+    showToast(
+      `Study plan created: ${topics.length} topics, ${remaining} left → ~${weeks} weeks`,
+    );
+    setTimeout(() => {
+      window.location.href = "/dashboard/study-plan";
+    }, 900);
+  });
+
+  importInput?.addEventListener("change", () => {
+    const file = importInput.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const parsed = JSON.parse(String(reader.result));
+        const all = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+        const incoming =
+          parsed && typeof parsed === "object" ? parsed[ROLE] ?? parsed : {};
+        const merged = { ...all, [ROLE]: { ...all[ROLE], ...incoming } };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+
+        nodes.forEach((n) => {
+          const id = n.getAttribute("data-node-id") ?? "";
+          const state =
+            typeof incoming[id] === "string" && ["doing", "done"].includes(incoming[id])
+              ? incoming[id]
+              : "pending";
+          applyNodeState(n, state);
+        });
+        refresh();
+        syncGlobalProgress();
+        showToast("Progress imported successfully");
+      } catch {
+        showToast("Invalid JSON file");
+      }
+    };
+    reader.readAsText(file);
+    importInput.value = "";
+  });
+</script>

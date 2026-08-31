@@ -1,0 +1,171 @@
+---
+import Layout from "../../layouts/Layout.astro";
+---
+
+<Layout title="Study Plan Generator" activeSection="dashboard">
+  <div class="plan-page">
+    <header class="plan-header">
+      <h1><span class="nf"></span> Study Plan Generator</h1>
+      <p class="plan-subtitle">Create personalized study plans based on your goals</p>
+    </header>
+
+    <div class="plan-generator">
+      <div class="generator-form">
+        <h2>Create New Plan</h2>
+        <form id="plan-form">
+          <div class="form-group"><label>Plan Name *</label><input type="text" name="name" required placeholder="e.g., Google SWE Prep" /></div>
+          <div class="form-row">
+            <div class="form-group"><label>Target Role *</label>
+              <select name="role" required>
+                <option value="SWE">Software Engineer</option>
+                <option value="Backend">Backend Engineer</option>
+                <option value="Frontend">Frontend Engineer</option>
+                <option value="Fullstack">Fullstack Engineer</option>
+                <option value="ML">ML Engineer</option>
+                <option value="Data">Data Engineer</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Duration (weeks) *</label><input type="number" name="weeks" min="4" max="24" value="12" required /></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Hours per Week *</label><input type="number" name="hoursPerWeek" min="5" max="40" value="15" required /></div>
+            <div class="form-group"><label>Start Date *</label><input type="date" name="startDate" required /></div>
+          </div>
+          <div class="form-group"><label>Target Companies</label><div class="checkbox-grid" id="companies-grid"></div></div>
+          <div class="modal-actions"><button type="submit" class="btn-submit">Generate Plan</button></div>
+        </form>
+      </div>
+    </div>
+
+    <div class="plans-list" id="plans-list">
+      <h2>Your Study Plans</h2>
+      <div id="plans-content"></div>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .plan-page { max-width: 1200px; margin: 0 auto; padding: var(--spacing-xl); }
+  .plan-header { margin-bottom: var(--spacing-2xl); }
+  .plan-header h1 { display: flex; align-items: center; gap: 0.75ch; font-size: 2em; color: var(--text); margin-bottom: var(--spacing-xs); }
+  .plan-subtitle { color: var(--subtext1); font-size: 1.1em; }
+  .plan-generator { background: var(--mantle); border: 1px solid var(--surface0); border-radius: 12px; padding: var(--spacing-xl); margin-bottom: var(--spacing-xl); }
+  .generator-form h2 { color: var(--text); margin-bottom: var(--spacing-lg); }
+  .form-group { margin-bottom: var(--spacing-md); }
+  .form-group label { display: block; color: var(--subtext1); margin-bottom: var(--spacing-xs); }
+  .form-group input, .form-group select { width: 100%; background: var(--crust); border: 1px solid var(--surface0); color: var(--text); padding: var(--spacing-sm); border-radius: 6px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md); }
+  .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--spacing-sm); }
+  .checkbox-item { display: flex; align-items: center; gap: 0.5ch; background: var(--crust); padding: var(--spacing-sm); border-radius: 6px; }
+  .btn-submit { background: var(--accent-green); border: none; color: var(--crust); padding: var(--spacing-md) var(--spacing-lg); border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; }
+  .btn-submit:hover { background: var(--green); }
+  .plans-list { background: var(--mantle); border: 1px solid var(--surface0); border-radius: 12px; padding: var(--spacing-xl); }
+  .plans-list h2 { color: var(--text); margin-bottom: var(--spacing-lg); }
+  .plan-card { background: var(--crust); border: 1px solid var(--surface0); border-radius: 8px; padding: var(--spacing-lg); margin-bottom: var(--spacing-md); }
+  .plan-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-md); }
+  .plan-name { font-size: 1.2em; font-weight: bold; color: var(--text); }
+  .plan-meta { color: var(--subtext1); font-size: 0.9em; }
+  .progress-bar { height: 8px; background: var(--surface0); border-radius: 4px; overflow: hidden; margin: var(--spacing-md) 0; }
+  .progress-fill { height: 100%; background: linear-gradient(to right, var(--accent-green), var(--accent-blue)); }
+  .plan-topics { display: flex; flex-direction: column; gap: var(--spacing-xs); }
+  .topic-item { display: flex; align-items: center; gap: var(--spacing-sm); padding: var(--spacing-xs); background: var(--mantle); border-radius: 4px; }
+  .topic-checkbox { width: 18px; height: 18px; cursor: pointer; }
+  .delete-plan { background: transparent; border: none; color: var(--red); cursor: pointer; font-size: 1.2em; }
+  .modal-actions { display: flex; justify-content: flex-end; gap: var(--spacing-md); margin-top: var(--spacing-lg); }
+  .empty-state { text-align: center; padding: var(--spacing-xl); color: var(--subtext0); }
+</style>
+
+<script>
+  import { loadFromStorage, saveToStorage, STORAGE_KEYS, generateId, formatDate } from "../../lib/user-data";
+
+  interface StudyPlan { id: string; name: string; role: string; weeks: number; hoursPerWeek: number; startDate: string; endDate: string; companies: string[]; topics: {id: string; name: string; completed: boolean}[]; progress: number; createdAt: string; }
+
+  const companies = ['google', 'meta', 'amazon', 'apple', 'microsoft', 'netflix', 'stripe', 'uber', 'airbnb', 'linkedin'];
+  const defaultTopics = ['DSA Basics', 'Arrays & Strings', 'Trees & Graphs', 'Dynamic Programming', 'System Design', 'Behavioral Prep', 'Mock Interviews'];
+
+  let plans: StudyPlan[] = [];
+
+  function loadPlans() {
+    plans = loadFromStorage<StudyPlan[]>(STORAGE_KEYS.STUDY_PLANS) || [];
+    renderPlans();
+  }
+
+  function renderPlans() {
+    const container = document.getElementById('plans-content');
+    if (!container) return;
+    if (plans.length === 0) { container.innerHTML = '<div class="empty-state">No study plans yet. Create your first plan!</div>'; return; }
+    
+    let html = '';
+    for (const plan of plans) {
+      html += `<div class="plan-card">
+        <div class="plan-card-header"><span class="plan-name">${plan.name}</span><button class="delete-plan" onclick="deletePlan('${plan.id}')"></button></div>
+        <div class="plan-meta">${plan.role} • ${plan.weeks} weeks • ${plan.hoursPerWeek}h/week</div>
+        <div class="plan-meta"><span class="nf"></span> ${plan.startDate} → ${plan.endDate}</div>
+        <div class="progress-bar"><div class="progress-fill" style="width: ${plan.progress}%"></div></div>
+        <div class="plan-meta">${plan.progress}% Complete • ${plan.topics.filter(t => t.completed).length}/${plan.topics.length} topics</div>
+        <div class="plan-topics">${plan.topics.map(t => `<div class="topic-item"><input type="checkbox" class="topic-checkbox" ${t.completed ? 'checked' : ''} onchange="toggleTopic('${plan.id}', '${t.id}')" /><span>${t.name}</span></div>`).join('')}</div>
+      </div>`;
+    }
+    container.innerHTML = html;
+  }
+
+  (window as any).toggleTopic = function(planId: string, topicId: string) {
+    const plan = plans.find(p => p.id === planId);
+    if (!plan) return;
+    const topic = plan.topics.find(t => t.id === topicId);
+    if (!topic) return;
+    topic.completed = !topic.completed;
+    plan.progress = Math.round((plan.topics.filter(t => t.completed).length / plan.topics.length) * 100);
+    saveToStorage(STORAGE_KEYS.STUDY_PLANS, plans);
+    renderPlans();
+  };
+
+  (window as any).deletePlan = function(id: string) {
+    if (!confirm('Delete this plan?')) return;
+    plans = plans.filter(p => p.id !== id);
+    saveToStorage(STORAGE_KEYS.STUDY_PLANS, plans);
+    loadPlans();
+  };
+
+  // Populate companies
+  const companiesGrid = document.getElementById('companies-grid');
+  if (companiesGrid) {
+    companiesGrid.innerHTML = companies.map(c => `<label class="checkbox-item"><input type="checkbox" name="companies" value="${c}" /> ${c.charAt(0).toUpperCase() + c.slice(1)}</label>`).join('');
+  }
+
+  document.getElementById('plan-form')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const fd = new FormData(e.target as HTMLFormElement);
+    const weeks = parseInt(fd.get('weeks') as string);
+    const startDate = new Date(fd.get('startDate') as string);
+    const endDate = new Date(startDate);
+    endDate.setDate(endDate.getDate() + (weeks * 7));
+    
+    const selectedCompanies = Array.from((e.target as HTMLFormElement).querySelectorAll('input[name="companies"]:checked')).map((el: any) => el.value);
+    
+    const newPlan: StudyPlan = {
+      id: generateId(),
+      name: fd.get('name') as string,
+      role: fd.get('role') as string,
+      weeks: weeks,
+      hoursPerWeek: parseInt(fd.get('hoursPerWeek') as string),
+      startDate: fd.get('startDate') as string,
+      endDate: endDate.toISOString().split('T')[0],
+      companies: selectedCompanies,
+      topics: defaultTopics.map(t => ({ id: generateId(), name: t, completed: false })),
+      progress: 0,
+      createdAt: new Date().toISOString(),
+    };
+    
+    plans.unshift(newPlan);
+    saveToStorage(STORAGE_KEYS.STUDY_PLANS, plans);
+    (e.target as HTMLFormElement).reset();
+    loadPlans();
+  });
+
+  // Set default start date to today
+  const dateInput = document.querySelector('input[name="startDate"]') as HTMLInputElement;
+  if (dateInput) dateInput.value = formatDate(new Date());
+
+  loadPlans();
+</script>

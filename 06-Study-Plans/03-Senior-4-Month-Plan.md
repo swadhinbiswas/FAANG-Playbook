@@ -193,7 +193,7 @@
 | ---------------- | ---------- | ---------------------------------------------------------------------------------------------- |
 | Offers received  | Week 15–16 | 1–2 offers                                                                                     |
 | Debrief feedback | Week 16    | Understand your strongest loop                                                                 |
-| Negotiate        | Week 16    | [Use playbook](../../07-Offer-Negotiation/salary-negotiation.md); emphasize your senior impact |
+| Negotiate        | Week 16    | [Use playbook](../../08-CAREER/04-Offer-Negotiation.md); emphasize your senior impact |
 | Decide           | Week 16    | Accept offer                                                                                   |
 
 **Senior negotiation tip:** Emphasize _scope_ not just salary. What will you own? What's the bar for promotion to principal?
@@ -273,7 +273,7 @@
 - **System design:** [Palantir interviews](https://www.palantir.com/careers/), [Jane Street blogs](https://blog.janestreet.com/), [Stripe Press](https://press.stripe.com/)
 - **Coding:** LeetCode Hard, but focus on communication (screenshare with peer)
 - **Behavioral:** [Leadership principles](../../02-Role-Roadmaps/01-SWE-Generalist.md) for your target companies
-- **Negotiation:** [Salary guide](../../07-Offer-Negotiation/salary-negotiation.md) + talk to current senior engineers at target companies
+- **Negotiation:** [Salary guide](../../08-CAREER/04-Offer-Negotiation.md) + talk to current senior engineers at target companies
 
 ---
 

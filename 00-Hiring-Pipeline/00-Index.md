@@ -2,7 +2,7 @@
 
 This folder is a practical walkthrough of how hiring typically works for software/data/ML/infra roles, and what to optimize for at each stage.
 
-If you already know your target lane, jump to [02-Role-Roadmaps/00-Index.md](../02-Role-Roadmaps/00-Index.md).
+If you already know your target lane, jump to [02-Role-Roadmaps/00-Role-Chooser.md](../02-Role-Roadmaps/00-Role-Chooser.md).
 
 ## What gets evaluated (high level)
 

@@ -1,0 +1,771 @@
+---
+import Layout from "../../layouts/Layout.astro";
+---
+
+<Layout title="Interview Questions" activeSection="dashboard">
+  <div class="questions-page">
+    <header class="questions-header">
+      <h1>
+        <span class="nf"></span>
+        Interview Questions Database
+      </h1>
+      <p class="questions-subtitle">Track and practice interview questions from real companies</p>
+    </header>
+
+    <!-- Search & Filters -->
+    <div class="filters-section">
+      <div class="search-box">
+        <span class="nf"></span>
+        <input 
+          type="text" 
+          id="search-input" 
+          placeholder="Search questions by title, company, or tags..."
+        />
+      </div>
+      
+      <div class="filters-row">
+        <select id="filter-company" class="filter-select">
+          <option value="">All Companies</option>
+          <option value="google">Google</option>
+          <option value="meta">Meta</option>
+          <option value="amazon">Amazon</option>
+          <option value="apple">Apple</option>
+          <option value="microsoft">Microsoft</option>
+          <option value="netflix">Netflix</option>
+          <option value="stripe">Stripe</option>
+          <option value="uber">Uber</option>
+        </select>
+
+        <select id="filter-type" class="filter-select">
+          <option value="">All Types</option>
+          <option value="coding">Coding</option>
+          <option value="system-design">System Design</option>
+          <option value="behavioral">Behavioral</option>
+          <option value="sql">SQL</option>
+        </select>
+
+        <select id="filter-difficulty" class="filter-select">
+          <option value="">All Difficulties</option>
+          <option value="easy">Easy</option>
+          <option value="medium">Medium</option>
+          <option value="hard">Hard</option>
+        </select>
+
+        <select id="filter-status" class="filter-select">
+          <option value="">All Status</option>
+          <option value="solved">Solved</option>
+          <option value="unsolved">Unsolved</option>
+        </select>
+
+        <button class="btn-add" id="add-question-btn">
+          <span class="nf"></span>
+          Add Question
+        </button>
+      </div>
+    </div>
+
+    <!-- Stats Summary -->
+    <div class="questions-stats">
+      <div class="stat-item">
+        <span class="stat-number" id="total-questions">0</span>
+        <span class="stat-label">Total Questions</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number" id="solved-questions">0</span>
+        <span class="stat-label">Solved</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number" id="unsolved-questions">0</span>
+        <span class="stat-label">Unsolved</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number" id="solve-rate">0%</span>
+        <span class="stat-label">Solve Rate</span>
+      </div>
+    </div>
+
+    <!-- Questions List -->
+    <div class="questions-list" id="questions-list">
+      <div class="questions-header-row">
+        <span>Question</span>
+        <span>Company</span>
+        <span>Type</span>
+        <span>Difficulty</span>
+        <span>Status</span>
+        <span>Actions</span>
+      </div>
+      <div id="questions-content">
+        <!-- Dynamically populated -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Question Modal -->
+  <div class="modal-overlay" id="add-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Add New Question</h2>
+        <button class="modal-close" id="close-modal">&times;</button>
+      </div>
+      <form id="add-question-form">
+        <div class="form-group">
+          <label>Question Title *</label>
+          <input type="text" name="title" required placeholder="e.g., Two Sum" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Company *</label>
+            <select name="company" required>
+              <option value="">Select Company</option>
+              <option value="google">Google</option>
+              <option value="meta">Meta</option>
+              <option value="amazon">Amazon</option>
+              <option value="apple">Apple</option>
+              <option value="microsoft">Microsoft</option>
+              <option value="netflix">Netflix</option>
+              <option value="stripe">Stripe</option>
+              <option value="uber">Uber</option>
+              <option value="airbnb">Airbnb</option>
+              <option value="linkedin">LinkedIn</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Role</label>
+            <input type="text" name="role" placeholder="e.g., SWE, Backend" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Type *</label>
+            <select name="type" required>
+              <option value="">Select Type</option>
+              <option value="coding">Coding</option>
+              <option value="system-design">System Design</option>
+              <option value="behavioral">Behavioral</option>
+              <option value="sql">SQL</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Difficulty *</label>
+            <select name="difficulty" required>
+              <option value="">Select Difficulty</option>
+              <option value="easy">Easy</option>
+              <option value="medium">Medium</option>
+              <option value="hard">Hard</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Question Description</label>
+          <textarea name="question" rows="4" placeholder="Describe the question..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>LeetCode Link</label>
+          <input type="url" name="leetCodeLink" placeholder="https://leetcode.com/problems/..." />
+        </div>
+        <div class="form-group">
+          <label>Tags (comma-separated)</label>
+          <input type="text" name="tags" placeholder="arrays, hash-map, two-pointers" />
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" id="cancel-btn">Cancel</button>
+          <button type="submit" class="btn-submit">Add Question</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .questions-page {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: var(--spacing-xl);
+  }
+
+  .questions-header {
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .questions-header h1 {
+    display: flex;
+    align-items: center;
+    gap: 0.75ch;
+    font-size: 2em;
+    color: var(--text);
+    margin-bottom: var(--spacing-xs);
+  }
+
+  .questions-subtitle {
+    color: var(--subtext1);
+    font-size: 1.1em;
+  }
+
+  .filters-section {
+    background: var(--mantle);
+    border: 1px solid var(--surface0);
+    border-radius: 12px;
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .search-box {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    background: var(--crust);
+    border: 1px solid var(--surface0);
+    border-radius: 8px;
+    padding: var(--spacing-sm) var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .search-box .nf {
+    color: var(--subtext0);
+  }
+
+  .search-box input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text);
+    font-family: var(--font-family);
+    font-size: 0.95em;
+    outline: none;
+  }
+
+  .filters-row {
+    display: flex;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .filter-select {
+    background: var(--crust);
+    border: 1px solid var(--surface0);
+    color: var(--subtext1);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: 6px;
+    font-family: var(--font-family);
+    font-size: 0.9em;
+    cursor: pointer;
+    min-width: 150px;
+  }
+
+  .filter-select:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+  }
+
+  .btn-add {
+    display: flex;
+    align-items: center;
+    gap: 0.5ch;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--accent-green);
+    color: var(--crust);
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+  }
+
+  .btn-add:hover {
+    background: var(--green);
+    transform: translateY(-2px);
+  }
+
+  .questions-stats {
+    display: flex;
+    gap: var(--spacing-xl);
+    padding: var(--spacing-lg);
+    background: var(--mantle);
+    border: 1px solid var(--surface0);
+    border-radius: 12px;
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .stat-number {
+    font-size: 2em;
+    font-weight: bold;
+    color: var(--accent-green);
+  }
+
+  .stat-label {
+    color: var(--subtext1);
+    font-size: 0.85em;
+    margin-top: var(--spacing-xs);
+  }
+
+  .questions-list {
+    background: var(--mantle);
+    border: 1px solid var(--surface0);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .questions-header-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr 120px;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md) var(--spacing-lg);
+    background: var(--surface0);
+    font-weight: bold;
+    color: var(--text);
+    font-size: 0.85em;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  #questions-content {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .question-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr 120px;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-bottom: 1px solid var(--surface0);
+    align-items: center;
+    transition: background var(--transition-fast);
+  }
+
+  .question-row:hover {
+    background: var(--surface0);
+  }
+
+  .question-title {
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .question-company {
+    color: var(--subtext1);
+    text-transform: capitalize;
+  }
+
+  .question-type {
+    color: var(--subtext1);
+    text-transform: capitalize;
+  }
+
+  .difficulty-badge {
+    display: inline-block;
+    padding: 0.2em 0.6em;
+    border-radius: 4px;
+    font-size: 0.8em;
+    font-weight: bold;
+    text-transform: capitalize;
+  }
+
+  .difficulty-badge.easy {
+    background: rgba(166, 227, 161, 0.2);
+    color: var(--green);
+  }
+
+  .difficulty-badge.medium {
+    background: rgba(250, 179, 135, 0.2);
+    color: var(--peach);
+  }
+
+  .difficulty-badge.hard {
+    background: rgba(243, 139, 168, 0.2);
+    color: var(--red);
+  }
+
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5ch;
+    color: var(--subtext1);
+    font-size: 0.9em;
+  }
+
+  .status-badge.solved {
+    color: var(--green);
+  }
+
+  .question-actions {
+    display: flex;
+    gap: var(--spacing-xs);
+  }
+
+  .action-icon {
+    background: transparent;
+    border: none;
+    color: var(--subtext0);
+    cursor: pointer;
+    font-size: 1.2em;
+    padding: var(--spacing-xs);
+    border-radius: 4px;
+    transition: all var(--transition-fast);
+  }
+
+  .action-icon:hover {
+    color: var(--accent-blue);
+    background: var(--surface1);
+  }
+
+  .action-icon.toggle:hover {
+    color: var(--accent-green);
+  }
+
+  .action-icon.delete:hover {
+    color: var(--red);
+  }
+
+  /* Modal */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+
+  .modal-overlay.open {
+    display: flex;
+  }
+
+  .modal {
+    background: var(--mantle);
+    border: 1px solid var(--surface0);
+    border-radius: 12px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-lg);
+    border-bottom: 1px solid var(--surface0);
+  }
+
+  .modal-header h2 {
+    color: var(--text);
+    font-size: 1.4em;
+  }
+
+  .modal-close {
+    background: transparent;
+    border: none;
+    color: var(--subtext0);
+    font-size: 2em;
+    cursor: pointer;
+    line-height: 1;
+  }
+
+  .modal-close:hover {
+    color: var(--text);
+  }
+
+  #add-question-form {
+    padding: var(--spacing-lg);
+  }
+
+  .form-group {
+    margin-bottom: var(--spacing-md);
+  }
+
+  .form-group label {
+    display: block;
+    color: var(--subtext1);
+    font-size: 0.9em;
+    margin-bottom: var(--spacing-xs);
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    background: var(--crust);
+    border: 1px solid var(--surface0);
+    color: var(--text);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: 6px;
+    font-family: var(--font-family);
+    font-size: 0.95em;
+  }
+
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-md);
+  }
+
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-lg);
+  }
+
+  .btn-cancel,
+  .btn-submit {
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+  }
+
+  .btn-cancel {
+    background: transparent;
+    border: 1px solid var(--surface1);
+    color: var(--subtext1);
+  }
+
+  .btn-cancel:hover {
+    background: var(--surface0);
+  }
+
+  .btn-submit {
+    background: var(--accent-green);
+    border: none;
+    color: var(--crust);
+  }
+
+  .btn-submit:hover {
+    background: var(--green);
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: var(--spacing-2xl);
+    color: var(--subtext0);
+  }
+
+  @media (max-width: 1024px) {
+    .questions-header-row,
+    .question-row {
+      grid-template-columns: 1.5fr 1fr 1fr 1fr;
+    }
+    
+    .questions-header-row span:nth-child(5),
+    .questions-header-row span:nth-child(6),
+    .question-row > :nth-child(5),
+    .question-row > :nth-child(6) {
+      display: none;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .filters-row {
+      flex-direction: column;
+    }
+
+    .filter-select {
+      width: 100%;
+    }
+
+    .questions-stats {
+      flex-wrap: wrap;
+      gap: var(--spacing-md);
+    }
+
+    .form-row {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  import { loadFromStorage, saveToStorage, STORAGE_KEYS, generateId, formatDate } from "../../lib/user-data";
+
+  interface Question {
+    id: string;
+    title: string;
+    company: string;
+    role: string;
+    type: string;
+    difficulty: string;
+    question: string;
+    leetCodeLink?: string;
+    tags: string[];
+    solved: boolean;
+    solvedAt?: string;
+    attempts: number;
+  }
+
+  let questions: Question[] = [];
+  let filteredQuestions: Question[] = [];
+
+  // Load questions
+  function loadQuestions() {
+    const stored = loadFromStorage<Question[]>(STORAGE_KEYS.QUESTIONS);
+    questions = stored || [];
+    filteredQuestions = [...questions];
+    renderQuestions();
+    updateStats();
+  }
+
+  // Render questions list
+  function renderQuestions() {
+    const container = document.getElementById('questions-content');
+    if (!container) return;
+
+    if (filteredQuestions.length === 0) {
+      container.innerHTML = '<div class="empty-state">No questions found. Add your first question!</div>';
+      return;
+    }
+
+    let html = '';
+    for (const q of filteredQuestions) {
+      html += `
+        <div class="question-row" data-id="${q.id}">
+          <div class="question-title">${q.title}</div>
+          <div class="question-company">${q.company}</div>
+          <div class="question-type">${q.type}</div>
+          <div><span class="difficulty-badge ${q.difficulty}">${q.difficulty}</span></div>
+          <div class="status-badge ${q.solved ? 'solved' : ''}">
+            ${q.solved ? '✓ Solved' : '○ Unsolved'}
+          </div>
+          <div class="question-actions">
+            <button class="action-icon toggle" onclick="toggleSolved('${q.id}')" title="Toggle solved">
+              ${q.solved ? '' : ''}
+            </button>
+            ${q.leetCodeLink ? `<a href="${q.leetCodeLink}" target="_blank" class="action-icon" title="Open LeetCode"></a>` : ''}
+            <button class="action-icon delete" onclick="deleteQuestion('${q.id}')" title="Delete"></button>
+          </div>
+        </div>
+      `;
+    }
+    container.innerHTML = html;
+  }
+
+  // Update stats
+  function updateStats() {
+    const total = questions.length;
+    const solved = questions.filter(q => q.solved).length;
+    const unsolved = total - solved;
+    const rate = total > 0 ? Math.round((solved / total) * 100) : 0;
+
+    document.getElementById('total-questions')!.textContent = total.toString();
+    document.getElementById('solved-questions')!.textContent = solved.toString();
+    document.getElementById('unsolved-questions')!.textContent = unsolved.toString();
+    document.getElementById('solve-rate')!.textContent = `${rate}%`;
+  }
+
+  // Toggle solved status
+  (window as any).toggleSolved = function(id: string) {
+    const question = questions.find(q => q.id === id);
+    if (!question) return;
+
+    question.solved = !question.solved;
+    question.solvedAt = question.solved ? formatDate(new Date()) : undefined;
+    question.attempts++;
+
+    saveToStorage(STORAGE_KEYS.QUESTIONS, questions);
+    renderQuestions();
+    updateStats();
+  };
+
+  // Delete question
+  (window as any).deleteQuestion = function(id: string) {
+    if (!confirm('Are you sure you want to delete this question?')) return;
+
+    questions = questions.filter(q => q.id !== id);
+    saveToStorage(STORAGE_KEYS.QUESTIONS, questions);
+    loadQuestions();
+  };
+
+  // Add question form
+  const modal = document.getElementById('add-modal');
+  const addBtn = document.getElementById('add-question-btn');
+  const closeBtn = document.getElementById('close-modal');
+  const cancelBtn = document.getElementById('cancel-btn');
+  const form = document.getElementById('add-question-form') as HTMLFormElement;
+
+  addBtn?.addEventListener('click', () => modal?.classList.add('open'));
+  closeBtn?.addEventListener('click', () => modal?.classList.remove('open'));
+  cancelBtn?.addEventListener('click', () => modal?.classList.remove('open'));
+
+  form?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const formData = new FormData(form);
+    
+    const newQuestion: Question = {
+      id: generateId(),
+      title: formData.get('title') as string,
+      company: formData.get('company') as string,
+      role: formData.get('role') as string || '',
+      type: formData.get('type') as string,
+      difficulty: formData.get('difficulty') as string,
+      question: formData.get('question') as string || '',
+      leetCodeLink: formData.get('leetCodeLink') as string || '',
+      tags: (formData.get('tags') as string || '').split(',').map(t => t.trim()).filter(t => t),
+      solved: false,
+      attempts: 0,
+    };
+
+    questions.unshift(newQuestion);
+    saveToStorage(STORAGE_KEYS.QUESTIONS, questions);
+    
+    form.reset();
+    modal?.classList.remove('open');
+    loadQuestions();
+  });
+
+  // Search and filter
+  const searchInput = document.getElementById('search-input');
+  const filterCompany = document.getElementById('filter-company');
+  const filterType = document.getElementById('filter-type');
+  const filterDifficulty = document.getElementById('filter-difficulty');
+  const filterStatus = document.getElementById('filter-status');
+
+  function applyFilters() {
+    const search = (searchInput as HTMLInputElement)?.value.toLowerCase() || '';
+    const company = (filterCompany as HTMLSelectElement)?.value || '';
+    const type = (filterType as HTMLSelectElement)?.value || '';
+    const difficulty = (filterDifficulty as HTMLSelectElement)?.value || '';
+    const status = (filterStatus as HTMLSelectElement)?.value || '';
+
+    filteredQuestions = questions.filter(q => {
+      const matchesSearch = !search || 
+        q.title.toLowerCase().includes(search) ||
+        q.company.toLowerCase().includes(search) ||
+        q.tags.some(t => t.toLowerCase().includes(search));
+      
+      const matchesCompany = !company || q.company === company;
+      const matchesType = !type || q.type === type;
+      const matchesDifficulty = !difficulty || q.difficulty === difficulty;
+      const matchesStatus = !status || (status === 'solved' && q.solved) || (status === 'unsolved' && !q.solved);
+
+      return matchesSearch && matchesCompany && matchesType && matchesDifficulty && matchesStatus;
+    });
+
+    renderQuestions();
+  }
+
+  searchInput?.addEventListener('input', applyFilters);
+  filterCompany?.addEventListener('change', applyFilters);
+  filterType?.addEventListener('change', applyFilters);
+  filterDifficulty?.addEventListener('change', applyFilters);
+  filterStatus?.addEventListener('change', applyFilters);
+
+  // Initialize
+  loadQuestions();
+</script>

@@ -1,5 +1,105 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import { readFileSync, existsSync } from 'fs';
+import { join } from 'path';
+import { parse } from 'csv-parse/sync';
+
+// Company aliases (canonical slug from CSVs -> preferred URL slug)
+const COMPANY_ALIASES: Record<string, string> = {
+  meta: 'facebook',
+  fb: 'facebook',
+};
+const COMPANY_DISPLAY_OVERRIDES: Record<string, string> = {
+  facebook: 'Meta',
+};
+
+interface Problem {
+  id: number;
+  title: string;
+  acceptance: string;
+  difficulty: 'Easy' | 'Medium' | 'Hard';
+  frequency: number;
+  url: string;
+}
+
+function parseCSV(filepath: string): Problem[] {
+  if (!existsSync(filepath)) return [];
+  try {
+    const content = readFileSync(filepath, 'utf-8');
+    const records = parse(content, {
+      skip_empty_lines: true,
+      relax_column_count: true,
+      trim: true,
+    });
+    return records
+      .filter((r: any[]) => r.length >= 5)
+      .map((r: any[]) => ({
+        id: parseInt(r[0], 10),
+        title: r[1]?.trim() || '',
+        acceptance: r[2]?.trim() || '0%',
+        difficulty: (['Easy', 'Medium', 'Hard'].includes(r[3]) ? r[3] : 'Medium') as 'Easy' | 'Medium' | 'Hard',
+        frequency: parseFloat(r[4]) || 0,
+        url: r[5]?.trim() || `https://leetcode.com/problems/${r[0]}`,
+      }))
+      .filter((p: Problem) => !isNaN(p.id));
+  } catch {
+    return [];
+  }
+}
+
+const CSV_DIR = join(process.cwd(), '..', 'leetcode Question ');
+
+interface CompanyAnalysis {
+  total: number;
+  easy: number;
+  medium: number;
+  hard: number;
+  repeat: number;
+  avgAcceptance: number;
+}
+
+const analysisCache: Record<string, CompanyAnalysis> = {};
+
+function analyzeCompany(name: string): CompanyAnalysis {
+  if (analysisCache[name]) return analysisCache[name];
+  const timeframes: Problem[][] = [];
+  for (const suffix of ['6months', '1year', '2year', 'alltime']) {
+    const problems = parseCSV(join(CSV_DIR, `${name}_${suffix}.csv`));
+    if (problems.length > 0) timeframes.push(problems);
+  }
+  const all = timeframes.flat();
+  const unique = [...new Map(all.map(p => [p.id, p])).values()];
+  const tfCounts: Record<number, number> = {};
+  for (const t of timeframes) for (const p of t) tfCounts[p.id] = (tfCounts[p.id] || 0) + 1;
+  const maxTf = Math.max(1, timeframes.length);
+  const result: CompanyAnalysis = {
+    total: unique.length,
+    easy: unique.filter(p => p.difficulty === 'Easy').length,
+    medium: unique.filter(p => p.difficulty === 'Medium').length,
+    hard: unique.filter(p => p.difficulty === 'Hard').length,
+    repeat: unique.filter(p => (tfCounts[p.id] || 1) === maxTf).length,
+    avgAcceptance: unique.length
+      ? Math.round(unique.reduce((s, p) => s + (parseFloat(p.acceptance) || 0), 0) / unique.length)
+      : 0,
+  };
+  analysisCache[name] = result;
+  return result;
+}
+
+function companyHref(name: string): string {
+  for (const [alias, target] of Object.entries(COMPANY_ALIASES)) {
+    if (target === name) return `/leetcode/${alias}`;
+  }
+  return `/leetcode/${name}`;
+}
+
+function companyDisplay(name: string, jsonDisplay: string): string {
+  return COMPANY_DISPLAY_OVERRIDES[name] ?? jsonDisplay;
+}
+
+function diffPct(a: CompanyAnalysis, n: number): number {
+  return a.total ? Math.round((n / a.total) * 100) : 0;
+}
 
 // Company icon helper - NerdFonts icons
 function getCompanyIcon(name: string): string {
@@ -179,6 +279,22 @@ try {
 
 const pageTitle = "LeetCode Questions by Company";
 const pageDescription = "Browse company-tagged LeetCode problems for FAANG interview preparation. Filter by company, difficulty, and time period.";
+
+// Aggregate analysis across all companies (from CSVs)
+let totalRepeat = 0;
+let overallAvgAcceptance = 0;
+let analyzedCompanies = 0;
+if (leetcodeData && Array.isArray(leetcodeData.companies)) {
+  for (const c of leetcodeData.companies) {
+    const a = analyzeCompany(c.name);
+    totalRepeat += a.repeat;
+    overallAvgAcceptance += a.avgAcceptance;
+    analyzedCompanies++;
+  }
+  if (analyzedCompanies > 0) {
+    overallAvgAcceptance = Math.round(overallAvgAcceptance / analyzedCompanies);
+  }
+}
 ---
 
 <Layout title={pageTitle} description={pageDescription}>
@@ -190,6 +306,7 @@ const pageDescription = "Browse company-tagged LeetCode problems for FAANG inter
       </h1>
       <p class="page-subtitle">
         Real interview questions from top tech companies. Filter by company and timeframe to focus your preparation.
+        <a href="/leetcode/patterns" class="patterns-link"><span class="nf">󰧑</span> Patterns Hub</a>
       </p>
 
       {leetcodeData && (
@@ -213,6 +330,14 @@ const pageDescription = "Browse company-tagged LeetCode problems for FAANG inter
           <div class="stat-item hard">
             <span class="stat-value">{leetcodeData.stats.byDifficulty?.Hard || 0}</span>
             <span class="stat-label">Hard</span>
+          </div>
+          <div class="stat-item repeat">
+            <span class="stat-value">{totalRepeat}</span>
+            <span class="stat-label">Repeat Offenders</span>
+          </div>
+          <div class="stat-item acceptance">
+            <span class="stat-value">{overallAvgAcceptance}%</span>
+            <span class="stat-label">Avg Acceptance</span>
           </div>
         </div>
       )}
@@ -255,25 +380,36 @@ const pageDescription = "Browse company-tagged LeetCode problems for FAANG inter
           </h2>
 
           <div class="companies-grid" id="companies-grid">
-            {leetcodeData.topCompanies.map((company: any) => (
-              <a
-                href={`/leetcode/${company.name}`}
-                class="company-card"
-                data-company={company.name}
-                data-problems={company.problemCount}
-              >
-                <div class="company-icon">
-                  {getCompanyIcon(company.name)}
-                </div>
-                <div class="company-info">
-                  <h3>{company.displayName}</h3>
-                  <span class="problem-count">
-                    <span class="nf"></span>
-                    {company.problemCount} problems
-                  </span>
-                </div>
-              </a>
-            ))}
+            {leetcodeData.topCompanies.map((company: any) => {
+              const analysis = analyzeCompany(company.name);
+              return (
+                <a
+                  href={companyHref(company.name)}
+                  class="company-card"
+                  data-company={company.name}
+                  data-problems={company.problemCount}
+                >
+                  <div class="company-icon">
+                    {getCompanyIcon(company.name)}
+                  </div>
+                  <div class="company-info">
+                    <h3>{companyDisplay(company.name, company.displayName)}</h3>
+                    <span class="problem-count">
+                      <span class="nf"></span>
+                      {company.problemCount} problems
+                    </span>
+                    {analysis.total > 0 && (
+                      <div class="company-diff">
+                        <span class="diff-chip easy">{diffPct(analysis, analysis.easy)}% E</span>
+                        <span class="diff-chip medium">{diffPct(analysis, analysis.medium)}% M</span>
+                        <span class="diff-chip hard">{diffPct(analysis, analysis.hard)}% H</span>
+                        <span class="repeat-chip" title="Asked in every timeframe">×{analysis.repeat}</span>
+                      </div>
+                    )}
+                  </div>
+                </a>
+              );
+            })}
           </div>
         </section>
 
@@ -285,26 +421,37 @@ const pageDescription = "Browse company-tagged LeetCode problems for FAANG inter
           </h2>
 
           <div class="companies-list" id="companies-list">
-            {leetcodeData.companies.map((company: any) => (
-              <a
-                href={`/leetcode/${company.name}`}
-                class="company-list-item"
-                data-company={company.name}
-                data-problems={company.totalProblems}
-              >
-                <span class="company-name">{company.displayName}</span>
-                <span class="company-meta">
-                  <span class="problem-badge">{company.totalProblems} problems</span>
-                  {company.timeframes?.length > 0 && (
-                    <span class="timeframe-badge">
-                      {company.timeframes.includes('6months') && '6M '}
-                      {company.timeframes.includes('1year') && '1Y '}
-                      {company.timeframes.includes('2year') && '2Y '}
-                    </span>
-                  )}
-                </span>
-              </a>
-            ))}
+            {leetcodeData.companies.map((company: any) => {
+              const analysis = analyzeCompany(company.name);
+              return (
+                <a
+                  href={companyHref(company.name)}
+                  class="company-list-item"
+                  data-company={company.name}
+                  data-problems={company.totalProblems}
+                >
+                  <span class="company-name">{companyDisplay(company.name, company.displayName)}</span>
+                  <span class="company-meta">
+                    <span class="problem-badge">{company.totalProblems} problems</span>
+                    {analysis.total > 0 && (
+                      <span class="diff-split">
+                        <span class="diff-chip easy">{diffPct(analysis, analysis.easy)}%</span>
+                        <span class="diff-chip medium">{diffPct(analysis, analysis.medium)}%</span>
+                        <span class="diff-chip hard">{diffPct(analysis, analysis.hard)}%</span>
+                        <span class="repeat-chip" title="Asked in every timeframe">×{analysis.repeat}</span>
+                      </span>
+                    )}
+                    {company.timeframes?.length > 0 && (
+                      <span class="timeframe-badge">
+                        {company.timeframes.includes('6months') && '6M '}
+                        {company.timeframes.includes('1year') && '1Y '}
+                        {company.timeframes.includes('2year') && '2Y '}
+                      </span>
+                    )}
+                  </span>
+                </a>
+              );
+            })}
           </div>
         </section>
       </>
@@ -434,6 +581,62 @@ const pageDescription = "Browse company-tagged LeetCode problems for FAANG inter
   .stat-item.easy .stat-value { color: var(--green); }
   .stat-item.medium .stat-value { color: var(--yellow); }
   .stat-item.hard .stat-value { color: var(--red); }
+  .stat-item.repeat .stat-value { color: var(--accent-teal); }
+  .stat-item.acceptance .stat-value { color: var(--accent-mauve); }
+
+  .patterns-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4ch;
+    margin-left: var(--spacing-sm);
+    color: var(--accent-blue);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.92em;
+  }
+
+  .patterns-link:hover {
+    text-decoration: underline;
+  }
+
+  /* Difficulty chips on cards/list */
+  .company-diff {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: var(--spacing-xs);
+    flex-wrap: wrap;
+  }
+
+  .diff-chip {
+    font-size: 0.68em;
+    font-weight: 700;
+    padding: 1px 7px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+
+  .diff-chip.easy { background: color-mix(in srgb, var(--green) 16%, transparent); color: var(--green); }
+  .diff-chip.medium { background: color-mix(in srgb, var(--yellow) 16%, transparent); color: var(--yellow); }
+  .diff-chip.hard { background: color-mix(in srgb, var(--red) 16%, transparent); color: var(--red); }
+
+  .repeat-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 1px 7px;
+    border-radius: 999px;
+    font-size: 0.68em;
+    font-weight: 700;
+    background: color-mix(in srgb, var(--accent-teal) 18%, transparent);
+    color: var(--accent-teal);
+  }
+
+  .diff-split {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
 
   /* Controls Section */
   .controls-section {

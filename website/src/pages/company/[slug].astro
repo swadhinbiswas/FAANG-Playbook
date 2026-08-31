@@ -1,0 +1,1197 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { getCompanyIcon, getCompanyColor } from "../../lib/company-icons";
+import fs from "node:fs";
+import path from "node:path";
+
+// Companies without a LeetCode dataset yet -> link to the directory instead
+const LECOMPANY_LEETCODE_MISSING = new Set(["coinbase", "snowflake", "stripe"]);
+const leetcodeHref = (s: string) =>
+  LECOMPANY_LEETCODE_MISSING.has(s) ? "/leetcode" : `/leetcode/${s}`;
+
+export async function getStaticPaths() {
+  const companies = [
+    { slug: "google", name: "Google" },
+    { slug: "meta", name: "Meta" },
+    { slug: "amazon", name: "Amazon" },
+    { slug: "apple", name: "Apple" },
+    { slug: "microsoft", name: "Microsoft" },
+    { slug: "netflix", name: "Netflix" },
+    { slug: "stripe", name: "Stripe" },
+    { slug: "uber", name: "Uber" },
+    { slug: "airbnb", name: "Airbnb" },
+    { slug: "linkedin", name: "LinkedIn" },
+    { slug: "twitter", name: "Twitter" },
+    { slug: "spotify", name: "Spotify" },
+    { slug: "salesforce", name: "Salesforce" },
+    { slug: "adobe", name: "Adobe" },
+    { slug: "oracle", name: "Oracle" },
+    { slug: "nvidia", name: "Nvidia" },
+    { slug: "intel", name: "Intel" },
+    { slug: "databricks", name: "Databricks" },
+    { slug: "snowflake", name: "Snowflake" },
+    { slug: "coinbase", name: "Coinbase" },
+  ];
+
+  return companies.map((company) => ({
+    params: { slug: company.slug },
+    props: { slug: company.slug, company },
+  }));
+}
+
+const { slug, company } = Astro.props;
+const companyIcon = getCompanyIcon(slug);
+const companyColor = getCompanyColor(slug);
+
+// Company-specific data
+const companyData: Record<string, any> = {
+  google: {
+    fullName: "Google",
+    color: "#4285F4",
+    levels: "L3-L6 (SWE), L4-L6 (SRE), L4-L5 (APM)",
+    culture: "Technical rigor, data-driven decisions, bias toward action",
+    loopStructure: [
+      { stage: "Recruiter Screen", duration: "30 min", focus: "Fit, communication, motivation" },
+      { stage: "Phone Screen (Coding)", duration: "60 min", focus: "Medium-hard DSA, code quality" },
+      { stage: "Onsite (4 rounds)", duration: "5 hours", focus: "Coding + Design + Behavioral + Tech depth" },
+    ],
+    codingFocus: ["Trees (DFS/BFS)", "Graphs", "Dynamic Programming", "Heaps", "Binary Search"],
+    systemDesignPrompts: ["Design YouTube", "Design Google Search", "Design Google Maps", "Design Ads System"],
+    behavioralFocus: ["Googleyness", "Problem-solving approach", "Leadership in ambiguity"],
+    topProblems: [
+      { name: "Two Sum", difficulty: "Easy", pattern: "Hash Map" },
+      { name: "LRU Cache", difficulty: "Medium", pattern: "Design" },
+      { name: "Word Ladder", difficulty: "Hard", pattern: "BFS" },
+      { name: "Median of Two Sorted Arrays", difficulty: "Hard", pattern: "Binary Search" },
+      { name: "Serialize/Deserialize BT", difficulty: "Hard", pattern: "Tree" },
+    ],
+    tips: [
+      "Focus on clean code that would pass code review",
+      "Explain your thought process clearly",
+      "Ask clarifying questions before coding",
+      "Test your solution with edge cases",
+    ],
+    resources: [
+      { title: "Google Detailed Guide", href: "/docs/company-notes/01-Google-Detailed" },
+      { title: "Coding Interview Playbook", href: "/docs/interviews/02-Coding-Interview-Playbook" },
+      { title: "System Design Template", href: "/docs/system-design/00-System-Design-Template" },
+    ],
+  },
+  meta: {
+    fullName: "Meta (Facebook)",
+    color: "#0668E1",
+    levels: "E3-E6 (SWE)",
+    culture: "Move fast, impact at scale, open collaboration",
+    loopStructure: [
+      { stage: "Recruiter Screen", duration: "30 min", focus: "Fit, role alignment" },
+      { stage: "Technical Phone", duration: "60 min", focus: "2x Coding rounds" },
+      { stage: "Virtual Onsite", duration: "4 rounds", focus: "2 Coding + 1 Design + 1 Behavioral" },
+    ],
+    codingFocus: ["Arrays & Strings", "Trees", "Graphs", "Dynamic Programming", "Backtracking"],
+    systemDesignPrompts: ["Design News Feed", "Design Instagram", "Design Messenger", "Design WhatsApp"],
+    behavioralFocus: ["Move Fast culture", "Impact-driven thinking", "Conflict resolution"],
+    topProblems: [
+      { name: "Valid Palindrome II", difficulty: "Easy", pattern: "Two Pointers" },
+      { name: "Binary Tree Vertical Order", difficulty: "Medium", pattern: "BFS" },
+      { name: "Merge K Sorted Lists", difficulty: "Hard", pattern: "Heap" },
+      { name: "Regular Expression Matching", difficulty: "Hard", pattern: "DP" },
+      { name: "Subarray Sum Equals K", difficulty: "Medium", pattern: "Prefix Sum" },
+    ],
+    tips: [
+      "Emphasize shipping velocity and measurable impact",
+      "Practice coding under time pressure",
+      "Show you can move fast but not break things",
+      "Prepare stories showing ownership",
+    ],
+    resources: [
+      { title: "Meta Detailed Guide", href: "/docs/company-notes/03-Meta-Detailed" },
+      { title: "Coding Interview Playbook", href: "/docs/interviews/02-Coding-Interview-Playbook" },
+      { title: "Behavioral Interview Guide", href: "/docs/interviews/06-Behavioral-Interview-Playbook" },
+    ],
+  },
+  amazon: {
+    fullName: "Amazon",
+    color: "#FF9900",
+    levels: "L4-L7 (SWE, SDE)",
+    culture: "14 Leadership Principles, Customer Obsession, Ownership",
+    loopStructure: [
+      { stage: "Online Assessment", duration: "90 min", focus: "2 Coding problems" },
+      { stage: "Phone Screen", duration: "60 min", focus: "Coding + LP questions" },
+      { stage: "Virtual Onsite", duration: "4-5 rounds", focus: "Coding + Design + Bar Raiser" },
+    ],
+    codingFocus: ["Trees", "Graphs", "Intervals", "Two Pointers", "DFS/BFS"],
+    systemDesignPrompts: ["Design Amazon.com", "Design Prime Video", "Design Alexa", "Design Order System"],
+    behavioralFocus: ["14 Leadership Principles", "STAR format mandatory", "Customer-first thinking"],
+    topProblems: [
+      { name: "Number of Islands", difficulty: "Medium", pattern: "DFS/BFS" },
+      { name: "LRU Cache", difficulty: "Medium", pattern: "Design" },
+      { name: "Word Search II", difficulty: "Hard", pattern: "Trie + DFS" },
+      { name: "Meeting Rooms II", difficulty: "Medium", pattern: "Intervals" },
+      { name: "Trapping Rain Water", difficulty: "Hard", pattern: "Two Pointers" },
+    ],
+    tips: [
+      "Every answer should tie to a Leadership Principle",
+      "Use STAR format for behavioral questions",
+      "Prepare 10+ behavioral stories",
+      "Show customer obsession in all answers",
+    ],
+    resources: [
+      { title: "Amazon Detailed Guide", href: "/docs/company-notes/02-Amazon-Detailed" },
+      { title: "Leadership Principles Guide", href: "/docs/company-notes/02-Amazon-Detailed" },
+      { title: "Behavioral Interview STAR", href: "/docs/interviews/06-Behavioral-Interview-Playbook" },
+    ],
+  },
+  apple: {
+    fullName: "Apple",
+    color: "#555555",
+    levels: "ICT2-ICT5 (SWE)",
+    culture: "Attention to detail, design excellence, privacy focus",
+    loopStructure: [
+      { stage: "Phone Screen", duration: "60 min", focus: "Coding + fundamentals" },
+      { stage: "Onsite", duration: "5-8 rounds", focus: "Coding + Design + Behavioral + Team fit" },
+    ],
+    codingFocus: ["Arrays", "Trees", "Dynamic Programming", "Two Pointers", "Design"],
+    systemDesignPrompts: ["Design iCloud", "Design Apple Music", "Design App Store", "Design Siri"],
+    behavioralFocus: ["Passion for products", "Design thinking", "Privacy mindset"],
+    topProblems: [
+      { name: "3Sum", difficulty: "Medium", pattern: "Two Pointers" },
+      { name: "Serialize/Deserialize BT", difficulty: "Hard", pattern: "Tree" },
+      { name: "Find Median from Stream", difficulty: "Hard", pattern: "Heap" },
+      { name: "Design Tic-Tac-Toe", difficulty: "Medium", pattern: "Design" },
+      { name: "Maximum Product Subarray", difficulty: "Medium", pattern: "DP" },
+    ],
+    tips: [
+      "Show passion for user experience and product quality",
+      "Demonstrate attention to detail",
+      "Think about privacy implications",
+      "Be prepared for multiple rounds",
+    ],
+    resources: [
+      { title: "Apple Detailed Guide", href: "/docs/company-notes/04-Apple-Detailed" },
+      { title: "System Design Guide", href: "/docs/interviews/03-System-Design-Interview-Playbook" },
+    ],
+  },
+  microsoft: {
+    fullName: "Microsoft",
+    color: "#00A4EF",
+    levels: "59-67 (SWE)",
+    culture: "Growth mindset, inclusive culture, customer success",
+    loopStructure: [
+      { stage: "Phone Screen", duration: "60 min", focus: "Coding + problem solving" },
+      { stage: "Onsite", duration: "5 rounds", focus: "Coding + Design + Behavioral" },
+    ],
+    codingFocus: ["Arrays", "Strings", "Trees", "Graphs", "Dynamic Programming"],
+    systemDesignPrompts: ["Design OneDrive", "Design Teams", "Design Outlook", "Design Xbox Live"],
+    behavioralFocus: ["Growth mindset", "Collaboration", "Customer impact"],
+    topProblems: [
+      { name: "Reverse Linked List", difficulty: "Easy", pattern: "Linked List" },
+      { name: "Valid Parentheses", difficulty: "Easy", pattern: "Stack" },
+      { name: "Course Schedule", difficulty: "Medium", pattern: "Graph" },
+      { name: "Implement Trie", difficulty: "Medium", pattern: "Trie" },
+      { name: "Longest Palindromic Substring", difficulty: "Medium", pattern: "DP" },
+    ],
+    tips: [
+      "Show continuous learning and cross-team collaboration",
+      "Demonstrate growth mindset",
+      "Focus on customer success stories",
+      "Be inclusive in your examples",
+    ],
+    resources: [
+      { title: "System Design Guide", href: "/docs/interviews/03-System-Design-Interview-Playbook" },
+      { title: "Coding Interview Playbook", href: "/docs/interviews/02-Coding-Interview-Playbook" },
+    ],
+  },
+  netflix: {
+    fullName: "Netflix",
+    color: "#E50914",
+    levels: "Senior+ (SWE, SRE)",
+    culture: "Freedom & responsibility, context not control, high performance",
+    loopStructure: [
+      { stage: "Phone Screen", duration: "60 min", focus: "Coding + system design" },
+      { stage: "Onsite", duration: "4 rounds", focus: "Design + Behavioral + Tech depth" },
+    ],
+    codingFocus: ["System Design heavy", "Scalability", "Distributed Systems"],
+    systemDesignPrompts: ["Design Netflix Streaming", "Design Recommendation System", "Design CDN", "Design A/B Testing"],
+    behavioralFocus: ["Senior judgment", "Autonomous decision-making", "Culture fit"],
+    topProblems: [
+      { name: "Design Rate Limiter", difficulty: "Medium", pattern: "System Design" },
+      { name: "Design Cache", difficulty: "Medium", pattern: "Design" },
+      { name: "Merge Intervals", difficulty: "Medium", pattern: "Intervals" },
+    ],
+    tips: [
+      "Demonstrate senior judgment and autonomous decision-making",
+      "Focus on tradeoffs and business impact",
+      "Show you can work with minimal direction",
+      "Prepare for deep system design discussions",
+    ],
+    resources: [
+      { title: "Netflix Detailed Guide", href: "/docs/company-notes/05-Netflix-Detailed" },
+      { title: "System Design Guide", href: "/docs/interviews/03-System-Design-Interview-Playbook" },
+    ],
+  },
+  stripe: {
+    fullName: "Stripe",
+    color: "#635BFF",
+    levels: "L1-L4 (SWE)",
+    culture: "User obsession, rigorous thinking, bias for action",
+    loopStructure: [
+      { stage: "Phone Screen", duration: "60 min", focus: "Coding + API design" },
+      { stage: "Onsite", duration: "4 rounds", focus: "Coding + System Design + Debugging" },
+    ],
+    codingFocus: ["API Design", "Data Modeling", "Clean Code", "Edge Cases"],
+    systemDesignPrompts: ["Design Payment System", "Design API Gateway", "Design Fraud Detection", "Design Webhooks"],
+    behavioralFocus: ["User empathy", "Rigorous thinking", "Writing skills"],
+    topProblems: [
+      { name: "Valid Sudoku", difficulty: "Medium", pattern: "Backtracking" },
+      { name: "Group Anagrams", difficulty: "Medium", pattern: "Hash Map" },
+      { name: "Top K Frequent Elements", difficulty: "Medium", pattern: "Heap" },
+    ],
+    tips: [
+      "Focus on API design and developer experience",
+      "Write exceptionally clean code",
+      "Think about edge cases thoroughly",
+      "Show user empathy in design decisions",
+    ],
+    resources: [
+      { title: "System Design Guide", href: "/docs/interviews/03-System-Design-Interview-Playbook" },
+      { title: "Coding Best Practices", href: "/docs/interviews/02-Coding-Interview-Playbook" },
+    ],
+  },
+  uber: {
+    fullName: "Uber",
+    color: "#000000",
+    levels: "L1-L5 (SWE)",
+    culture: "Go get it, customer obsessed, be an owner",
+    loopStructure: [
+      { stage: "Phone Screen", duration: "60 min", focus: "2x Coding" },
+      { stage: "Onsite", duration: "4 rounds", focus: "2 Coding + 1 Design + 1 Behavioral" },
+    ],
+    codingFocus: ["Arrays", "Graphs", "Intervals", "Dynamic Programming"],
+    systemDesignPrompts: ["Design Uber Ride", "Design Uber Eats", "Design Surge Pricing", "Design Matching System"],
+    behavioralFocus: ["Ownership", "Customer obsession", "Bias for action"],
+    topProblems: [
+      { name: "Product of Array Except Self", difficulty: "Medium", pattern: "Arrays" },
+      { name: "Graph Valid Tree", difficulty: "Medium", pattern: "Graph" },
+      { name: "Minimum Window Substring", difficulty: "Hard", pattern: "Sliding Window" },
+    ],
+    tips: [
+      "Show you can move fast in ambiguous situations",
+      "Focus on real-world impact",
+      "Demonstrate ownership mentality",
+      "Think about marketplace dynamics",
+    ],
+    resources: [
+      { title: "System Design Guide", href: "/docs/interviews/03-System-Design-Interview-Playbook" },
+    ],
+  },
+  airbnb: {
+    fullName: "Airbnb",
+    color: "#FF5A5F",
+    levels: "L1-L5 (SWE)",
+    culture: "Belong anywhere, host mindset, be a cereal entrepreneur",
+    loopStructure: [
+      { stage: "Phone Screen", duration: "60 min", focus: "Coding + product sense" },
+      { stage: "Onsite", duration: "5 rounds", focus: "Coding + Design + Behavioral + Mission fit" },
+    ],
+    codingFocus: ["Arrays", "Strings", "Trees", "Graphs"],
+    systemDesignPrompts: ["Design Airbnb Search", "Design Booking System", "Design Review System", "Design Messaging"],
+    behavioralFocus: ["Mission alignment", "Host mindset", "Community focus"],
+    topProblems: [
+      { name: "Container With Most Water", difficulty: "Medium", pattern: "Two Pointers" },
+      { name: "Clone Graph", difficulty: "Medium", pattern: "Graph" },
+      { name: "Generate Parentheses", difficulty: "Medium", pattern: "Backtracking" },
+    ],
+    tips: [
+      "Show genuine passion for the mission",
+      "Think about both guest and host experience",
+      "Demonstrate community mindset",
+      "Be creative in problem solving",
+    ],
+    resources: [
+      { title: "System Design Guide", href: "/docs/interviews/03-System-Design-Interview-Playbook" },
+    ],
+  },
+  linkedin: {
+    fullName: "LinkedIn",
+    color: "#0A66C2",
+    levels: "L1-L5 (SWE)",
+    culture: "Members first, relationships matter, be results obsessed",
+    loopStructure: [
+      { stage: "Phone Screen", duration: "60 min", focus: "2x Coding" },
+      { stage: "Onsite", duration: "4 rounds", focus: "2 Coding + 1 Design + 1 Behavioral" },
+    ],
+    codingFocus: ["Trees", "Graphs", "Dynamic Programming", "Arrays"],
+    systemDesignPrompts: ["Design Feed", "Design Connections", "Design Messaging", "Design Job Search"],
+    behavioralFocus: ["Member impact", "Results orientation", "Collaboration"],
+    topProblems: [
+      { name: "Lowest Common Ancestor", difficulty: "Medium", pattern: "Tree" },
+      { name: "Word Break", difficulty: "Medium", pattern: "DP" },
+      { name: "Find Peak Element", difficulty: "Medium", pattern: "Binary Search" },
+    ],
+    tips: [
+      "Focus on member impact in all answers",
+      "Show results-oriented thinking",
+      "Demonstrate collaboration skills",
+      "Think about network effects",
+    ],
+    resources: [
+      { title: "System Design Guide", href: "/docs/interviews/03-System-Design-Interview-Playbook" },
+    ],
+  },
+  twitter: {
+    fullName: "Twitter/X",
+    color: "#000000",
+    levels: "L1-L5 (SWE)",
+    culture: "Move fast, build for scale, direct communication",
+    loopStructure: [
+      { stage: "Phone Screen", duration: "60 min", focus: "Coding" },
+      { stage: "Onsite", duration: "4 rounds", focus: "2 Coding + 1 Design + 1 System" },
+    ],
+    codingFocus: ["Arrays", "Strings", "Trees", "System Design"],
+    systemDesignPrompts: ["Design Twitter Feed", "Design Trending Topics", "Design Notifications", "Design DM System"],
+    behavioralFocus: ["Bias for action", "Scale thinking", "Direct feedback"],
+    topProblems: [
+      { name: "K Closest Points", difficulty: "Medium", pattern: "Heap" },
+      { name: "Rotate Image", difficulty: "Medium", pattern: "Matrix" },
+      { name: "Text Justification", difficulty: "Hard", pattern: "Greedy" },
+    ],
+    tips: [
+      "Think about massive scale from day one",
+      "Be direct and clear in communication",
+      "Show you can ship quickly",
+      "Focus on real-time systems",
+    ],
+    resources: [
+      { title: "System Design Guide", href: "/docs/interviews/03-System-Design-Interview-Playbook" },
+    ],
+  },
+  spotify: {
+    fullName: "Spotify",
+    color: "#1DB954",
+    levels: "L1-L5 (SWE)",
+    culture: "Innovate, collaborate, be authentic",
+    loopStructure: [
+      { stage: "Phone Screen", duration: "60 min", focus: "Coding + culture fit" },
+      { stage: "Onsite", duration: "4 rounds", focus: "Coding + Design + Culture" },
+    ],
+    codingFocus: ["Arrays", "Strings", "Algorithms"],
+    systemDesignPrompts: ["Design Music Streaming", "Design Recommendation", "Design Playlist", "Design Search"],
+    behavioralFocus: ["Culture fit", "Innovation", "Collaboration"],
+    topProblems: [
+      { name: "Shuffle Array", difficulty: "Medium", pattern: "Random" },
+      { name: "Meeting Rooms", difficulty: "Easy", pattern: "Intervals" },
+      { name: "Insert Delete GetRandom", difficulty: "Hard", pattern: "Design" },
+    ],
+    tips: [
+      "Show passion for music and audio",
+      "Demonstrate collaborative mindset",
+      "Be authentic in interviews",
+      "Think about personalization",
+    ],
+    resources: [
+      { title: "System Design Guide", href: "/docs/interviews/03-System-Design-Interview-Playbook" },
+    ],
+  },
+  salesforce: {
+    fullName: "Salesforce",
+    color: "#00A1E0",
+    levels: "L1-L5 (SWE)",
+    culture: "Ohana, equality, innovation, sustainability",
+    loopStructure: [
+      { stage: "Phone Screen", duration: "60 min", focus: "Coding" },
+      { stage: "Onsite", duration: "4-5 rounds", focus: "Coding + Design + Behavioral" },
+    ],
+    codingFocus: ["Objects", "Arrays", "Strings", "Trees"],
+    systemDesignPrompts: ["Design CRM System", "Design Multi-tenant Platform", "Design API", "Design Workflow Engine"],
+    behavioralFocus: ["Ohana culture", "Customer success", "Equality"],
+    topProblems: [
+      { name: "Two Sum", difficulty: "Easy", pattern: "Hash Map" },
+      { name: "Best Time to Buy Stock", difficulty: "Easy", pattern: "Arrays" },
+      { name: "Contains Duplicate", difficulty: "Easy", pattern: "Hash Set" },
+    ],
+    tips: [
+      "Emphasize customer success stories",
+      "Show team-oriented thinking",
+      "Demonstrate values alignment",
+      "Think about enterprise scale",
+    ],
+    resources: [
+      { title: "System Design Guide", href: "/docs/interviews/03-System-Design-Interview-Playbook" },
+    ],
+  },
+  adobe: {
+    fullName: "Adobe",
+    color: "#FF0000",
+    levels: "L1-L5 (SWE, Computer Vision)",
+    culture: "Creativity, innovation, customer focus",
+    loopStructure: [
+      { stage: "Online Test", duration: "90 min", focus: "2 Coding + MCQs" },
+      { stage: "Phone Screen", duration: "60 min", focus: "Coding" },
+      { stage: "Onsite", duration: "4 rounds", focus: "Coding + Design + Domain" },
+    ],
+    codingFocus: ["Arrays", "Strings", "Trees", "Dynamic Programming"],
+    systemDesignPrompts: ["Design Document Editor", "Design Image Processing", "Design Cloud Storage", "Design Collaboration"],
+    behavioralFocus: ["Creativity", "Innovation", "Customer impact"],
+    topProblems: [
+      { name: "Majority Element", difficulty: "Easy", pattern: "Arrays" },
+      { name: "Happy Number", difficulty: "Easy", pattern: "Hash Set" },
+      { name: "Search in Rotated Array", difficulty: "Medium", pattern: "Binary Search" },
+    ],
+    tips: [
+      "Show creative problem-solving",
+      "Think about user experience",
+      "Demonstrate domain knowledge",
+      "Focus on innovation",
+    ],
+    resources: [
+      { title: "Coding Interview Guide", href: "/docs/interviews/02-Coding-Interview-Playbook" },
+    ],
+  },
+  oracle: {
+    fullName: "Oracle",
+    color: "#C74634",
+    levels: "L1-L5 (SWE, Cloud)",
+    culture: "Innovation, performance, customer success",
+    loopStructure: [
+      { stage: "Online Test", duration: "90 min", focus: "Coding + CS fundamentals" },
+      { stage: "Technical Interview", duration: "60 min", focus: "Coding + DB" },
+      { stage: "Managerial Round", duration: "45 min", focus: "Behavioral + fit" },
+    ],
+    codingFocus: ["Arrays", "Linked Lists", "Trees", "SQL"],
+    systemDesignPrompts: ["Design Database", "Design Cloud Service", "Design Distributed System", "Design Cache"],
+    behavioralFocus: ["Performance", "Learning agility", "Team fit"],
+    topProblems: [
+      { name: "Add Two Numbers", difficulty: "Medium", pattern: "Linked List" },
+      { name: "Reverse Integer", difficulty: "Medium", pattern: "Math" },
+      { name: "Palindrome Number", difficulty: "Easy", pattern: "Math" },
+    ],
+    tips: [
+      "Strong CS fundamentals required",
+      "Prepare database concepts",
+      "Show performance mindset",
+      "Think enterprise scale",
+    ],
+    resources: [
+      { title: "Databases Guide", href: "/docs/foundations/03-Databases" },
+    ],
+  },
+  nvidia: {
+    fullName: "Nvidia",
+    color: "#76B900",
+    levels: "L1-L5 (SWE, GPU, ML)",
+    culture: "Innovation, speed, excellence",
+    loopStructure: [
+      { stage: "Phone Screen", duration: "60 min", focus: "Coding + domain" },
+      { stage: "Onsite", duration: "5 rounds", focus: "Coding + Domain + Design" },
+    ],
+    codingFocus: ["Arrays", "Matrices", "Bit Manipulation", "Algorithms"],
+    systemDesignPrompts: ["Design GPU Scheduler", "Design Parallel System", "Design ML Pipeline", "Design Memory System"],
+    behavioralFocus: ["Innovation", "Technical depth", "Passion for tech"],
+    topProblems: [
+      { name: "Set Matrix Zeroes", difficulty: "Medium", pattern: "Matrix" },
+      { name: "Spiral Matrix", difficulty: "Medium", pattern: "Matrix" },
+      { name: "Number of 1 Bits", difficulty: "Easy", pattern: "Bits" },
+    ],
+    tips: [
+      "Show deep technical knowledge",
+      "Demonstrate passion for GPUs/ML",
+      "Think about parallel computing",
+      "Focus on performance optimization",
+    ],
+    resources: [
+      { title: "ML Interview Guide", href: "/docs/ml-mlops/00-ML-Index" },
+    ],
+  },
+  intel: {
+    fullName: "Intel",
+    color: "#0071C5",
+    levels: "L1-L5 (SWE, Hardware)",
+    culture: "Innovation, quality, customer focus",
+    loopStructure: [
+      { stage: "Phone Screen", duration: "60 min", focus: "Coding + fundamentals" },
+      { stage: "Onsite", duration: "4-5 rounds", focus: "Coding + Domain + Behavioral" },
+    ],
+    codingFocus: ["Arrays", "Bit Manipulation", "Algorithms", "C/C++"],
+    systemDesignPrompts: ["Design CPU Scheduler", "Design Memory System", "Design Pipeline", "Design Cache Coherence"],
+    behavioralFocus: ["Quality focus", "Innovation", "Teamwork"],
+    topProblems: [
+      { name: "Single Number", difficulty: "Easy", pattern: "Bit Manipulation" },
+      { name: "Reverse Bits", difficulty: "Easy", pattern: "Bits" },
+      { name: "Counting Bits", difficulty: "Easy", pattern: "DP + Bits" },
+    ],
+    tips: [
+      "Strong fundamentals in CS/EE",
+      "Think about hardware constraints",
+      "Show quality mindset",
+      "Demonstrate attention to detail",
+    ],
+    resources: [
+      { title: "Computer Systems Guide", href: "/docs/foundations/02-Computer-Systems" },
+    ],
+  },
+  databricks: {
+    fullName: "Databricks",
+    color: "#FF3621",
+    levels: "L1-L5 (SWE, Data)",
+    culture: "Open source, data-driven, customer obsessed",
+    loopStructure: [
+      { stage: "Phone Screen", duration: "60 min", focus: "Coding + data systems" },
+      { stage: "Onsite", duration: "4 rounds", focus: "Coding + Design + Domain" },
+    ],
+    codingFocus: ["Arrays", "Trees", "Graphs", "Data Systems"],
+    systemDesignPrompts: ["Design Data Lake", "Design ETL Pipeline", "Design Query Engine", "Design Streaming System"],
+    behavioralFocus: ["Open source contribution", "Data passion", "Customer impact"],
+    topProblems: [
+      { name: "Merge Intervals", difficulty: "Medium", pattern: "Intervals" },
+      { name: "Pacific Atlantic Water Flow", difficulty: "Medium", pattern: "Graph" },
+      { name: "Alien Dictionary", difficulty: "Hard", pattern: "Graph" },
+    ],
+    tips: [
+      "Show passion for data and analytics",
+      "Understand distributed systems",
+      "Open source contributions help",
+      "Think about scale and performance",
+    ],
+    resources: [
+      { title: "Data Engineering Guide", href: "/docs/data/00-Data-Index" },
+    ],
+  },
+  snowflake: {
+    fullName: "Snowflake",
+    color: "#29B5E8",
+    levels: "L1-L5 (SWE, Data)",
+    culture: "Innovation, customer success, transparency",
+    loopStructure: [
+      { stage: "Phone Screen", duration: "60 min", focus: "Coding + SQL" },
+      { stage: "Onsite", duration: "4 rounds", focus: "Coding + Design + SQL + Behavioral" },
+    ],
+    codingFocus: ["Arrays", "Strings", "SQL", "Data Structures"],
+    systemDesignPrompts: ["Design Data Warehouse", "Design Query Optimizer", "Design Storage System", "Design Multi-Cloud"],
+    behavioralFocus: ["Customer success", "Innovation", "Transparency"],
+    topProblems: [
+      { name: "Database normalization", difficulty: "Medium", pattern: "SQL" },
+      { name: "Window Functions", difficulty: "Medium", pattern: "SQL" },
+      { name: "Query Optimization", difficulty: "Hard", pattern: "SQL" },
+    ],
+    tips: [
+      "Strong SQL skills required",
+      "Understand data warehousing",
+      "Think about cloud architecture",
+      "Show customer obsession",
+    ],
+    resources: [
+      { title: "SQL Interview Guide", href: "/docs/interviews/05-SQL-Data-Interview" },
+      { title: "Data Modeling", href: "/docs/data/02-Data-Modeling" },
+    ],
+  },
+  coinbase: {
+    fullName: "Coinbase",
+    color: "#0052FF",
+    levels: "L1-L5 (SWE, Crypto)",
+    culture: "Clear communication, efficient execution, continuous learning",
+    loopStructure: [
+      { stage: "Phone Screen", duration: "60 min", focus: "Coding" },
+      { stage: "Onsite", duration: "4 rounds", focus: "Coding + Design + Domain + Behavioral" },
+    ],
+    codingFocus: ["Arrays", "Strings", "Trees", "Cryptography basics"],
+    systemDesignPrompts: ["Design Exchange", "Design Wallet", "Design Blockchain", "Design Payment System"],
+    behavioralFocus: ["Crypto passion", "Clear communication", "Efficient execution"],
+    topProblems: [
+      { name: "Decode Ways", difficulty: "Medium", pattern: "DP" },
+      { name: "Validate Binary Tree", difficulty: "Medium", pattern: "Tree" },
+      { name: "Design HashMap", difficulty: "Easy", pattern: "Design" },
+    ],
+    tips: [
+      "Show genuine interest in crypto",
+      "Understand blockchain basics",
+      "Think about security first",
+      "Communicate clearly and efficiently",
+    ],
+    resources: [
+      { title: "System Design Guide", href: "/docs/interviews/03-System-Design-Interview-Playbook" },
+    ],
+  },
+};
+
+const data = companyData[slug] || companyData.google;
+const pageTitle = `${company.name} Interview Prep 2026-2027`;
+const pageDescription = `Complete interview preparation guide for ${company.name}. Master coding, system design, and behavioral interviews with company-specific questions, tips, and resources.`;
+---
+
+<Layout title={pageTitle} activeSection="company-prep">
+  <div class="company-page">
+    <!-- Company Header -->
+    <header class="company-header" style={`background: linear-gradient(135deg, ${companyColor}22 0%, ${companyColor}05 100%)`}>
+      <div class="company-hero">
+        <div class="company-logo" style={`background: ${companyColor}`}>
+          <Fragment set:html={companyIcon} />
+        </div>
+        <div class="company-info">
+          <h1>{company.name} Interview Prep</h1>
+          <p class="company-levels">
+            <span class="nf">📊</span> Levels: {data.levels}
+          </p>
+          <p class="company-culture">
+            <span class="nf">🎯</span> Culture: {data.culture}
+          </p>
+        </div>
+      </div>
+    </header>
+
+    <div class="company-content">
+      <!-- Interview Loop -->
+      <section class="company-section">
+        <h2 class="section-title">
+          <span class="nf">🔄</span> Interview Loop Structure
+        </h2>
+        <div class="loop-timeline">
+          {data.loopStructure.map((stage: any, idx: number) => (
+            <div class="loop-stage">
+              <div class="stage-marker">{idx + 1}</div>
+              <div class="stage-content">
+                <h3>{stage.stage}</h3>
+                <div class="stage-meta">
+                  <span class="duration"><span class="nf">⏱</span> {stage.duration}</span>
+                  <span class="focus"><span class="nf">🎯</span> {stage.focus}</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <!-- Coding Focus -->
+      <section class="company-section">
+        <h2 class="section-title">
+          <span class="nf">💻</span> Coding Focus Areas
+        </h2>
+        <div class="focus-grid">
+          {data.codingFocus.map((topic: string) => (
+            <div class="focus-card">
+              <span class="nf">✓</span>
+              {topic}
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <!-- Top LeetCode Problems -->
+      <section class="company-section">
+        <h2 class="section-title">
+          <span class="nf">🔥</span> Top LeetCode Problems
+          <a href={leetcodeHref(slug)} class="view-all-link">
+            View all problems →
+          </a>
+        </h2>
+        <div class="problems-table">
+          <div class="problems-header">
+            <span>Problem Name</span>
+            <span>Difficulty</span>
+            <span>Pattern</span>
+          </div>
+          {data.topProblems.map((problem: any) => (
+            <a 
+              href={`https://leetcode.com/problems/${problem.name.toLowerCase().replace(/\s+/g, '-')}/`}
+              target="_blank"
+              rel="noopener"
+              class="problem-row"
+            >
+              <span class="problem-name">{problem.name}</span>
+              <span class={`difficulty ${problem.difficulty.toLowerCase()}`}>{problem.difficulty}</span>
+              <span class="pattern">{problem.pattern}</span>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      <!-- System Design Prompts -->
+      <section class="company-section">
+        <h2 class="section-title">
+          <span class="nf">🏗</span> Common System Design Prompts
+        </h2>
+        <div class="prompts-list">
+          {data.systemDesignPrompts.map((prompt: string) => (
+            <div class="prompt-item">
+              <span class="nf">▸</span>
+              {prompt}
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <!-- Behavioral Focus -->
+      <section class="company-section">
+        <h2 class="section-title">
+          <span class="nf">🎭</span> Behavioral Focus
+        </h2>
+        <div class="behavioral-tags">
+          {data.behavioralFocus.map((focus: string) => (
+            <span class="behavioral-tag">{focus}</span>
+          ))}
+        </div>
+      </section>
+
+      <!-- Pro Tips -->
+      <section class="company-section">
+        <h2 class="section-title">
+          <span class="nf">💡</span> Pro Tips for {data.fullName}
+        </h2>
+        <div class="tips-grid">
+          {data.tips.map((tip: string) => (
+            <div class="tip-card">
+              <span class="nf">⭐</span>
+              {tip}
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <!-- Resources -->
+      <section class="company-section">
+        <h2 class="section-title">
+          <span class="nf">📚</span> Recommended Resources
+        </h2>
+        <div class="resources-list">
+          {data.resources.map((resource: any) => (
+            <a href={resource.href} class="resource-link">
+              <span class="nf">📖</span>
+              {resource.title}
+              <span class="nf arrow">→</span>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      <!-- CTA -->
+      <section class="company-cta">
+        <h2>Ready to Start Your Preparation?</h2>
+        <div class="cta-actions">
+          <a href={leetcodeHref(slug)} class="btn btn-primary">
+            <span class="nf">👨‍💻</span>
+            Practice LeetCode Problems
+          </a>
+          <a href="/docs/start-here/00-README" class="btn btn-secondary">
+            <span class="nf">📖</span>
+            View Study Roadmap
+          </a>
+        </div>
+      </section>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .company-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--spacing-xl);
+  }
+
+  .company-header {
+    border-radius: 12px;
+    padding: var(--spacing-2xl);
+    margin-bottom: var(--spacing-xl);
+    border: 1px solid var(--surface0);
+  }
+
+  .company-hero {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xl);
+  }
+
+  .company-logo {
+    width: 80px;
+    height: 80px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    padding: 12px;
+  }
+
+  .company-logo svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .company-info h1 {
+    font-size: 2em;
+    margin-bottom: var(--spacing-sm);
+    color: var(--text);
+  }
+
+  .company-levels,
+  .company-culture {
+    color: var(--subtext1);
+    font-size: 0.95em;
+    margin: var(--spacing-xs) 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5ch;
+  }
+
+  .company-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xl);
+  }
+
+  .company-section {
+    background: var(--mantle);
+    border: 1px solid var(--surface0);
+    border-radius: 12px;
+    padding: var(--spacing-lg);
+  }
+
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75ch;
+    font-size: 1.3em;
+    color: var(--text);
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 1px solid var(--surface0);
+  }
+
+  .section-title .nf {
+    font-size: 1.2em;
+  }
+
+  .view-all-link {
+    margin-left: auto;
+    font-size: 0.85em;
+    color: var(--accent-blue);
+  }
+
+  /* Loop Timeline */
+  .loop-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+
+  .loop-stage {
+    display: flex;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    background: var(--crust);
+    border-radius: 8px;
+    border: 1px solid var(--surface0);
+  }
+
+  .stage-marker {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--accent-green);
+    color: var(--crust);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    flex-shrink: 0;
+  }
+
+  .stage-content h3 {
+    color: var(--text);
+    font-size: 1.05em;
+    margin-bottom: var(--spacing-xs);
+  }
+
+  .stage-meta {
+    display: flex;
+    gap: var(--spacing-md);
+    font-size: 0.85em;
+    color: var(--subtext1);
+  }
+
+  .stage-meta .duration,
+  .stage-meta .focus {
+    display: flex;
+    align-items: center;
+    gap: 0.5ch;
+  }
+
+  /* Focus Grid */
+  .focus-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: var(--spacing-sm);
+  }
+
+  .focus-card {
+    display: flex;
+    align-items: center;
+    gap: 0.75ch;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--crust);
+    border: 1px solid var(--surface0);
+    border-radius: 6px;
+    color: var(--subtext1);
+    font-size: 0.9em;
+  }
+
+  .focus-card .nf {
+    color: var(--accent-green);
+  }
+
+  /* Problems Table */
+  .problems-table {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  .problems-header {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--surface0);
+    border-radius: 6px;
+    font-size: 0.85em;
+    font-weight: bold;
+    color: var(--text);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .problem-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--crust);
+    border: 1px solid var(--surface0);
+    border-radius: 6px;
+    color: var(--subtext1);
+    text-decoration: none;
+    transition: all var(--transition-fast);
+    font-size: 0.9em;
+  }
+
+  .problem-row:hover {
+    border-color: var(--accent-blue);
+    background: var(--surface0);
+    text-decoration: none;
+  }
+
+  .problem-name {
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .difficulty {
+    padding: 0.15em 0.6em;
+    border-radius: 4px;
+    font-size: 0.85em;
+    font-weight: bold;
+    text-align: center;
+    width: fit-content;
+  }
+
+  .difficulty.easy {
+    background: rgba(166, 227, 161, 0.2);
+    color: var(--green);
+  }
+
+  .difficulty.medium {
+    background: rgba(250, 179, 135, 0.2);
+    color: var(--peach);
+  }
+
+  .difficulty.hard {
+    background: rgba(243, 139, 168, 0.2);
+    color: var(--red);
+  }
+
+  .pattern {
+    color: var(--subtext0);
+  }
+
+  /* Prompts List */
+  .prompts-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+
+  .prompt-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75ch;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--crust);
+    border: 1px solid var(--surface0);
+    border-radius: 6px;
+    color: var(--subtext1);
+    font-size: 0.95em;
+  }
+
+  .prompt-item .nf {
+    color: var(--accent-blue);
+  }
+
+  /* Behavioral Tags */
+  .behavioral-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+  }
+
+  .behavioral-tag {
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--crust);
+    border: 1px solid var(--surface0);
+    border-radius: 6px;
+    color: var(--subtext1);
+    font-size: 0.9em;
+    font-weight: 500;
+  }
+
+  /* Tips Grid */
+  .tips-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: var(--spacing-sm);
+  }
+
+  .tip-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75ch;
+    padding: var(--spacing-md);
+    background: var(--crust);
+    border: 1px solid var(--surface0);
+    border-radius: 6px;
+    color: var(--subtext1);
+    font-size: 0.9em;
+    line-height: 1.5;
+  }
+
+  .tip-card .nf {
+    color: var(--accent-yellow);
+    flex-shrink: 0;
+  }
+
+  /* Resources */
+  .resources-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+
+  .resource-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75ch;
+    padding: var(--spacing-md);
+    background: var(--crust);
+    border: 1px solid var(--surface0);
+    border-radius: 6px;
+    color: var(--subtext1);
+    text-decoration: none;
+    transition: all var(--transition-fast);
+    font-size: 0.95em;
+  }
+
+  .resource-link:hover {
+    border-color: var(--accent-green);
+    color: var(--accent-green);
+    text-decoration: none;
+    transform: translateX(4px);
+  }
+
+  .resource-link .arrow {
+    margin-left: auto;
+    color: var(--accent-green);
+  }
+
+  /* CTA Section */
+  .company-cta {
+    text-align: center;
+    padding: var(--spacing-2xl);
+    background: linear-gradient(135deg, var(--surface0) 0%, var(--mantle) 100%);
+    border: 1px solid var(--surface1);
+    border-radius: 12px;
+  }
+
+  .company-cta h2 {
+    color: var(--text);
+    font-size: 1.5em;
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .cta-actions {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75ch;
+    padding: var(--spacing-md) var(--spacing-xl);
+    border-radius: 8px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: all var(--transition-fast);
+  }
+
+  .btn-primary {
+    background: var(--accent-green);
+    color: var(--crust);
+  }
+
+  .btn-primary:hover {
+    background: var(--green);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(166, 227, 161, 0.3);
+    text-decoration: none;
+  }
+
+  .btn-secondary {
+    background: var(--surface0);
+    color: var(--text);
+    border: 1px solid var(--surface1);
+  }
+
+  .btn-secondary:hover {
+    background: var(--surface1);
+    transform: translateY(-2px);
+    text-decoration: none;
+  }
+
+  @media (max-width: 768px) {
+    .company-hero {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .company-info h1 {
+      font-size: 1.5em;
+    }
+
+    .problems-header,
+    .problem-row {
+      grid-template-columns: 1.5fr 0.8fr 0.8fr;
+      font-size: 0.8em;
+    }
+
+    .cta-actions {
+      flex-direction: column;
+    }
+
+    .btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+</style>

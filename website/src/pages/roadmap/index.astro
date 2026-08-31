@@ -1,0 +1,1239 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { ROADMAPS } from "../../lib/roadmaps";
+
+const nm = {
+  terminal: "󰒋",
+  server: "",
+  brain: "󰧑",
+  database: "",
+  chart: "",
+  flag: "󰘓",
+  arrow: "→",
+  clock: "",
+  level: "󰓾",
+  loop: "",
+  check: "",
+  browser: "󰖟",
+  device: "󰀲",
+  shield: "󰛡",
+  search: "",
+};
+
+const iconMap: Record<string, string> = {
+  terminal: nm.terminal,
+  server: nm.server,
+  brain: nm.brain,
+  database: nm.database,
+  chart: nm.chart,
+  browser: nm.browser,
+  device: nm.device,
+  shield: nm.shield,
+};
+
+const totalNodes = ROADMAPS.reduce(
+  (acc, r) => acc + r.phases.reduce((a, p) => a + p.nodes.length, 0),
+  0,
+);
+
+const totalPhases = ROADMAPS.reduce((a, r) => a + r.phases.length, 0);
+
+const fullRoadmapData = ROADMAPS.map((r) => ({
+  slug: r.slug,
+  name: r.name,
+  tagline: r.tagline,
+  description: r.description,
+  phases: r.phases.map((p) => ({
+    name: p.name,
+    goal: p.goal,
+    question: p.question,
+    nodes: p.nodes.map((n) => ({
+      id: n.id,
+      title: n.title,
+      hint: n.hint,
+      resource: n.resource ?? null,
+      resources: n.resources ?? [],
+    })),
+  })),
+}));
+---
+
+<Layout
+  title="Interactive Role Roadmaps"
+  description="Interactive, progress-tracked interview roadmaps for 7 engineering roles. Click nodes, mark them in-progress or done, and track your prep."
+  activeSection="roadmap"
+>
+  <div class="roadmap-landing">
+    <header class="rm-hero">
+      <h1><span class="nf">{nm.flag}</span> Interactive Role Roadmaps</h1>
+      <p class="rm-subtitle">
+        Pick a role and walk a phase-by-phase path to interview readiness. Each
+        roadmap is checkable and tracks your progress — better than a static
+        picture.
+      </p>
+      <div class="rm-stats">
+        <div class="rm-stat"><span class="value">{ROADMAPS.length}</span><span class="label">Roles</span></div>
+        <div class="rm-stat"><span class="value">{totalPhases}</span><span class="label">Phases</span></div>
+        <div class="rm-stat"><span class="value">{totalNodes}</span><span class="label">Topics</span></div>
+      </div>
+      <div class="rm-search">
+        <span class="nf">{nm.search}</span>
+        <input
+          type="text"
+          id="rm-search-input"
+          placeholder="Search topics across all roadmaps… e.g. caching, SQL, A/B testing"
+          autocomplete="off"
+        />
+        <span class="rm-search-count" id="rm-search-count"></span>
+      </div>
+      <div class="rm-search-results" id="rm-search-results" hidden></div>
+    </header>
+
+    <script type="application/json" id="rm-index-data" set:html={JSON.stringify(ROADMAPS.map(r => ({ slug: r.slug, name: r.name, tagline: r.tagline, description: r.description, phases: r.phases.map(p => ({ name: p.name, nodes: p.nodes.map(n => ({ id: n.id, title: n.title, hint: n.hint })) })) })))}></script>
+    <script type="application/json" id="rm-full-data" set:html={JSON.stringify(fullRoadmapData)}></script>
+
+    <!-- Obsidian vault export -->
+    <div class="rm-hero-actions">
+      <button class="rm-vault-btn" id="rm-export-vault" type="button">
+        <span class="nf">󰈠</span> Export all for Obsidian
+      </button>
+      <span class="rm-vault-hint">Downloads one markdown vault note with all {ROADMAPS.length} roadmaps, your progress, notes & links.</span>
+    </div>
+
+    <!-- Role quiz -->
+    <section class="rm-quiz" id="rm-quiz">
+      <button class="rm-quiz-launch" id="rm-quiz-launch" type="button">
+        <span class="nf">{nm.search}</span> Not sure which role? Take the 30-second quiz
+      </button>
+      <div class="rm-quiz-body" id="rm-quiz-body" hidden>
+        <div class="rm-quiz-questions" id="rm-quiz-questions"></div>
+        <button class="rm-quiz-submit" id="rm-quiz-submit" type="button">Show my recommendation</button>
+      </div>
+      <div class="rm-quiz-result" id="rm-quiz-result" hidden></div>
+    </section>
+
+    <div class="rm-grid">
+      {
+        ROADMAPS.map((roadmap) => (
+          <a href={`/roadmap/${roadmap.slug}`} class="rm-card" data-slug={roadmap.slug} style={`--rm-color: ${roadmap.color}`}>
+            <div class="rm-card-top">
+              <span class="rm-icon">
+                <span class="nf">{iconMap[roadmap.icon] || nm.terminal}</span>
+              </span>
+              <span class="rm-arrow"><span class="nf">{nm.arrow}</span></span>
+            </div>
+            <h2 class="rm-name">{roadmap.name}</h2>
+            <p class="rm-tagline">{roadmap.tagline}</p>
+            <div class="rm-card-progress">
+              <div class="rm-card-bar"><div class="rm-card-fill" style="width:0%"></div></div>
+              <span class="rm-card-pct">0%</span>
+            </div>
+            <ul class="rm-meta">
+              <li><span class="nf">{nm.level}</span> {roadmap.levels}</li>
+              <li><span class="nf">{nm.loop}</span> {roadmap.loop}</li>
+              <li><span class="nf">{nm.clock}</span> {roadmap.weeklyHours} · {roadmap.phases.length} phases</li>
+            </ul>
+            <div class="rm-footer">
+              <span class="rm-cta">Start roadmap</span>
+              <span class="rm-pip">{roadmap.phases.length} phases</span>
+            </div>
+          </a>
+        ))
+      }
+    </div>
+
+    <!-- Prep audit -->
+    <section class="rm-audit" id="rm-audit">
+      <header class="rm-audit-head">
+        <h2><span class="nf">{nm.check}</span> Prep audit</h2>
+        <p class="rm-audit-sub">Where you stand across all {ROADMAPS.length} roadmaps — and the gaps to attack next.</p>
+      </header>
+      <div class="rm-audit-stats" id="rm-audit-stats"></div>
+      <div class="rm-audit-cols" id="rm-audit-cols"></div>
+    </section>
+
+    <div class="rm-tip">
+      <span class="nf">{nm.check}</span>
+      Progress is saved automatically in your browser. Click a topic to cycle it
+      between <em>pending</em>, <em>in progress</em> and <em>done</em>.
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .roadmap-landing { max-width: 1200px; margin: 0 auto; padding: var(--spacing-xl); }
+  .rm-hero { margin-bottom: var(--spacing-2xl); }
+  .rm-hero h1 { display: flex; align-items: center; gap: 0.75ch; font-size: 2em; color: var(--text); margin-bottom: var(--spacing-sm); }
+  .rm-hero h1 .nf { color: var(--accent-green); }
+  .rm-subtitle { color: var(--subtext1); font-size: 1.1em; max-width: 70ch; margin-bottom: var(--spacing-lg); }
+  .rm-stats { display: flex; gap: var(--spacing-xl); margin-top: var(--spacing-lg); }
+  .rm-stat { display: flex; flex-direction: column; }
+  .rm-stat .value { font-size: 2em; font-weight: 700; color: var(--accent-blue); }
+  .rm-stat .label { color: var(--subtext0); font-size: 0.85em; text-transform: uppercase; letter-spacing: 0.05em; }
+  .rm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: var(--spacing-lg); }
+  .rm-card { position: relative; display: flex; flex-direction: column; gap: var(--spacing-sm); background: var(--mantle); border: 1px solid var(--surface0); border-radius: 12px; padding: var(--spacing-lg); text-decoration: none; overflow: hidden; transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease; }
+  .rm-card::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--rm-color), transparent); opacity: 0.75; }
+  .rm-card:hover { transform: translateY(-4px); border-color: var(--rm-color); box-shadow: 0 10px 28px color-mix(in srgb, var(--rm-color) 22%, rgba(0,0,0,0.2)); }
+  .rm-card-top { display: flex; justify-content: space-between; align-items: center; }
+  .rm-icon { display: grid; place-items: center; width: 46px; height: 46px; border-radius: 12px; background: linear-gradient(135deg, color-mix(in srgb, var(--rm-color) 26%, transparent), transparent); color: var(--rm-color); font-size: 1.55em; border: 1px solid color-mix(in srgb, var(--rm-color) 30%, transparent); }
+  .rm-arrow { color: var(--subtext0); font-size: 1.2em; transition: transform 0.15s ease, color 0.15s ease; }
+  .rm-card:hover .rm-arrow { color: var(--rm-color); transform: translateX(3px); }
+  .rm-name { color: var(--text); font-size: 1.4em; margin: var(--spacing-sm) 0 0; }
+  .rm-tagline { color: var(--subtext1); font-size: 0.95em; line-height: 1.5; margin: 0; }
+  .rm-card-progress { display: flex; align-items: center; gap: 0.75ch; margin-top: var(--spacing-md); }
+  .rm-card-bar { flex: 1; height: 6px; background: var(--crust); border: 1px solid var(--surface0); border-radius: 3px; overflow: hidden; }
+  .rm-card-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--rm-color), var(--accent-green)); border-radius: 3px; transition: width 0.5s ease; }
+  .rm-card-pct { color: var(--subtext0); font-size: 0.8em; font-weight: 700; min-width: 3ch; text-align: right; }
+  .rm-meta { list-style: none; padding: 0; margin: var(--spacing-sm) 0 0; display: flex; flex-direction: column; gap: var(--spacing-xs); }
+  .rm-meta li { display: flex; align-items: center; gap: 0.6ch; color: var(--subtext0); font-size: 0.85em; }
+  .rm-meta .nf { color: var(--rm-color); }
+  .rm-footer { margin-top: auto; padding-top: var(--spacing-md); display: flex; justify-content: space-between; align-items: center; }
+  .rm-cta { color: var(--rm-color); font-weight: 600; font-size: 0.9em; }
+  .rm-pip { color: var(--subtext0); font-size: 0.8em; background: var(--crust); border: 1px solid var(--surface0); padding: 2px 8px; border-radius: 999px; }
+  .rm-tip { margin-top: var(--spacing-2xl); padding: var(--spacing-md) var(--spacing-lg); background: var(--mantle); border: 1px dashed var(--surface1); border-radius: 8px; color: var(--subtext1); font-size: 0.9em; display: flex; align-items: center; gap: 0.75ch; }
+  .rm-tip .nf { color: var(--accent-green); }
+
+  .rm-search {
+    display: flex;
+    align-items: center;
+    gap: 0.75ch;
+    margin-top: var(--spacing-lg);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--crust);
+    border: 1px solid var(--surface0);
+    border-radius: 10px;
+    max-width: 560px;
+    transition: border-color var(--transition-fast);
+  }
+
+  .rm-search:focus-within {
+    border-color: var(--accent-blue);
+  }
+
+  .rm-search .nf {
+    color: var(--subtext0);
+  }
+
+  .rm-search input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text);
+    font-family: var(--font-family);
+    font-size: 0.95em;
+    outline: none;
+  }
+
+  .rm-search input::placeholder {
+    color: var(--subtext0);
+  }
+
+  .rm-search-count {
+    color: var(--subtext0);
+    font-size: 0.8em;
+    white-space: nowrap;
+  }
+
+  .rm-search-results {
+    margin-top: var(--spacing-md);
+    background: var(--mantle);
+    border: 1px solid var(--surface0);
+    border-radius: 10px;
+    padding: var(--spacing-md);
+    max-height: 320px;
+    overflow-y: auto;
+  }
+
+  .rm-search-results[hidden] {
+    display: none;
+  }
+
+  .rm-result-group {
+    margin-bottom: var(--spacing-md);
+  }
+
+  .rm-result-group:last-child {
+    margin-bottom: 0;
+  }
+
+  .rm-result-role {
+    color: var(--text);
+    font-weight: 700;
+    font-size: 0.85em;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: var(--spacing-xs);
+  }
+
+  .rm-result-item {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75ch;
+    padding: 4px 8px;
+    border-radius: 6px;
+    color: var(--subtext1);
+    font-size: 0.9em;
+  }
+
+  .rm-result-item:hover {
+    background: var(--surface0);
+  }
+
+  .rm-result-item a {
+    color: var(--accent-blue);
+    text-decoration: none;
+  }
+
+  .rm-result-item a:hover {
+    text-decoration: underline;
+  }
+
+  .rm-result-title {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .rm-result-hint {
+    color: var(--subtext0);
+    font-size: 0.82em;
+  }
+
+  .rm-quiz {
+    margin-top: var(--spacing-lg);
+    max-width: 560px;
+  }
+
+  .rm-hero-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-md);
+    flex-wrap: wrap;
+  }
+
+  .rm-vault-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5ch;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: color-mix(in srgb, var(--accent-blue) 14%, transparent);
+    border: 1px solid var(--accent-blue);
+    border-radius: 8px;
+    color: var(--accent-blue);
+    font-family: var(--font-family);
+    font-size: 0.88em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+  }
+
+  .rm-vault-btn:hover {
+    background: color-mix(in srgb, var(--accent-blue) 26%, transparent);
+    box-shadow: 0 4px 14px color-mix(in srgb, var(--accent-blue) 25%, transparent);
+  }
+
+  .rm-vault-hint {
+    color: var(--subtext0);
+    font-size: 0.82em;
+  }
+
+  .rm-quiz-launch {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6ch;
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--mantle);
+    border: 1px dashed var(--yellow);
+    border-radius: 10px;
+    color: var(--yellow);
+    font-family: var(--font-family);
+    font-size: 0.92em;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+  }
+
+  .rm-quiz-launch:hover {
+    background: color-mix(in srgb, var(--yellow) 10%, transparent);
+  }
+
+  .rm-quiz-body {
+    margin-top: var(--spacing-sm);
+    background: var(--mantle);
+    border: 1px solid var(--yellow);
+    border-radius: 12px;
+    padding: var(--spacing-lg);
+  }
+
+  .rm-quiz-body[hidden],
+  .rm-quiz-result[hidden] {
+    display: none;
+  }
+
+  .rm-quiz-q {
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .rm-quiz-q-title {
+    color: var(--text);
+    font-weight: 700;
+    font-size: 0.95em;
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .rm-quiz-opt {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: var(--spacing-sm) var(--spacing-md);
+    margin-bottom: var(--spacing-xs);
+    background: var(--crust);
+    border: 1px solid var(--surface0);
+    border-radius: 8px;
+    color: var(--subtext1);
+    font-family: var(--font-family);
+    font-size: 0.9em;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+  }
+
+  .rm-quiz-opt:hover {
+    border-color: var(--yellow);
+    color: var(--text);
+  }
+
+  .rm-quiz-opt.selected {
+    border-color: var(--yellow);
+    background: color-mix(in srgb, var(--yellow) 12%, transparent);
+    color: var(--text);
+  }
+
+  .rm-quiz-submit {
+    margin-top: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-lg);
+    background: color-mix(in srgb, var(--yellow) 15%, transparent);
+    border: 1px solid var(--yellow);
+    border-radius: 8px;
+    color: var(--yellow);
+    font-family: var(--font-family);
+    font-size: 0.95em;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+  }
+
+  .rm-quiz-submit:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--yellow) 28%, transparent);
+  }
+
+  .rm-quiz-submit:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .rm-quiz-result {
+    margin-top: var(--spacing-sm);
+    background: var(--mantle);
+    border: 1px solid var(--accent-green);
+    border-radius: 12px;
+    padding: var(--spacing-lg);
+  }
+
+  .rm-quiz-result h3 {
+    color: var(--text);
+    margin: 0 0 var(--spacing-sm);
+    font-size: 1.1em;
+    display: flex;
+    align-items: center;
+    gap: 0.6ch;
+  }
+
+  .rm-quiz-result h3 .nf {
+    color: var(--accent-green);
+  }
+
+  .rm-quiz-match {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) 0;
+    border-bottom: 1px solid var(--surface0);
+    text-decoration: none;
+  }
+
+  .rm-quiz-match:last-child {
+    border-bottom: none;
+  }
+
+  .rm-quiz-match:hover .rm-quiz-match-name {
+    color: var(--accent-blue);
+  }
+
+  .rm-quiz-match-rank {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: var(--crust);
+    border: 1px solid var(--surface1);
+    color: var(--subtext0);
+    font-size: 0.8em;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .rm-quiz-match-main {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .rm-quiz-match-name {
+    color: var(--text);
+    font-weight: 600;
+    font-size: 0.95em;
+    display: flex;
+    align-items: center;
+    gap: 0.5ch;
+  }
+
+  .rm-quiz-match-name .nf {
+    color: var(--subtext0);
+    font-size: 1em;
+  }
+
+  .rm-quiz-match-bar {
+    margin-top: 4px;
+    height: 5px;
+    background: var(--crust);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .rm-quiz-match-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: linear-gradient(90deg, var(--accent-green), var(--green));
+    transition: width 0.6s ease;
+  }
+
+  .rm-quiz-match-pct {
+    color: var(--subtext0);
+    font-size: 0.82em;
+    font-weight: 700;
+    width: 4ch;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  .rm-audit {
+    margin-top: var(--spacing-2xl);
+    background: var(--mantle);
+    border: 1px solid var(--surface0);
+    border-radius: 14px;
+    padding: var(--spacing-lg);
+  }
+
+  .rm-audit-head h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.6ch;
+    color: var(--text);
+    font-size: 1.2em;
+    margin: 0 0 var(--spacing-xs);
+  }
+
+  .rm-audit-head h2 .nf {
+    color: var(--accent-green);
+  }
+
+  .rm-audit-sub {
+    color: var(--subtext0);
+    font-size: 0.88em;
+    margin: 0 0 var(--spacing-lg);
+  }
+
+  .rm-audit-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .rm-audit-stat {
+    background: var(--crust);
+    border: 1px solid var(--surface0);
+    border-radius: 10px;
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+
+  .rm-audit-stat .value {
+    display: block;
+    font-size: 1.6em;
+    font-weight: 700;
+    color: var(--accent-blue);
+  }
+
+  .rm-audit-stat .label {
+    color: var(--subtext0);
+    font-size: 0.75em;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .rm-audit-cols {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--spacing-lg);
+  }
+
+  .rm-audit-col h3 {
+    color: var(--text);
+    font-size: 0.95em;
+    margin: 0 0 var(--spacing-sm);
+    display: flex;
+    align-items: center;
+    gap: 0.5ch;
+  }
+
+  .rm-audit-col h3 .nf {
+    color: var(--yellow);
+  }
+
+  .rm-audit-row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-xs) 0;
+    text-decoration: none;
+  }
+
+  .rm-audit-row:hover .rm-audit-row-name {
+    color: var(--accent-blue);
+  }
+
+  .rm-audit-row-name {
+    color: var(--text);
+    font-weight: 600;
+    font-size: 0.88em;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transition: color var(--transition-fast);
+  }
+
+  .rm-audit-row-detail {
+    color: var(--subtext0);
+    font-size: 0.8em;
+  }
+
+  .rm-audit-row-bar {
+    flex: 1;
+    height: 5px;
+    background: var(--crust);
+    border: 1px solid var(--surface0);
+    border-radius: 3px;
+    overflow: hidden;
+    min-width: 60px;
+  }
+
+  .rm-audit-row-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: linear-gradient(90deg, var(--red), var(--yellow));
+    transition: width 0.5s ease;
+  }
+
+  .rm-audit-row-fill.warm {
+    background: linear-gradient(90deg, var(--yellow), var(--green));
+  }
+
+  .rm-audit-row-fill.good {
+    background: linear-gradient(90deg, var(--green), var(--teal));
+  }
+
+  .rm-audit-row-pct {
+    color: var(--subtext0);
+    font-size: 0.8em;
+    font-weight: 700;
+    width: 3.5ch;
+    text-align: right;
+  }
+
+  .rm-audit-empty {
+    color: var(--subtext0);
+    font-size: 0.88em;
+    font-style: italic;
+  }
+</style>
+
+<script>
+  const searchInput = document.getElementById("rm-search-input");
+  const resultsBox = document.getElementById("rm-search-results");
+  const countEl = document.getElementById("rm-search-count");
+  const dataEl = document.getElementById("rm-index-data");
+  const cards = Array.from(document.querySelectorAll<HTMLElement>(".rm-card"));
+
+  // Live progress on each role card
+  try {
+    const allSaved = JSON.parse(localStorage.getItem("rm-progress") || "{}");
+    cards.forEach((card) => {
+      const slug = card.getAttribute("data-slug");
+      if (!slug || !dataEl) return;
+      const rm = JSON.parse(dataEl.textContent || "[]").find(
+        (r: any) => r.slug === slug,
+      );
+      if (!rm) return;
+      let total = 0;
+      rm.phases.forEach((p: any) => (total += p.nodes.length));
+      const state = allSaved[slug] || {};
+      let done = 0;
+      let doing = 0;
+      for (const v of Object.values(state)) {
+        if (v === "done") done++;
+        else if (v === "doing") doing++;
+      }
+      const pct = total ? Math.round(((done + doing * 0.5) / total) * 100) : 0;
+      const fill = card.querySelector<HTMLElement>(".rm-card-fill");
+      const label = card.querySelector<HTMLElement>(".rm-card-pct");
+      if (fill) fill.style.width = `${pct}%`;
+      if (label) label.textContent = `${pct}%`;
+    });
+  } catch {
+    /* ignore storage errors */
+  }
+
+  if (searchInput && dataEl) {
+    const roadmaps = JSON.parse(dataEl.textContent || "[]");
+
+    function normalize(s: string): string {
+      return s.toLowerCase().trim();
+    }
+
+    searchInput.addEventListener("input", () => {
+      const q = normalize(searchInput.value);
+      if (!q) {
+        cards.forEach((c) => (c.style.display = ""));
+        resultsBox?.setAttribute("hidden", "");
+        if (countEl) countEl.textContent = "";
+        return;
+      }
+
+      // Filter role cards by name/tagline/description
+      cards.forEach((card) => {
+        const hay = normalize(card.textContent || "");
+        card.style.display = hay.includes(q) ? "" : "none";
+      });
+
+      // Topic matches across all roadmaps
+      let matches = 0;
+      let html = "";
+      for (const rm of roadmaps) {
+        const hits: { title: string; hint: string }[] = [];
+        for (const phase of rm.phases) {
+          for (const node of phase.nodes) {
+            if (
+              normalize(node.title).includes(q) ||
+              normalize(node.hint).includes(q)
+            ) {
+              hits.push({ title: node.title, hint: node.hint });
+            }
+          }
+        }
+        if (hits.length > 0) {
+          matches += hits.length;
+          html += `<div class="rm-result-group">
+            <div class="rm-result-role"><a href="/roadmap/${rm.slug}">${rm.name}</a></div>
+            ${hits
+              .slice(0, 6)
+              .map(
+                (h) => `<div class="rm-result-item">
+                  <a href="/roadmap/${rm.slug}"><span class="rm-result-title">${h.title}</span></a>
+                  <span class="rm-result-hint">${h.hint}</span>
+                </div>`,
+              )
+              .join("")}
+          </div>`;
+        }
+      }
+
+      if (matches === 0) {
+        resultsBox?.removeAttribute("hidden");
+        resultsBox!.innerHTML = `<div class="rm-result-item">No topics match "<strong>${searchInput.value}</strong>" — try "SQL", "caching", "drift", "behavioral".</div>`;
+      } else {
+        resultsBox?.removeAttribute("hidden");
+        resultsBox!.innerHTML = html;
+      }
+      if (countEl) countEl.textContent = matches ? `${matches} topics` : "";
+    });
+  }
+
+  // ============ Role suggestion quiz ============
+
+  const quizRoles = JSON.parse(dataEl?.textContent || "[]");
+
+  const quizQuestions = [
+    {
+      q: "What kind of problems do you most enjoy?",
+      options: [
+        { label: "Building polished user-facing products", roles: ["frontend-engineer", "fullstack-engineer", "mobile-engineer"] },
+        { label: "Services, APIs & distributed systems", roles: ["backend-engineer", "swe-generalist", "fullstack-engineer"] },
+        { label: "Models, data & statistics", roles: ["ml-engineer", "ml-research-scientist", "data-scientist"] },
+        { label: "Data plumbing, warehouses & ETL", roles: ["data-engineer", "mlops", "data-scientist"] },
+        { label: "Reliability, automation & incidents", roles: ["devops-sre", "mlops"] },
+        { label: "Security: attack & defense", roles: ["security-engineer"] },
+      ],
+    },
+    {
+      q: "Which sounds like a great day at work?",
+      options: [
+        { label: "Shipping a feature users love", roles: ["frontend-engineer", "fullstack-engineer", "mobile-engineer"] },
+        { label: "Solving a hard systems-design puzzle", roles: ["backend-engineer", "swe-generalist", "devops-sre"] },
+        { label: "A clean experiment result", roles: ["ml-engineer", "data-scientist", "ml-research-scientist"] },
+        { label: "A pipeline that runs flawlessly", roles: ["data-engineer", "mlops"] },
+        { label: "Getting a model into production", roles: ["ml-engineer", "mlops", "backend-engineer"] },
+        { label: "Finding a real vulnerability", roles: ["security-engineer"] },
+      ],
+    },
+    {
+      q: "How do you feel about math & statistics?",
+      options: [
+        { label: "Love it — proofs and distributions feel natural", roles: ["ml-research-scientist", "ml-engineer", "data-scientist"] },
+        { label: "Comfortable, fine when needed", roles: ["backend-engineer", "data-engineer", "mlops"] },
+        { label: "Prefer to avoid heavy math", roles: ["frontend-engineer", "mobile-engineer", "security-engineer", "fullstack-engineer", "swe-generalist", "devops-sre"] },
+      ],
+    },
+    {
+      q: "What's your target?",
+      options: [
+        { label: "Fastest, broadest path to interviews", roles: ["swe-generalist", "backend-engineer", "frontend-engineer"] },
+        { label: "A specialized high-demand niche", roles: ["ml-engineer", "data-engineer", "mlops", "security-engineer", "mobile-engineer"] },
+        { label: "A research / deep-tech track", roles: ["ml-research-scientist", "data-scientist"] },
+      ],
+    },
+    {
+      q: "Preferred working style?",
+      options: [
+        { label: "Deep individual craft", roles: ["frontend-engineer", "mobile-engineer", "ml-research-scientist", "security-engineer"] },
+        { label: "Cross-team collaboration & influencing", roles: ["backend-engineer", "data-scientist", "mlops", "swe-generalist", "fullstack-engineer"] },
+        { label: "Keeping systems running (incl. on-call)", roles: ["devops-sre", "mlops"] },
+      ],
+    },
+  ];
+
+  const quizEls = {
+    launch: document.getElementById("rm-quiz-launch"),
+    body: document.getElementById("rm-quiz-body"),
+    questions: document.getElementById("rm-quiz-questions"),
+    submit: document.getElementById("rm-quiz-submit"),
+    result: document.getElementById("rm-quiz-result"),
+  };
+
+  const quizScores: Record<string, number> = {};
+  quizRoles.forEach((r: any) => (quizScores[r.slug] = 0));
+  let quizSelected: (number | null)[] = quizQuestions.map(() => null);
+
+  function renderQuiz() {
+    if (!quizEls.questions) return;
+    quizEls.questions.innerHTML = quizQuestions
+      .map(
+        (qq, qi) => `<div class="rm-quiz-q">
+          <div class="rm-quiz-q-title">${qi + 1}. ${qq.q}</div>
+          ${qq.options
+            .map(
+              (opt, oi) =>
+                `<button type="button" class="rm-quiz-opt${quizSelected[qi] === oi ? " selected" : ""}" data-q="${qi}" data-o="${oi}">${opt.label}</button>`,
+            )
+            .join("")}
+        </div>`,
+      )
+      .join("");
+    quizEls.questions.querySelectorAll<HTMLButtonElement>(".rm-quiz-opt").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const q = parseInt(btn.getAttribute("data-q") || "0", 10);
+        const o = parseInt(btn.getAttribute("data-o") || "0", 10);
+        quizSelected[q] = o;
+        renderQuiz();
+      });
+    });
+    const answered = quizSelected.filter((s) => s !== null).length;
+    if (quizEls.submit) quizEls.submit.disabled = answered < quizQuestions.length;
+  }
+
+  quizEls.launch?.addEventListener("click", () => {
+    quizEls.body?.removeAttribute("hidden");
+    quizEls.launch?.setAttribute("hidden", "");
+    renderQuiz();
+  });
+
+  quizEls.submit?.addEventListener("click", () => {
+    Object.keys(quizScores).forEach((k) => (quizScores[k] = 0));
+    quizSelected.forEach((choice, qi) => {
+      if (choice === null) return;
+      quizQuestions[qi].options[choice].roles.forEach((slug) => {
+        quizScores[slug] += 2;
+      });
+    });
+    const max = Math.max(1, ...Object.values(quizScores));
+    const ranked = Object.entries(quizScores)
+      .map(([slug, score]) => ({
+        slug,
+        score,
+        pct: Math.round((score / max) * 100),
+        meta: quizRoles.find((r: any) => r.slug === slug),
+      }))
+      .filter((r) => r.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 3);
+
+    if (!quizEls.result) return;
+    quizEls.result.removeAttribute("hidden");
+    quizEls.result.innerHTML = `<h3><span class="nf">{nm.search}</span> Your best-fit roadmaps</h3>
+      ${ranked
+        .map(
+          (r, i) => `<a class="rm-quiz-match" href="/roadmap/${r.slug}">
+            <span class="rm-quiz-match-rank">${i + 1}</span>
+            <span class="rm-quiz-match-main">
+              <span class="rm-quiz-match-name"><span class="nf">{nm.terminal}</span> ${r.meta?.name ?? r.slug}</span>
+              <span class="rm-quiz-match-bar"><span class="rm-quiz-match-fill" style="width:${r.pct}%"></span></span>
+            </span>
+            <span class="rm-quiz-match-pct">${r.pct}%</span>
+          </a>`,
+        )
+        .join("")}`;
+    quizEls.result.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  });
+
+  // ============ Prep audit (weak spots across all roadmaps) ============
+
+  function renderAudit() {
+    const statsEl = document.getElementById("rm-audit-stats");
+    const colsEl = document.getElementById("rm-audit-cols");
+    if (!statsEl || !colsEl) return;
+
+    let allSaved: Record<string, Record<string, string>> = {};
+    try {
+      allSaved = JSON.parse(localStorage.getItem("rm-progress") || "{}");
+    } catch {
+      /* ignore */
+    }
+    const roles = JSON.parse(dataEl?.textContent || "[]");
+
+    let totalNodes = 0;
+    let totalDone = 0;
+    let totalDoing = 0;
+    const roleStats: {
+      slug: string;
+      name: string;
+      color: string;
+      done: number;
+      doing: number;
+      total: number;
+      pct: number;
+      phaseGaps: { phaseIndex: number; name: string; done: number; total: number }[];
+    }[] = [];
+
+    roles.forEach((r: any) => {
+      const state = allSaved[r.slug] || {};
+      let done = 0;
+      let doing = 0;
+      const phaseGaps: {
+        phaseIndex: number;
+        name: string;
+        done: number;
+        total: number;
+      }[] = [];
+      r.phases.forEach((p: any, pi: number) => {
+        let pdone = 0;
+        p.nodes.forEach((n: any) => {
+          const s = state[n.id];
+          if (s === "done") {
+            done++;
+            pdone++;
+          } else if (s === "doing") doing++;
+        });
+        if (pdone < p.nodes.length) {
+          phaseGaps.push({
+            phaseIndex: pi,
+            name: p.name,
+            done: pdone,
+            total: p.nodes.length,
+          });
+        }
+      });
+      const total = r.phases.reduce((a: number, p: any) => a + p.nodes.length, 0);
+      const pct = total ? Math.round(((done + doing * 0.5) / total) * 100) : 0;
+      roleStats.push({
+        slug: r.slug,
+        name: r.name,
+        color: r.color,
+        done,
+        doing,
+        total,
+        pct,
+        phaseGaps,
+      });
+      totalNodes += total;
+      totalDone += done;
+      totalDoing += doing;
+    });
+
+    const overallPct = totalNodes
+      ? Math.round(((totalDone + totalDoing * 0.5) / totalNodes) * 100)
+      : 0;
+
+    statsEl.innerHTML = `
+      <div class="rm-audit-stat"><span class="value">${overallPct}%</span><span class="label">Overall</span></div>
+      <div class="rm-audit-stat"><span class="value">${totalDone}</span><span class="label">Topics done</span></div>
+      <div class="rm-audit-stat"><span class="value">${totalDoing}</span><span class="label">In progress</span></div>
+      <div class="rm-audit-stat"><span class="value">${roleStats.filter((r) => r.pct > 0).length}</span><span class="label">Roles started</span></div>
+    `;
+
+    // Weakest roadmaps: smallest pct first
+    const weakest = [...roleStats].sort((a, b) => a.pct - b.pct).slice(0, 6);
+    // Weakest phases: smallest done/total ratio across all roadmaps
+    const weakestPhases = roleStats
+      .flatMap((r) =>
+        r.phaseGaps.map((g) => ({
+          slug: r.slug,
+          color: r.color,
+          name: r.name,
+          phaseName: g.name,
+          done: g.done,
+          total: g.total,
+          ratio: g.total ? g.done / g.total : 0,
+        })),
+      )
+      .sort((a, b) => a.ratio - b.ratio)
+      .slice(0, 6);
+
+    const cols: string[] = [];
+
+    cols.push(`<div class="rm-audit-col">
+      <h3><span class="nf">󰍁</span> Biggest gaps</h3>
+      ${weakest
+        .map(
+          (r) => {
+            const cls = r.pct >= 50 ? "good" : r.pct >= 20 ? "warm" : "";
+            const stateLabel =
+              r.pct === 0 ? "Not started" : `${r.pct}% · ${r.done}/${r.total} done`;
+            return `<a class="rm-audit-row" href="/roadmap/${r.slug}">
+              <span class="rm-audit-row-name" style="color:${r.color}">${r.name}</span>
+              <span class="rm-audit-row-bar"><span class="rm-audit-row-fill ${cls}" style="width:${r.pct}%"></span></span>
+              <span class="rm-audit-row-pct">${stateLabel}</span>
+            </a>`;
+          }
+        )
+        .join("")}
+    </div>`);
+
+    cols.push(`<div class="rm-audit-col">
+      <h3><span class="nf">󰧑</span> Weakest phases</h3>
+      ${
+        weakestPhases.length
+          ? weakestPhases
+              .map(
+                (g) => `<a class="rm-audit-row" href="/roadmap/${g.slug}">
+              <span class="rm-audit-row-name" style="color:${g.color}">${g.phaseName}</span>
+              <span class="rm-audit-row-detail">${g.name}</span>
+              <span class="rm-audit-row-bar"><span class="rm-audit-row-fill warm" style="width:${(g.done / g.total) * 100}%"></span></span>
+              <span class="rm-audit-row-pct">${g.done}/${g.total}</span>
+            </a>`,
+              )
+              .join("")
+          : `<div class="rm-audit-empty">Every phase you've started is complete. Time to pick a new role?</div>`
+      }
+    </div>`);
+
+    colsEl.innerHTML = cols.join("");
+  }
+
+  renderAudit();
+
+  window.addEventListener("storage", (e) => {
+    if (e.key === "rm-progress") renderAudit();
+  });
+
+  // ============ Export all for Obsidian (vault note) ============
+
+  function toObsidianLink(href: string, label: string): string {
+    if (href.startsWith("http")) return `[${label}](${href})`;
+    const name = href.split("/").pop() ?? href;
+    return `[[${name}]]`;
+  }
+
+  function buildVaultMarkdown(): string {
+    const fullEl = document.getElementById("rm-full-data");
+    const full = fullEl ? JSON.parse(fullEl.textContent || "[]") : [];
+    if (full.length === 0) return "";
+
+    let allSaved: Record<string, Record<string, string>> = {};
+    let allNotes: Record<string, Record<string, string>> = {};
+    try {
+      allSaved = JSON.parse(localStorage.getItem("rm-progress") || "{}");
+    } catch {
+      /* ignore */
+    }
+    try {
+      allNotes = JSON.parse(localStorage.getItem("rm-notes") || "{}");
+    } catch {
+      /* ignore */
+    }
+
+    const today = new Date().toISOString().split("T")[0];
+    let totalTopics = 0;
+    let totalDone = 0;
+    let totalDoing = 0;
+
+    function rmTotal(rm: any): number {
+      return rm.phases.reduce((a: number, p: any) => a + p.nodes.length, 0);
+    }
+
+    const roleStats = full.map((rm: any) => {
+      const state = allSaved[rm.slug] || {};
+      const notes = allNotes[rm.slug] || {};
+      let done = 0;
+      let doing = 0;
+      rm.phases.forEach((p: any) => {
+        p.nodes.forEach((n: any) => {
+          const s = state[n.id];
+          if (s === "done") done++;
+          else if (s === "doing") doing++;
+        });
+      });
+      totalTopics += rmTotal(rm);
+      totalDone += done;
+      totalDoing += doing;
+      const pct = rmTotal(rm)
+        ? Math.round(((done + doing * 0.5) / rmTotal(rm)) * 100)
+        : 0;
+      return { rm, done, doing, pct, notes };
+    });
+
+    const overallPct = totalTopics
+      ? Math.round(((totalDone + totalDoing * 0.5) / totalTopics) * 100)
+      : 0;
+
+    const lines: string[] = [];
+    lines.push("---");
+    lines.push("title: FAANG Prep Vault");
+    lines.push(`roles: ${full.length}`);
+    lines.push(`topics: ${totalTopics}`);
+    lines.push(`completed: ${totalDone}`);
+    lines.push(`in_progress: ${totalDoing}`);
+    lines.push(`progress: ${overallPct}`);
+    lines.push(`generated: ${today}`);
+    lines.push("tags:");
+    lines.push("  - roadmap");
+    lines.push("  - interview-prep");
+    lines.push("  - faang-prep-vault");
+    lines.push("---");
+    lines.push("");
+    lines.push("# FAANG Prep Vault");
+    lines.push("");
+    lines.push("> [!info] Prep overview");
+    lines.push(
+      `> - **Progress:** ${overallPct}% — ${totalDone} done, ${totalDoing} in progress`,
+    );
+    lines.push(
+      `> - **Scale:** ${full.length} roles · ${totalTopics} topics`,
+    );
+    lines.push("");
+    lines.push("## Roadmaps");
+    lines.push("");
+    roleStats.forEach((s: any) => {
+      lines.push(
+        `- [[#${s.rm.name} Roadmap]] — ${s.pct}% (${s.done}/${rmTotal(s.rm)} done)`,
+      );
+    });
+    lines.push("");
+
+    roleStats.forEach((s: any) => {
+      const { rm, done, doing, pct, notes } = s;
+      lines.push("---");
+      lines.push("");
+      lines.push(`# ${rm.name} Roadmap`);
+      lines.push("");
+      lines.push("> [!info] Prep status");
+      lines.push(
+        `> - **Progress:** ${pct}% — ${done} done, ${doing} in progress`,
+      );
+      lines.push(`> - **Topics:** ${done}/${rmTotal(rm)} completed`);
+      lines.push("");
+      if (rm.tagline) lines.push(rm.tagline);
+      if (rm.description) {
+        lines.push("");
+        lines.push(rm.description);
+      }
+      lines.push("");
+
+      rm.phases.forEach((p: any, idx: number) => {
+        lines.push(`## Phase ${idx + 1} — ${p.name}`);
+        lines.push("");
+        if (p.goal) {
+          lines.push("> [!goal] Goal");
+          p.goal.split("\n").forEach((g: string) => lines.push(`> ${g}`));
+          lines.push("");
+        }
+        if (p.question) {
+          lines.push("> [!question] De-risks");
+          lines.push(`> ${p.question}`);
+          lines.push("");
+        }
+        p.nodes.forEach((n: any) => {
+          const state =
+            allSaved[rm.slug]?.[n.id] ?? "pending";
+          const mark =
+            state === "done" ? "[x]" : state === "doing" ? "[/]" : "[ ]";
+          lines.push(`- ${mark} **${n.title}**`);
+          if (n.hint) lines.push(`  - ${n.hint}`);
+
+          const linkParts: string[] = [];
+          if (n.resource) linkParts.push(toObsidianLink(n.resource, "docs"));
+          (n.resources || []).forEach((r: any) =>
+            linkParts.push(toObsidianLink(r.href, r.label)),
+          );
+          if (linkParts.length > 0) lines.push(`  - ${linkParts.join(" · ")}`);
+
+          const noteText = notes[n.id];
+          if (noteText) {
+            lines.push("");
+            lines.push("  > [!note] Note");
+            noteText.split("\n").forEach((l: string) => lines.push(`  > ${l}`));
+          }
+        });
+        lines.push("");
+      });
+      lines.push("");
+    });
+
+    lines.push("---");
+    lines.push("");
+    lines.push("> [!tip] Keep going");
+    lines.push("> Continue marking topics done on the interactive roadmaps, then re-export to refresh this vault.");
+    lines.push("");
+    return lines.join("\n");
+  }
+
+  document
+    .getElementById("rm-export-vault")
+    ?.addEventListener("click", () => {
+      try {
+        const md = buildVaultMarkdown();
+        if (!md) {
+          alert("Roadmap data unavailable — please reload.");
+          return;
+        }
+        const blob = new Blob([md], { type: "text/markdown" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "faang-prep-vault.md";
+        a.click();
+        URL.revokeObjectURL(url);
+      } catch {
+        alert("Could not build the vault export.");
+      }
+    });
+</script>

@@ -91,6 +91,23 @@ const { section, file, title } = Astro.props;
 // Read and parse the markdown content
 const content = fs.readFileSync(file, "utf-8");
 
+// Real index file name per section (used by the breadcrumb)
+const sectionIndexFile: Record<string, string> = {
+  "hiring-pipeline": "00-Index",
+  "start-here": "00-README",
+  foundations: "00-Foundations-Index",
+  "role-roadmaps": "00-Role-Chooser",
+  interviews: "00-Interview-Index",
+  "system-design": "00-System-Design-Template",
+  "ml-mlops": "00-ML-Index",
+  "mock-interviews": "00-Mock-Interviews-Index",
+  data: "00-Data-Index",
+  "study-plans": "00-Study-Plans-Index",
+  "infra-devops": "00-Infra-Index",
+  career: "00-Career-Index",
+  "company-notes": "00-Index",
+}[section];
+
 // Map folder names to URL slugs for link transformation
 const folderToSlug: Record<string, string> = {
   "00-Hiring-Pipeline": "hiring-pipeline",
@@ -107,10 +124,17 @@ const folderToSlug: Record<string, string> = {
   "08-CAREER": "career",
   "08-Company-Specific-Notes": "company-notes",
   // Also handle lowercase/titlecase variants
+  "00-Hiring-Pipeline": "hiring-pipeline",
+  "00-START-HERE": "start-here",
+  "01-Foundations": "foundations",
+  "02-Role-Roadmaps": "role-roadmaps",
+  "03-Interviews": "interviews",
   "04-System-Design-Library": "system-design",
+  "04-SYSTEM-DESIGN-LIBRARY": "system-design",
   "05-ML-MLOps": "ml-mlops",
   "06-Data": "data",
   "07-Infra-DevOps": "infra-devops",
+  "08-Company-Specific-Notes": "company-notes",
 };
 
 // Transform internal markdown links to website URLs
@@ -128,7 +152,7 @@ function transformInternalLinks(md: string): string {
 
     // Check if it's an internal .md link
     if (href.includes(".md")) {
-      // Extract folder and file from path like ../../04-SYSTEM-DESIGN-LIBRARY/00-System-Design-Template.md
+      // Extract folder and file from path
       const parts = href.split("/");
       let folder = "";
       let file = "";
@@ -144,8 +168,22 @@ function transformInternalLinks(md: string): string {
         }
       }
 
+      // If we found both folder and file, construct the URL
       if (folder && file) {
-        return `[${text}](/docs/${folder}/${file})`;
+        // Clean up link text: remove .md and folder prefixes
+        let cleanText = text.replace(/\.md$/, "");
+        // Remove folder prefixes like "03-INTERVIEWS/"
+        cleanText = cleanText.replace(/^\d+-[A-Z]+[-A-Z]*\//i, "");
+        return `[${cleanText}](/docs/${folder}/${file})`;
+      }
+
+      // If we only found a file (same-folder link like "02-Computer-Systems.md")
+      // use the current section
+      if (file && section) {
+        // Clean up link text: remove .md and any folder prefixes
+        let cleanText = text.replace(/\.md$/, "");
+        cleanText = cleanText.replace(/^\d+-[A-Z]+[-A-Z]*\//i, "");
+        return `[${cleanText}](/docs/${section}/${file})`;
       }
     }
 
@@ -218,18 +256,15 @@ const htmlContent = markdownToHtml(content);
     <nav class="breadcrumb">
       <a href="/">Home</a>
       <span>/</span>
-      <a
-        href={`/docs/${section}/00-${
-          section === "start-here"
-            ? "README"
-            : section
-                .split("-")
-                .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-                .join("-") + "-Index"
-        }`}
-      >
-        {sectionTitles[section]}
-      </a>
+      {
+        sectionIndexFile ? (
+          <a href={`/docs/${section}/${sectionIndexFile}`}>
+            {sectionTitles[section]}
+          </a>
+        ) : (
+          <span>{sectionTitles[section]}</span>
+        )
+      }
       <span>/</span>
       <span>{title}</span>
     </nav>
@@ -268,14 +303,16 @@ const htmlContent = markdownToHtml(content);
   .markdown-content {
     max-width: 75ch;
     line-height: 1.75;
+    font-size: 1.05em;
   }
 
   .markdown-content :global(h1) {
-    font-size: 1.6em;
+    font-size: 1.8em;
     margin: var(--spacing-xl) 0 var(--spacing-md);
     padding-bottom: var(--spacing-sm);
-    border-bottom: 1px solid var(--surface0);
+    border-bottom: 2px solid var(--surface0);
     color: var(--text);
+    line-height: 1.3;
   }
 
   .markdown-content :global(h1)::before {
@@ -284,9 +321,11 @@ const htmlContent = markdownToHtml(content);
   }
 
   .markdown-content :global(h2) {
-    font-size: 1.3em;
+    font-size: 1.5em;
     margin: var(--spacing-xl) 0 var(--spacing-md);
+    padding-top: var(--spacing-lg);
     color: var(--text);
+    line-height: 1.35;
   }
 
   .markdown-content :global(h2)::before {
@@ -295,9 +334,10 @@ const htmlContent = markdownToHtml(content);
   }
 
   .markdown-content :global(h3) {
-    font-size: 1.15em;
+    font-size: 1.25em;
     margin: var(--spacing-lg) 0 var(--spacing-sm);
     color: var(--text);
+    line-height: 1.4;
   }
 
   .markdown-content :global(h3)::before {
@@ -306,9 +346,10 @@ const htmlContent = markdownToHtml(content);
   }
 
   .markdown-content :global(h4) {
-    font-size: 1em;
+    font-size: 1.1em;
     margin: var(--spacing-md) 0 var(--spacing-sm);
     color: var(--text);
+    line-height: 1.45;
   }
 
   .markdown-content :global(h4)::before {
@@ -319,38 +360,51 @@ const htmlContent = markdownToHtml(content);
   .markdown-content :global(p) {
     margin: var(--spacing-md) 0;
     color: var(--subtext1);
+    letter-spacing: -0.01em;
   }
 
   .markdown-content :global(a) {
     color: var(--blue);
     text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: all var(--transition-fast);
+    padding: 0.1em 0;
   }
 
   .markdown-content :global(a:hover) {
-    text-decoration: underline;
+    text-decoration: none;
     color: var(--sky);
+    border-bottom-color: var(--sky);
+    background: rgba(137, 180, 250, 0.1);
   }
 
   .markdown-content :global(code) {
     background: var(--surface0);
-    padding: 0.1rem 0.5ch;
+    padding: 0.2em 0.6ch;
     font-family: var(--font-family);
     color: var(--green);
-    font-size: 0.95em;
+    font-size: 0.9em;
+    border-radius: 3px;
+    border: 1px solid var(--surface1);
   }
 
   .markdown-content :global(pre) {
     background: var(--crust);
     border: 1px solid var(--surface0);
-    padding: var(--spacing-md);
+    padding: var(--spacing-lg);
     overflow-x: auto;
-    margin: var(--spacing-md) 0;
+    margin: var(--spacing-lg) 0;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   }
 
   .markdown-content :global(pre code) {
     background: none;
     padding: 0;
     color: var(--subtext1);
+    border: none;
+    font-size: 0.9em;
+    line-height: 1.6;
   }
 
   .markdown-content :global(ul),
@@ -362,6 +416,7 @@ const htmlContent = markdownToHtml(content);
   .markdown-content :global(li) {
     margin: var(--spacing-xs) 0;
     color: var(--subtext1);
+    line-height: 1.7;
   }
 
   .markdown-content :global(li)::marker {
@@ -369,18 +424,29 @@ const htmlContent = markdownToHtml(content);
   }
 
   .markdown-content :global(blockquote) {
-    border-left: 3px solid var(--blue);
-    padding: var(--spacing-sm) var(--spacing-md);
-    margin: var(--spacing-md) 0;
-    background: var(--mantle);
+    border-left: 4px solid var(--blue);
+    padding: var(--spacing-md) var(--spacing-lg);
+    margin: var(--spacing-lg) 0;
+    background: linear-gradient(
+      to right,
+      rgba(137, 180, 250, 0.05),
+      transparent
+    );
     color: var(--subtext0);
+    border-radius: 0 6px 6px 0;
+  }
+
+  .markdown-content :global(blockquote p) {
+    margin: 0;
   }
 
   .markdown-content :global(table) {
     width: 100%;
     border-collapse: collapse;
-    margin: var(--spacing-md) 0;
+    margin: var(--spacing-lg) 0;
     font-size: 0.9em;
+    overflow: hidden;
+    border-radius: 6px;
   }
 
   .markdown-content :global(th),
@@ -394,15 +460,22 @@ const htmlContent = markdownToHtml(content);
     background: var(--surface0);
     color: var(--text);
     font-weight: var(--font-weight-bold);
+    text-transform: uppercase;
+    font-size: 0.85em;
+    letter-spacing: 0.05em;
   }
 
   .markdown-content :global(tr:nth-child(even)) {
     background: var(--mantle);
   }
 
+  .markdown-content :global(tr:hover) {
+    background: var(--surface0);
+  }
+
   .markdown-content :global(hr) {
     border: none;
-    border-top: 1px dashed var(--surface1);
+    border-top: 2px dashed var(--surface1);
     margin: var(--spacing-xl) 0;
   }
 
@@ -421,6 +494,88 @@ const htmlContent = markdownToHtml(content);
     height: auto;
     border: 1px solid var(--surface0);
     margin: var(--spacing-md) 0;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Reading progress bar */
+  .reading-progress {
+    position: fixed;
+    top: var(--nav-height);
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: var(--surface0);
+    z-index: 99;
+  }
+
+  .reading-progress-bar {
+    height: 100%;
+    background: linear-gradient(
+      to right,
+      var(--accent-green),
+      var(--accent-blue)
+    );
+    width: 0%;
+    transition: width 0.1s ease;
+  }
+
+  /* Table of Contents */
+  .toc {
+    background: var(--mantle);
+    border: 1px solid var(--surface0);
+    padding: var(--spacing-lg);
+    margin: var(--spacing-lg) 0;
+    border-radius: 6px;
+  }
+
+  .toc-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75ch;
+    color: var(--text);
+    font-weight: var(--font-weight-bold);
+    margin-bottom: var(--spacing-md);
+    font-size: 0.95em;
+  }
+
+  .toc-title .nf {
+    color: var(--accent-green);
+  }
+
+  .toc-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .toc-list li {
+    margin: var(--spacing-xs) 0;
+  }
+
+  .toc-list a {
+    color: var(--subtext1);
+    text-decoration: none;
+    display: block;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: 4px;
+    transition: all var(--transition-fast);
+    font-size: 0.9em;
+  }
+
+  .toc-list a:hover {
+    color: var(--accent-blue);
+    background: var(--surface0);
+    text-decoration: none;
+  }
+
+  .toc-list .toc-h2 {
+    padding-left: var(--spacing-md);
+  }
+
+  .toc-list .toc-h3 {
+    padding-left: var(--spacing-xl);
+    font-size: 0.85em;
   }
 
   @media (max-width: 768px) {

@@ -32,27 +32,30 @@ const icons = {
 
 // Companies you can prepare for with this roadmap
 const companies = [
-  { name: "Google", icon: "" },
-  { name: "Meta", icon: "" },
-  { name: "Amazon", icon: "" },
-  { name: "Apple", icon: "" },
-  { name: "Microsoft", icon: "" },
-  { name: "Netflix", icon: "" },
-  { name: "Stripe", icon: "" },
-  { name: "Uber", icon: "" },
-  { name: "Airbnb", icon: "" },
-  { name: "LinkedIn", icon: "" },
-  { name: "Twitter/X", icon: "" },
-  { name: "Spotify", icon: "" },
-  { name: "Salesforce", icon: "" },
-  { name: "Adobe", icon: "" },
-  { name: "Oracle", icon: "" },
-  { name: "Nvidia", icon: "" },
-  { name: "Intel", icon: "" },
-  { name: "Databricks", icon: "" },
-  { name: "Snowflake", icon: "" },
-  { name: "Coinbase", icon: "" },
+  { name: "Google", slug: "google", color: "#4285F4" },
+  { name: "Meta", slug: "meta", color: "#0668E1" },
+  { name: "Amazon", slug: "amazon", color: "#FF9900" },
+  { name: "Apple", slug: "apple", color: "#555555" },
+  { name: "Microsoft", slug: "microsoft", color: "#00A4EF" },
+  { name: "Netflix", slug: "netflix", color: "#E50914" },
+  { name: "Stripe", slug: "stripe", color: "#635BFF" },
+  { name: "Uber", slug: "uber", color: "#000000" },
+  { name: "Airbnb", slug: "airbnb", color: "#FF5A5F" },
+  { name: "LinkedIn", slug: "linkedin", color: "#0A66C2" },
+  { name: "Twitter/X", slug: "twitter", color: "#000000" },
+  { name: "Spotify", slug: "spotify", color: "#1DB954" },
+  { name: "Salesforce", slug: "salesforce", color: "#00A1E0" },
+  { name: "Adobe", slug: "adobe", color: "#FF0000" },
+  { name: "Oracle", slug: "oracle", color: "#C74634" },
+  { name: "Nvidia", slug: "nvidia", color: "#76B900" },
+  { name: "Intel", slug: "intel", color: "#0071C5" },
+  { name: "Databricks", slug: "databricks", color: "#FF3621" },
+  { name: "Snowflake", slug: "snowflake", color: "#29B5E8" },
+  { name: "Coinbase", slug: "coinbase", color: "#0052FF" },
 ];
+
+// Companies without a LeetCode dataset yet -> link to the directory instead
+const leetcodeMissing = new Set(["stripe"]);
 
 const sections = [
   {
@@ -1008,10 +1011,13 @@ const practiceQuestions = [
       <div class="companies-grid">
         {
           companies.map((company) => (
-            <span class="company-badge">
-              <span class="nf">{company.icon}</span>
+            <a href={`/company/${company.slug}`} class="company-badge">
+              <div class="company-icon-svg" style={`background: ${company.color}`}>
+                <img src={`https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/${company.slug}.svg`} alt={company.name} />
+              </div>
               {company.name}
-            </span>
+              <span class="nf arrow">→</span>
+            </a>
           ))
         }
       </div>
@@ -1047,6 +1053,15 @@ const practiceQuestions = [
       >
         <span class="nf">{icons.book}</span>
         Browse Docs
+      </a>
+      <a
+        href="/roadmap"
+        is-="button"
+        box-="square"
+        variant-="secondary"
+      >
+        <span class="nf"></span>
+        Interactive Roadmaps
       </a>
     </div>
   </div>
@@ -1382,6 +1397,50 @@ const practiceQuestions = [
   </div>
 
   <!-- Resources & External Links -->
+  <!-- LeetCode Practice Section -->
+  <h2 class="section-header">
+    <span class="nf">{icons.code}</span>
+    Practice LeetCode Problems by Company
+  </h2>
+
+  <div class="leetcode-intro">
+    <p>
+      Master coding interviews with company-specific LeetCode problems. 
+      Practice the most frequently asked questions from your target companies.
+    </p>
+  </div>
+
+  <div class="leetcode-companies-grid">
+    {
+      companies.slice(0, 12).map((company) => (
+        <a href={leetcodeMissing.has(company.slug) ? "/leetcode" : `/leetcode/${company.slug}`} class="leetcode-company-card">
+          <div class="leetcode-card-header">
+            <div class="leetcode-company-icon" style={`background: ${company.color}`}>
+              <img src={`https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/${company.slug}.svg`} alt={company.name} />
+            </div>
+            <div class="leetcode-company-info">
+              <h3>{company.name}</h3>
+              <span class="leetcode-problems-count">
+                <span class="nf">📝</span> View Problems
+              </span>
+            </div>
+          </div>
+          <div class="leetcode-card-footer">
+            <span class="nf">→</span>
+            Practice now
+          </div>
+        </a>
+      ))
+    }
+  </div>
+
+  <div class="leetcode-cta">
+    <a href="/leetcode" class="btn btn-primary">
+      <span class="nf">{icons.code}</span>
+      View All Companies & Problems
+    </a>
+  </div>
+
   <h2 class="section-header">
     <span class="nf">{icons.star}</span>
     Curated Resources
@@ -2360,6 +2419,208 @@ const practiceQuestions = [
 
     .phase-focus {
       display: none;
+    }
+  }
+
+  /* Enhanced Company Badges */
+  .company-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75ch;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--mantle);
+    color: var(--subtext1);
+    border: 1px solid var(--surface0);
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all var(--transition-fast);
+    font-size: 0.9em;
+    font-weight: 500;
+  }
+
+  .company-badge:hover {
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(137, 180, 250, 0.2);
+    text-decoration: none;
+  }
+
+  .company-icon-svg {
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    flex-shrink: 0;
+  }
+
+  .company-icon-svg img {
+    width: 16px;
+    height: 16px;
+    filter: brightness(0) invert(1);
+  }
+
+  .company-badge .arrow {
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: all var(--transition-fast);
+    color: var(--accent-blue);
+  }
+
+  .company-badge:hover .arrow {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  /* LeetCode Section */
+  .leetcode-intro {
+    max-width: 700px;
+    color: var(--subtext1);
+    margin-bottom: var(--spacing-lg);
+    font-size: 1.05em;
+    line-height: 1.6;
+  }
+
+  .leetcode-companies-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .leetcode-company-card {
+    display: block;
+    background: var(--mantle);
+    border: 1px solid var(--surface0);
+    border-radius: 8px;
+    padding: var(--spacing-md);
+    text-decoration: none;
+    transition: all var(--transition-fast);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .leetcode-company-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(to right, var(--accent-green), var(--accent-blue));
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+  }
+
+  .leetcode-company-card:hover {
+    border-color: var(--accent-green);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(166, 227, 161, 0.15);
+    text-decoration: none;
+  }
+
+  .leetcode-company-card:hover::before {
+    opacity: 1;
+  }
+
+  .leetcode-card-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .leetcode-company-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: white;
+    flex-shrink: 0;
+    padding: 8px;
+  }
+
+  .leetcode-company-icon img {
+    width: 32px;
+    height: 32px;
+    filter: brightness(0) invert(1);
+  }
+
+  .leetcode-company-info h3 {
+    margin: 0;
+    color: var(--text);
+    font-size: 1.05em;
+    font-weight: 600;
+  }
+
+  .leetcode-problems-count {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5ch;
+    font-size: 0.85em;
+    color: var(--subtext0);
+    margin-top: var(--spacing-xs);
+  }
+
+  .leetcode-card-footer {
+    display: flex;
+    align-items: center;
+    gap: 0.5ch;
+    color: var(--accent-green);
+    font-size: 0.9em;
+    font-weight: 600;
+    margin-top: var(--spacing-sm);
+    padding-top: var(--spacing-sm);
+    border-top: 1px dashed var(--surface0);
+  }
+
+  .leetcode-card-footer .nf {
+    transition: transform var(--transition-fast);
+  }
+
+  .leetcode-company-card:hover .leetcode-card-footer .nf {
+    transform: translateX(4px);
+  }
+
+  .leetcode-cta {
+    text-align: center;
+    margin: var(--spacing-xl) 0;
+  }
+
+  .leetcode-cta .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75ch;
+    padding: var(--spacing-md) var(--spacing-xl);
+    background: var(--accent-green);
+    color: var(--crust);
+    border-radius: 8px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: all var(--transition-fast);
+  }
+
+  .leetcode-cta .btn:hover {
+    background: var(--green);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(166, 227, 161, 0.3);
+    text-decoration: none;
+  }
+
+  @media (max-width: 768px) {
+    .leetcode-companies-grid {
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
+
+    .company-badge {
+      font-size: 0.85em;
+      padding: var(--spacing-xs) var(--spacing-sm);
     }
   }
 </style>

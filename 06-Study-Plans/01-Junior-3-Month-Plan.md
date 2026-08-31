@@ -129,7 +129,7 @@
 | Day | Activity                     | Format                                                                                                           | Notes                          |
 | --- | ---------------------------- | ---------------------------------------------------------------------------------------------------------------- | ------------------------------ |
 | Mon | Design URL Shortener         | Untimed; read template; design on paper                                                                          | Learn template flow            |
-| Tue | Debrief URL Shortener        | Compare to [example](../../02-System-Design/example-designs/url-shortener.md)                                    | Identify gaps                  |
+| Tue | Debrief URL Shortener        | Compare to [example](../../04-SYSTEM-DESIGN-LIBRARY/00-System-Design-Template.md)                                    | Identify gaps                  |
 | Wed | Design News Feed             | 60 min timed; no template; trust yourself                                                                        | Test real skills               |
 | Thu | Debrief News Feed            | Record yourself explaining your design                                                                           | Identify communication issues  |
 | Fri | Design Messaging System      | 60 min timed                                                                                                     | Practice failure-mode thinking |
@@ -197,8 +197,8 @@
 
 | Day     | Activity          | Output                                                                                                  |
 | ------- | ----------------- | ------------------------------------------------------------------------------------------------------- |
-| Mon–Wed | Build target list | [ATS-optimized resume](../../04-Resume-LinkedIn-GitHub/faang-resume-guide.md) for 10–15 companies       |
-| Thu–Fri | Optimize resume   | Use [ATS checklist](../../04-Resume-LinkedIn-GitHub/ats-optimization.md); tailor role-specific keywords |
+| Mon–Wed | Build target list | [ATS-optimized resume](../../08-CAREER/01-Resume-LinkedIn-GitHub.md) for 10–15 companies       |
+| Thu–Fri | Optimize resume   | Use [ATS checklist](../../08-CAREER/01-Resume-LinkedIn-GitHub.md); tailor role-specific keywords |
 | Sat     | LinkedIn/GitHub   | Update profiles; add system design project                                                              |
 | Sun     | Apply             | Submit 3–5 applications                                                                                 |
 
@@ -248,7 +248,7 @@
 | **Coding/Design**   | Minimal reps (2–3 per day)                                               | Maintain muscle memory |
 | **Behavioral**      | 1–2 final rehearsals                                                     | Confidence             |
 | **Real Interviews** | 2–4 more loops                                                           | Normalize it           |
-| **Offers**          | [Negotiation playbook](../../07-Offer-Negotiation/salary-negotiation.md) | Maximize package       |
+| **Offers**          | [Negotiation playbook](../../08-CAREER/04-Offer-Negotiation.md) | Maximize package       |
 | **Rest**            | Ample sleep night before loops                                           | Peak performance       |
 
 **Time:** 12–15 hours
@@ -294,10 +294,10 @@
 ## **Resources**
 
 - **Coding:** LeetCode (Grind75/LeetCode 75 lists); [DSA fundamentals](../../01-Foundations/01-DSA-and-Coding.md)
-- **Design:** [System Design Template](../../04-System-Design-Library/00-System-Design-Template.md); [Example Designs](../../02-System-Design/example-designs/)
+- **Design:** [System Design Template](../../04-System-Design-Library/00-System-Design-Template.md); [System Design Template](../../04-SYSTEM-DESIGN-LIBRARY/00-System-Design-Template.md)
 - **Behavioral:** [Behavioral Playbook](../../03-Interviews/06-Behavioral-Interview-Playbook.md)
 - **Mocks:** Leetcode contest; peer mocks; interviewing.io
-- **Resume:** [ATS Guide](../../04-Resume-LinkedIn-GitHub/faang-resume-guide.md)
+- **Resume:** [ATS Guide](../../08-CAREER/01-Resume-LinkedIn-GitHub.md)
 
 ---
 

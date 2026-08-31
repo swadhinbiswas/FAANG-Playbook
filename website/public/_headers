@@ -35,6 +35,11 @@
 /*.ico
   Cache-Control: public, max-age=604800
 
+# Service worker must never be cached by the CDN (immutable .js rule above would apply)
+/sw.js
+  Cache-Control: public, max-age=0, must-revalidate
+  Service-Worker-Allowed: /
+
 # Don't cache HTML (for fresh content)
 /*.html
   Cache-Control: public, max-age=0, must-revalidate
